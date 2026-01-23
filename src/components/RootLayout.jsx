@@ -17,7 +17,8 @@ import Image from "next/image";
 // Assets
 import blackLogo from "../../assets/Logo/blacklogo.png";
 import whiteLogo from "../../assets/Logo/WhiteLogo.png";
-import compactLogo from "../../assets/Logo/CompactLogo-mobile.svg";
+import compactLogoblack from "../../assets/Logo/CompactLogo-black.png";
+import compactLogowhite from "../../assets/Logo/CompactLogo-white.png";
 
 const Header = ({
   panelId,
@@ -43,9 +44,9 @@ const Header = ({
             
             {/* Mobile Logo: Compact h-10 for small screens */}
             <Image
-              src={invert ? compactLogo : compactLogo}
+              src={invert ? compactLogowhite : compactLogoblack}
               alt="Berztech Logo"
-              className="block sm:hidden h-10 w-auto object-contain"
+              className="block sm:hidden h-16 w-auto object-contain"
               priority
             />
           </Logo>

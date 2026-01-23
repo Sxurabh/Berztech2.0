@@ -3,8 +3,8 @@ import "./globals.css";
 
 export const metadata = {
   title: {
-    template: "berztech",
-    default: "berztech",
+    template: "Berztech Inc. - Build Online Presence",
+    default: "Berztech Inc. - Build Online Presence",
   },
 };
 

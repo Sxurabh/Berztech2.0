@@ -12,11 +12,7 @@ export default function Home() {
     <main className="text-black">
       {/* Wrapped Hero Section with relative isolate to position the GridPattern behind it */}
       <div className="relative isolate">
-        <GridPattern
-          className="absolute inset-x-0 -top-14 -z-10 h-[1000px] w-full fill-neutral-50 stroke-neutral-950/5 [mask-image:linear-gradient(to_bottom_left,white_40%,transparent_50%)]"
-          yOffset={-96}
-          interactive
-        />
+        
         <Container className="mt-24 sm:mt-32">
           <FadeIn className="max-w-3xl">
             <h1 className="font-display text-5xl font-medium tracking-tight text-neutral-950 [text-wrap:balance] sm:text-7xl">
