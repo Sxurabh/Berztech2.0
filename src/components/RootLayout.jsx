@@ -15,8 +15,9 @@ import Footer from "./Footer";
 import Image from "next/image";
 
 // Assets
-import blackLogo from "../../assets/Logo/blacklogo.svg";
-import whiteLogo from "../../assets/Logo/WhiteLogo.svg";
+import blackLogo from "../../assets/Logo/blacklogo.png";
+import whiteLogo from "../../assets/Logo/WhiteLogo.png";
+import compactLogo from "../../assets/Logo/CompactLogo-mobile.svg";
 
 const Header = ({
   panelId,
@@ -26,17 +27,25 @@ const Header = ({
   onToggle,
   toggleRef,
 }) => {
-  // Container
   return (
     <Container>
       <div className="flex items-center justify-between">
         {/* Logo */}
         <Link href={"/"} aria-label="Home">
           <Logo invert={invert}>
+            {/* Desktop Logo: Set to h-12 (approx 48px) to match Studio template sleekness */}
             <Image
               src={invert ? whiteLogo : blackLogo}
               alt="Berztech Logo"
-              className="h-16 w-auto object-contain"
+              className="hidden sm:block h-10 w-auto object-contain"
+              priority
+            />
+            
+            {/* Mobile Logo: Compact h-10 for small screens */}
+            <Image
+              src={invert ? compactLogo : compactLogo}
+              alt="Berztech Logo"
+              className="block sm:hidden h-10 w-auto object-contain"
               priority
             />
           </Logo>
@@ -71,6 +80,7 @@ const Header = ({
     </Container>
   );
 };
+
 const NavigationRow = ({ children }) => {
   return (
     <div className="even:mt-px sm:bg-neutral-950">
@@ -115,6 +125,7 @@ const RootLayoutInner = ({ children }) => {
   const closeRef = useRef();
   const navRef = useRef();
   const shouldReduceMotion = useReducedMotion();
+  
   useEffect(() => {
     function onClick(event) {
       if (event.target.closest("a")?.href === window.location.href) {
@@ -127,15 +138,16 @@ const RootLayoutInner = ({ children }) => {
       window.removeEventListener("click", onClick);
     };
   }, []);
+
   return (
     <MotionConfig transition={shouldReduceMotion ? { duration: 0 } : undefined}>
       <header>
+        {/* Adjusted padding to pt-6 to match the Studio template's tight header */}
         <div
           className="absolute left-0 right-0 top-2 z-40 pt-14"
           aria-hidden={expanded ? "true" : undefined}
           inert={expanded ? "" : undefined}
         >
-          {/* Header */}
           <Header
             panelId={panelId}
             icon={HiMenuAlt4}
@@ -173,7 +185,6 @@ const RootLayoutInner = ({ children }) => {
                 }}
               />
             </div>
-            {/* Navigation */}
             <Navigation />
             <div className="relative bg-neutral-950 before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-neutral-800">
               <Container>
@@ -209,7 +220,6 @@ const RootLayoutInner = ({ children }) => {
           className="relative isolate flex w-full flex-col pt-9"
         >
           <main className="w-full flex-auto">{children}</main>
-          {/* Footer */}
           <Footer />
         </motion.div>
       </motion.div>
