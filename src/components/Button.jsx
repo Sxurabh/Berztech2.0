@@ -19,8 +19,8 @@ function ButtonInner({ className, children, invert, ...props }) {
 
         // TRUE B/W INVERSION
         invert
-          ? "bg-neutral-100 text-black hover:bg-white"
-          : "bg-neutral-100 text-black hover:bg-white ",
+  ? "bg-neutral-900 text-white hover:bg-neutral-900"
+  : "bg-white text-black hover:bg-neutral-100",
 
         className
       )}

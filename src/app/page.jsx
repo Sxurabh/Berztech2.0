@@ -16,20 +16,20 @@ export default function Home() {
             </h1>
             
             <div className="mt-12 max-w-2xl">
-              <p className="text-xl leading-relaxed text-neutral-600 sm:text-2xl">
+              <p className="font-jetbrains-mono text-l leading-relaxed text-neutral-600 sm:text-xl">
                 We are a boutique engineering studio architecting high-performance 
                 web applications for the next generation of digital leaders. 
                 No templates, just pure code.
               </p>
               
-              <div className="mt-10 flex flex-wrap gap-6">
+              <div className="mt-10 flex  gap-6">
                 {/* Redesigned Button - Primary */}
                 <Button href="/contact" className="w-full sm:w-auto">
                   Start your project
                 </Button>
                 
                 {/* Redesigned Button - Secondary/Invert */}
-                <Button href="/process" invert className="w-full sm:w-auto">
+                <Button href="/process" className="w-full sm:w-auto">
                   Explore our process
                 </Button>
               </div>
