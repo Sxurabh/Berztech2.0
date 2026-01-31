@@ -2,11 +2,15 @@ import ContactSection from "@/components/ContactSection";
 import Container from "@/components/Container";
 import FadeIn from "@/components/FadeIn";
 import Services from "@/components/Services";
-import Button from "@/components/Button"; // Use the redesigned component
+import Button from "@/components/Button";
+import Clients from "@/components/Clients"; // Added for Social Proof
+import CodeShowcase from "@/components/CodeShowcase"; // The "Engineering" Proof
+import BentoGrid from "@/components/BentoGrid"; // The "Scale" Proof
 
 export default function Home() {
   return (
     <main className="w-full bg-white">
+      {/* 1. HERO SECTION */}
       <div className="relative pt-32 pb-20 sm:pt-48 sm:pb-32">
         <Container>
           <FadeIn>
@@ -16,19 +20,17 @@ export default function Home() {
             </h1>
             
             <div className="mt-12 max-w-2xl">
-              <p className="font-jetbrains-mono text-l leading-relaxed text-neutral-600 sm:text-xl">
+              <p className="font-jetbrains-mono text-lg leading-relaxed text-neutral-600 sm:text-xl">
                 We are a boutique engineering studio architecting high-performance 
                 web applications for the next generation of digital leaders. 
                 No templates, just pure code.
               </p>
               
-              <div className="mt-10 flex  gap-6">
-                {/* Redesigned Button - Primary */}
+              <div className="mt-10 flex gap-6">
                 <Button href="/contact" className="w-full sm:w-auto">
                   Start your project
                 </Button>
                 
-                {/* Redesigned Button - Secondary/Invert */}
                 <Button href="/process" className="w-full sm:w-auto">
                   Explore our process
                 </Button>
@@ -38,7 +40,19 @@ export default function Home() {
         </Container>
       </div>
 
+      {/* 2. CLIENTS (Validation) */}
+      <Clients />
+
+      {/* 3. CODE SHOWCASE (Engineering Proof) */}
+      <CodeShowcase />
+
+      {/* 4. BENTO GRID (Scale & Reliability) */}
+      <BentoGrid />
+
+      {/* 5. SERVICES (The Offer) */}
       <Services />
+
+      {/* 6. CONTACT (The Closer) */}
       <ContactSection />
     </main>
   );
