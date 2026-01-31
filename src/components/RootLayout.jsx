@@ -192,7 +192,7 @@ const RootLayoutInner = ({ children }) => {
                 <div className="grid grid-cols-1 gap-y-10 pb-16 pt-10 sm:grid-cols-2 sm:pt-16">
                   <div>
                     <h2 className="font-display text-base font-semibold text-white">
-                      Our offices
+                      Our office
                     </h2>
                     <Offices
                       invert
