@@ -204,7 +204,7 @@ function AICard() {
          </div>
 
          {/* The "Brain" Node */}
-         <div className="relative bg-white border border-neutral-200 px-5 py-3 shadow-lg z-10 hover:scale-105 transition-transform cursor-default rounded-lg">
+         <div className="relative bg-white border border-neutral-200 px-5 py-3 shadow-lg z-10 hover:scale-105 transition-transform cursor-default ">
             <div className="flex items-center gap-3">
                <div className="w-2.5 h-2.5 bg-purple-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(168,85,247,0.5)]" />
                <span className="font-jetbrains-mono text-xs font-bold tracking-wider text-neutral-800">MODEL_READY</span>
