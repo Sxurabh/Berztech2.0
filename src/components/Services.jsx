@@ -10,13 +10,13 @@ const Services = () => {
   return (
     <>
       <SectionIntro
-        eyebrow="Services"
+        eyebrow="Expertise"
         title="We help you identify, explore and respond to new opportunities."
         className="mt-24 sm:mt-32 lg:mt-40"
       >
         <p>
-          As long as those opportunities involve giving us money to re-purpose
-          old projects — we can come up with an endless number of those.
+          Our approach combines deep technical proficiency with an obsession for 
+          user-centric design. We build tools that don't just work—they inspire.
         </p>
       </SectionIntro>
       <Container className="mt-16">
@@ -30,26 +30,23 @@ const Services = () => {
               />
             </FadeIn>
           </div>
-          {/* List item */}
+          
           <List className="mt-16 lg:mt-0 lg:w-1/2 lg:min-w-[33rem] lg:pl-4">
-            <ListItem title="Web development">
-              We specialise in crafting beautiful, high quality marketing pages.
-              The rest of the website will be a shell that uses lorem ipsum
-              everywhere.
+            <ListItem title="Full-Stack Web Development">
+              High-performance, SEO-optimized web applications built with 
+              Next.js, React, and robust backend architectures.
             </ListItem>
-            <ListItem title="Application development">
-              We have a team of skilled developers who are experts in the latest
-              app frameworks, like Angular 1 and Google Web Toolkit.
+            <ListItem title="Scalable App Infrastructure">
+              Cloud-native development focusing on AWS/Vercel deployments, 
+              ensuring your application scales with your user base.
             </ListItem>
-            <ListItem title="E-commerce">
-              We are at the forefront of modern e-commerce development. Which
-              mainly means adding your logo to the Shopify store template we’ve
-              used for the past six years.
+            <ListItem title="E-commerce Solutions">
+              Custom headless commerce experiences using Shopify Hydrogen 
+              or MedusaJS for brands that have outgrown standard templates.
             </ListItem>
-            <ListItem title="Custom content management">
-              At Studio we understand the importance of having a robust and
-              customised CMS. That’s why we run all of our client projects out
-              of a single, enormous Joomla instance.
+            <ListItem title="Legacy Modernization">
+              Refactoring outdated systems into modern, maintainable codebases 
+              without disrupting your ongoing business operations.
             </ListItem>
           </List>
         </div>
