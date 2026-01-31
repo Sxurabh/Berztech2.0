@@ -1,19 +1,16 @@
-import Clients from "@/components/Clients";
 import ContactSection from "@/components/ContactSection";
 import Container from "@/components/Container";
 import FadeIn from "@/components/FadeIn";
 import Services from "@/components/Services";
-import Testimonials from "@/components/Testimonials";
-import logoPhobiaDark from "@/images/clients/phobia/logo-dark.svg";
+import Button from "@/components/Button"; // Use the redesigned component
 
 export default function Home() {
   return (
     <main className="w-full bg-white">
-      {/* Hero Section - Clean, High-Contrast Minimalism */}
       <div className="relative pt-32 pb-20 sm:pt-48 sm:pb-32">
         <Container>
           <FadeIn>
-            <h1 className="font-display text-6xl font-medium tracking-tight text-neutral-950 [text-wrap:balance] sm:text-8xl lg:text-[120px] leading-[0.9]">
+            <h1 className="font-space-grotesk text-6xl font-medium tracking-tight text-neutral-950 [text-wrap:balance] sm:text-8xl lg:text-[120px] leading-[0.9]">
               Engineering <br /> 
               Digital <span className="text-neutral-400">Excellence.</span>
             </h1>
@@ -26,25 +23,22 @@ export default function Home() {
               </p>
               
               <div className="mt-10 flex flex-wrap gap-6">
-                <button className="rounded-full bg-neutral-950 px-8 py-4 text-base font-semibold text-white transition hover:bg-neutral-800">
+                {/* Redesigned Button - Primary */}
+                <Button href="/contact" className="w-full sm:w-auto">
                   Start your project
-                </button>
-                <button className="flex items-center gap-x-2 text-base font-semibold text-neutral-950 hover:text-neutral-600 transition">
-                  Explore our process 
-                  <span aria-hidden="true">→</span>
-                </button>
+                </Button>
+                
+                {/* Redesigned Button - Secondary/Invert */}
+                <Button href="/process" invert className="w-full sm:w-auto">
+                  Explore our process
+                </Button>
               </div>
             </div>
           </FadeIn>
         </Container>
       </div>
 
-    
-
       <Services />
-
-    
-
       <ContactSection />
     </main>
   );
