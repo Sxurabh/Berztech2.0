@@ -1,27 +1,29 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
+import clsx from "clsx";
+import { CornerFrame } from "@/components/CornerFrame";
 
 /* ---------------- Parallax Hook ---------------- */
-function useParallax(strength = 10) {
+function useParallax(strength = 6) {
   const ref = useRef(null);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
 
+    // Only apply parallax on desktop (lg screens)
+    if (window.innerWidth < 1024) return;
+
     const move = (e) => {
       const r = el.getBoundingClientRect();
       const x = (e.clientX - r.left) / r.width - 0.5;
       const y = (e.clientY - r.top) / r.height - 0.5;
-      el.style.transform = `rotateX(${y * -strength}deg) rotateY(${x * strength}deg)`;
-      el.style.setProperty("--x", `${e.clientX - r.left}px`);
-      el.style.setProperty("--y", `${e.clientY - r.top}px`);
+      
+      el.style.transform = `perspective(1000px) rotateX(${y * -strength}deg) rotateY(${x * strength}deg)`;
     };
 
     const leave = () => {
-      el.style.transform = "rotateX(0deg) rotateY(0deg)";
-      el.style.setProperty("--x", `50%`);
-      el.style.setProperty("--y", `50%`);
+      el.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg)";
     };
 
     el.addEventListener("mousemove", move);
@@ -36,214 +38,182 @@ function useParallax(strength = 10) {
 }
 
 /* ---------------- Bento Card Wrapper ---------------- */
-function BentoCard({ title, subtitle, tag, children, className = "", dark }) {
+function BentoCard({ 
+  title, 
+  subtitle, 
+  tag, 
+  children, 
+  className = "", 
+  dark = false,
+  // CUSTOMIZATION: Default to slightly bolder corners than buttons
+  bracketClass = "w-5 h-5 border-2" 
+}) {
   const ref = useParallax(4);
 
   return (
-    <div
-      ref={ref}
-      className={`group relative overflow-hidden rounded-3xl p-8 transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl ${
-        dark 
-          ? "bg-neutral-950 text-white border border-neutral-800" 
-          : "bg-white text-neutral-950 border border-neutral-200"
-      } ${className}`}
-      style={{ transformStyle: "preserve-3d" }}
-    >
-      {/* Dynamic Cursor Spotlight */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0"
-        style={{
-          background:
-            "radial-gradient(circle at var(--x,50%) var(--y,50%), rgba(255,255,255,0.1), transparent 50%)",
-        }}
-      />
+    <div className={clsx("h-full min-h-[320px]", className)}>
+      <CornerFrame
+        ref={ref}
+        // Pass the custom styling to your CornerFrame component
+        bracketClassName={bracketClass}
+        className={clsx(
+          "h-full w-full transition-all duration-500 ",
+          dark ? "bg-neutral-950 text-blue-400 hover:text-black" : "bg-white text-black"
+        )}
+        style={{ transformStyle: "preserve-3d" }}
+      >
+        <div className={clsx(
+          "relative h-full overflow-hidden p-6 sm:p-8 flex flex-col",
+          dark ? "text-white" : "text-neutral-950"
+        )}>
+          
+          {/* Background Grid Pattern */}
+          <div 
+            className={clsx("absolute inset-0 opacity-[0.03] pointer-events-none", dark ? "bg-white" : "bg-black")}
+            style={{ 
+              backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)', 
+              backgroundSize: '24px 24px' 
+            }} 
+          />
 
-      <div className="relative z-10 flex h-full flex-col justify-between pointer-events-none">
-        <div>
-          <div className="flex items-center gap-2 mb-3">
-            <span className={`h-1.5 w-1.5 rounded-full ${dark ? 'bg-blue-400' : 'bg-blue-600'}`}></span>
-            <p className={`text-xs font-mono uppercase tracking-widest font-bold ${dark ? 'text-blue-400' : 'text-blue-600'}`}>
-              {tag}
+          {/* Header */}
+          <div className="relative z-10 pointer-events-none mb-4">
+            <div className="flex items-center gap-2 mb-3">
+               <div className={clsx("h-1 w-1 rounded-full", dark ? "bg-blue-400" : "bg-neutral-950")} />
+               <p className={clsx("font-jetbrains-mono text-[10px] uppercase tracking-widest font-bold", dark ? "text-blue-400" : "text-neutral-500")}>
+                 {tag}
+               </p>
+            </div>
+            <h3 className="font-space-grotesk text-2xl font-medium tracking-tight">{title}</h3>
+            <p className={clsx("mt-3 text-sm leading-relaxed max-w-[90%]", dark ? "text-neutral-400" : "text-neutral-600")}>
+              {subtitle}
             </p>
           </div>
-          <h3 className="font-display text-2xl font-semibold tracking-tight">{title}</h3>
-          <p className={`mt-3 text-sm leading-relaxed ${dark ? "text-neutral-400" : "text-neutral-500"}`}>
-            {subtitle}
-          </p>
+          
+          {/* Content Area */}
+          <div className="relative w-full flex-1 flex items-end justify-center pointer-events-auto min-h-[180px]">
+             {children}
+          </div>
         </div>
-        {/* Children container with pointer-events-auto so interactive elements work */}
-        <div className="mt-8 relative pointer-events-auto h-full min-h-[140px] flex items-end">{children}</div>
-      </div>
+      </CornerFrame>
     </div>
   );
 }
 
-/* ---------------- Card 1: Architecture (The Connector) ---------------- */
+/* ---------------- Card 1: Architecture (Upscaled) ---------------- */
 function CrossPlatformCard() {
   return (
     <BentoCard
       tag="Architecture"
-      title="Unified Cross-Platform Architecture"
-      subtitle="One scalable codebase delivering seamless performance across web, mobile, and desktop."
-      className="lg:col-span-2 lg:row-span-2 bg-neutral-50"
+      title="Unified Core"
+      subtitle="One scalable codebase deploying to Web, iOS, and Android seamlessly."
+      className="lg:col-span-2 lg:row-span-2"
     >
-      {/* Background Dot Pattern */}
-      <div className="absolute inset-0 z-0 opacity-[0.4]" 
-           style={{ backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundSize: '24px 24px' }}>
-      </div>
+      <div className="absolute inset-0 flex items-center justify-center translate-y-4 sm:translate-y-8">
+         {/* Scaled Wrapper */}
+         <div className="relative w-full max-w-[450px] aspect-[4/3] scale-110 sm:scale-125 origin-bottom">
+            
+            {/* Connector Lines */}
+            <svg className="absolute inset-0 w-full h-full text-neutral-200" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" style={{ overflow: 'visible' }}>
+               <path d="M200 150 L 100 240" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="6 6" />
+               <path d="M200 150 L 300 240" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="6 6" />
+               <path d="M200 150 L 200 60" fill="none" stroke="currentColor" strokeWidth="2" />
+            </svg>
 
-      {/* Connection Visualization */}
-      <div className="absolute inset-0 top-32 flex items-center justify-center pointer-events-none">
-        <div className="relative w-full h-full px-8 pb-8 flex items-end justify-center gap-4 sm:gap-8">
-          
-          {/* Connecting Lines (Behind) */}
-          <div className="absolute bottom-24 left-1/2 -translate-x-1/2 w-48 h-32 border-b-2 border-x-2 border-neutral-200 rounded-b-3xl -z-10 hidden sm:block"></div>
-          <div className="absolute bottom-40 left-1/2 -translate-x-1/2 h-12 w-0.5 bg-neutral-200 -z-10 hidden sm:block"></div>
+            {/* Central Node */}
+            <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-[80%] w-24 h-24 bg-white  border-neutral-100 shadow-2xl flex items-center justify-center z-20 hover:scale-105 transition-transform cursor-default ">
+               <div className="w-10 h-10 bg-neutral-900 rounded-lg" />
+            </div>
 
-          {/* Left Element: Desktop/Web */}
-          <div className="relative group/desktop bg-white border border-neutral-200 shadow-lg rounded-lg w-1/2 h-40 sm:h-48 p-2 flex flex-col transition-transform duration-500 hover:-translate-y-2">
-            <div className="flex gap-1.5 mb-2 border-b border-neutral-100 pb-2">
-              <div className="w-2 h-2 rounded-full bg-red-400/80"></div>
-              <div className="w-2 h-2 rounded-full bg-amber-400/80"></div>
-              <div className="w-2 h-2 rounded-full bg-green-400/80"></div>
+            {/* Sub Nodes */}
+            <div className="absolute bottom-[10%] left-[15%] w-16 h-16 bg-neutral-50 border border-neutral-200 shadow-lg flex items-center justify-center z-10 hover:-translate-y-1 transition-transform cursor-default ">
+               <span className="font-jetbrains-mono text-xs font-bold text-neutral-400">WEB</span>
             </div>
-            <div className="flex-1 bg-neutral-50 rounded border border-neutral-100 flex gap-2 p-2 overflow-hidden">
-               <div className="w-1/4 h-full bg-neutral-200/50 rounded-sm"></div>
-               <div className="w-3/4 h-full space-y-2">
-                  <div className="w-full h-8 bg-neutral-200/50 rounded-sm"></div>
-                  <div className="w-2/3 h-4 bg-neutral-200/30 rounded-sm"></div>
-                  <div className="flex gap-2 mt-4">
-                     <div className="w-1/2 h-12 bg-blue-50 rounded-sm border border-blue-100"></div>
-                     <div className="w-1/2 h-12 bg-purple-50 rounded-sm border border-purple-100"></div>
-                  </div>
-               </div>
+            <div className="absolute bottom-[10%] right-[15%] w-16 h-16 bg-neutral-50 border border-neutral-200 shadow-lg flex items-center justify-center z-10 hover:-translate-y-1 transition-transform cursor-default ">
+               <span className="font-jetbrains-mono text-xs font-bold text-neutral-400">APP</span>
             </div>
-            {/* Label Badge */}
-            <div className="absolute -top-3 left-4 bg-neutral-900 text-white text-[10px] font-mono px-2 py-0.5 rounded shadow-sm">
-              Web & Desktop
+            
+            {/* Badge */}
+            <div className="absolute top-[10%] left-[50%] -translate-x-1/2 bg-neutral-100 border border-neutral-200 px-3 py-1  shadow-sm">
+               <span className="font-jetbrains-mono text-[10px] font-bold text-neutral-500 tracking-wider">v2.0 STABLE</span>
             </div>
-          </div>
-
-          {/* Central Core (Hub) */}
-          <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-20 hidden sm:flex items-center justify-center">
-            <div className="w-12 h-12 bg-white rounded-xl border border-neutral-200 shadow-xl flex items-center justify-center animate-pulse-slow">
-              <svg className="w-6 h-6 text-neutral-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-            </div>
-          </div>
-
-          {/* Right Element: Mobile */}
-          <div className="relative group/mobile bg-neutral-900 border border-neutral-800 shadow-xl rounded-[2rem] w-24 sm:w-32 h-44 sm:h-56 p-1.5 flex flex-col transition-transform duration-500 hover:-translate-y-4">
-            <div className="w-10 h-4 bg-black rounded-b-xl mx-auto absolute top-1.5 left-1/2 -translate-x-1/2 z-10"></div>
-            <div className="flex-1 bg-neutral-800 rounded-[1.7rem] overflow-hidden relative">
-               {/* UI Mockup inside phone */}
-               <div className="w-full h-full bg-neutral-900 flex flex-col p-3 pt-8 space-y-3">
-                  <div className="w-8 h-8 rounded-full bg-neutral-800"></div>
-                  <div className="w-full h-24 bg-neutral-800/50 rounded-lg border border-white/5"></div>
-                  <div className="w-full h-8 bg-blue-500/20 rounded border border-blue-500/30"></div>
-               </div>
-            </div>
-             {/* Label Badge */}
-             <div className="absolute -right-2 top-12 rotate-90 bg-white text-neutral-900 text-[10px] font-mono px-2 py-0.5 rounded shadow-sm">
-              Native Mobile
-            </div>
-          </div>
-
-        </div>
+         </div>
       </div>
     </BentoCard>
   );
 }
 
-/* ---------------- Card 2: Performance (The Histogram) ---------------- */
+/* ---------------- Card 2: Performance (Responsive Terminal) ---------------- */
 function RealtimeCard() {
-  const [bars, setBars] = useState([]);
+  const [logs, setLogs] = useState([
+    "> init_sequence()",
+    "> connecting...",
+    "> stream_active: true",
+  ]);
 
   useEffect(() => {
-    // Initialize bars
-    setBars(Array.from({ length: 12 }, () => Math.floor(Math.random() * 60) + 20));
-
+    const messages = ["> packet_rcvd [2kb]", "> latency: 12ms", "> syncing_db...", "> event_emitted","> userlogged_in","> user_clicked_cart","> payment_recieved","> closing_page","> exit_terminal","> event_emitted", ];
     const interval = setInterval(() => {
-      setBars(prev => prev.map(() => Math.floor(Math.random() * 70) + 20));
-    }, 1500); 
-
+      setLogs(prev => [...prev, messages[Math.floor(Math.random() * messages.length)]].slice(-5));
+    }, 800);
     return () => clearInterval(interval);
   }, []);
 
   return (
     <BentoCard
-      tag="Performance"
-      title="Real-Time Data"
-      subtitle="Instant updates and event-driven systems built for high-performance applications."
+      tag="Infrastructure"
+      title="Real-Time"
+      subtitle="Event-driven systems built for sub-millisecond updates."
       dark
-      className="bg-neutral-950"
+      className="lg:col-span-1"
     >
-      <div className="relative w-full mt-2">
-        {/* Header with Pulse */}
-        <div className="flex items-center justify-between mb-6">
-           <div className="flex items-center gap-2 px-2 py-1 rounded bg-white/5 border border-white/10">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-              </span>
-              <span className="text-[10px] font-mono text-neutral-300 uppercase">Live System</span>
-           </div>
-           <div className="text-[10px] font-mono text-neutral-500">98.4% Load</div>
-        </div>
-
-        {/* Histogram Visualization */}
-        <div className="flex items-end justify-between h-24 gap-1 sm:gap-2 px-1">
-          {bars.map((height, i) => (
-            <div 
-              key={i} 
-              className="w-full bg-neutral-800 rounded-t-sm relative group overflow-hidden"
-              style={{ height: `${height}%`, transition: 'height 0.5s ease-in-out' }}
-            >
-               <div className="absolute inset-0 bg-gradient-to-t from-blue-600/80 to-cyan-400/80 opacity-60 group-hover:opacity-100 transition-opacity"></div>
-            </div>
-          ))}
-        </div>
-        
-        <div className="h-px w-full bg-neutral-800 mt-0"></div>
+      <div className="w-full bg-neutral-900 border border-neutral-800 p-4 font-jetbrains-mono text-[10px] text-green-400 leading-5 opacity-90 relative overflow-hidden rounded-md shadow-inner h-32 flex flex-col justify-end">
+         {/* Scanline Effect */}
+         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent animate-scan pointer-events-none" />
+         
+         <div className="absolute top-0 left-0 right-0 flex justify-between border-b border-neutral-800 p-2 bg-neutral-900/90 z-10">
+            <span>TERMINAL</span>
+            <span className="animate-pulse text-green-500">● LIVE</span>
+         </div>
+         
+         <div className="flex flex-col gap-1 mt-8">
+            {logs.map((log, i) => (
+               <div key={i} className="animate-fadeIn truncate">{log}</div>
+            ))}
+         </div>
       </div>
     </BentoCard>
   );
 }
 
-/* ---------------- Card 3: Intelligence (Glass & Glow) ---------------- */
+/* ---------------- Card 3: Intelligence ---------------- */
 function AICard() {
   return (
     <BentoCard
       tag="Intelligence"
-      title="AI-Ready Core"
-      subtitle="Integrate AI copilots and intelligent workflows directly into your platform."
-      className="bg-white"
+      title="AI Agents"
+      subtitle="Embed intelligent workflows directly into your platform."
+      className="lg:col-span-1"
     >
-      <div className="absolute inset-0 overflow-hidden rounded-3xl">
-         {/* Enhanced Gradients */}
-         <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-purple-500/20 rounded-full blur-3xl"></div>
-         <div className="absolute left-10 bottom-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl"></div>
-      </div>
+      <div className="relative w-full h-full flex items-center justify-center py-6">
+         {/* Background Lines */}
+         <div className="absolute inset-0 flex items-center justify-center gap-1 opacity-20">
+            <div className="w-px h-full max-h-[120px] bg-neutral-400" />
+            <div className="w-px h-full max-h-[160px] bg-neutral-400" />
+            <div className="w-px h-full max-h-[120px] bg-neutral-400" />
+         </div>
 
-      <div className="relative w-full mt-4 flex justify-center pb-4">
-        {/* Glassmorphism Card */}
-        <div className="relative w-full max-w-[200px] bg-white/10 backdrop-blur-md border border-white/20 shadow-xl rounded-xl p-4 flex flex-col gap-3 animate-float">
-           <div className="flex gap-2 items-center border-b border-black/5 pb-2">
-              <div className="w-6 h-6 rounded bg-gradient-to-tr from-purple-500 to-blue-500 flex items-center justify-center text-white text-[10px]">✨</div>
-              <div className="h-2 w-16 bg-neutral-200/50 rounded-full"></div>
-           </div>
-           <div className="space-y-2">
-              <div className="h-1.5 w-full bg-neutral-100 rounded-full"></div>
-              <div className="h-1.5 w-2/3 bg-neutral-100 rounded-full"></div>
-              <div className="h-1.5 w-3/4 bg-neutral-100 rounded-full"></div>
-           </div>
-           <div className="mt-1 flex justify-end">
-              <div className="h-4 w-12 bg-black/5 rounded flex items-center justify-center">
-                 <div className="h-1 w-6 bg-black/10 rounded-full"></div>
-              </div>
-           </div>
-        </div>
+         {/* The "Brain" Node */}
+         <div className="relative bg-white border border-neutral-200 px-5 py-3 shadow-lg z-10 hover:scale-105 transition-transform cursor-default rounded-lg">
+            <div className="flex items-center gap-3">
+               <div className="w-2.5 h-2.5 bg-purple-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(168,85,247,0.5)]" />
+               <span className="font-jetbrains-mono text-xs font-bold tracking-wider text-neutral-800">MODEL_READY</span>
+            </div>
+         </div>
+         
+         {/* Orbiting Particles */}
+         <div className="absolute top-1/2 left-[20%] w-1.5 h-1.5 bg-neutral-400 rounded-full animate-ping" />
+         <div className="absolute top-[30%] right-[20%] w-1.5 h-1.5 bg-neutral-400 rounded-full animate-ping" style={{ animationDelay: '0.5s' }} />
       </div>
     </BentoCard>
   );
@@ -255,16 +225,17 @@ export default function BentoGrid() {
     <section className="py-24 px-6 sm:py-32 bg-white">
       <div className="mx-auto max-w-7xl">
         <div className="max-w-2xl mb-16">
-          <h2 className="font-display text-4xl font-semibold tracking-tight text-neutral-950 sm:text-5xl">
-            Engineered for scale. <br/>Designed for the future.
+          <h2 className="font-space-grotesk text-4xl font-medium tracking-tight text-neutral-950 sm:text-5xl">
+            Engineered for scale. <br/>
+            <span className="text-neutral-400">Designed for longevity.</span>
           </h2>
-          <p className="mt-6 text-lg text-neutral-600 font-light max-w-xl">
-            We build high-performance digital products powered by modern architecture,
-            real-time systems, and AI-driven capabilities.
+          <p className="mt-6 text-lg font-jetbrains-mono text-neutral-500">
+            // We build systems, not just pages.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:grid-rows-2 lg:h-[650px]">
+        {/* Responsive Grid Layout */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:grid-rows-2 lg:min-h-[600px] auto-rows-fr">
           <CrossPlatformCard />
           <RealtimeCard />
           <AICard />
@@ -272,19 +243,19 @@ export default function BentoGrid() {
       </div>
 
       <style jsx global>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(5px); }
+          to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes pulse-custom {
-          0%, 100% { opacity: 1; }
-          50% { opacity: .5; }
+        .animate-fadeIn {
+          animation: fadeIn 0.2s ease-out forwards;
         }
-        .animate-float {
-          animation: float 6s ease-in-out infinite;
+        @keyframes scan {
+          0% { transform: translateY(-100%); }
+          100% { transform: translateY(100%); }
         }
-        .animate-pulse-slow {
-           animation: pulse-custom 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        .animate-scan {
+           animation: scan 2s linear infinite;
         }
       `}</style>
     </section>
