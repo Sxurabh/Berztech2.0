@@ -8,7 +8,14 @@ import Button from "@/components/Button";
 import Clients from "@/components/Clients";
 import CodeShowcase from "@/components/CodeShowcase";
 import BentoGrid from "@/components/BentoGrid";
-import { CornerFrame } from "@/components/CornerFrame"; // Imported CornerFrame
+import { CornerFrame } from "@/components/CornerFrame"; 
+import LogoTicker from "@/components/LogoTicker";// Imported CornerFrame
+import StatsBar from "@/components/StatsBar";
+import FeaturedCaseStudy from "@/components/FeaturedCaseStudy";
+import ProcessStrip from "@/components/ProcessStrip";
+import Testimonial from "@/components/Testimonial";
+import ContactCTA from "@/components/ContactCTA";
+
 
 /* --- NEW: Hero Background Component (The "Element" you requested) --- */
 function HeroBackground() {
@@ -122,16 +129,18 @@ export default function Home() {
       <Clients />
 
       {/* 3. CODE SHOWCASE (Engineering Proof) */}
-      <CodeShowcase />
-
-      {/* 4. BENTO GRID (Scale & Reliability) */}
+      
+      <StatsBar />
+      <ProcessStrip />
       <BentoGrid />
+      <Testimonial />
+      <FeaturedCaseStudy/>
 
       {/* 5. SERVICES (The Offer) */}
       <Services />
 
       {/* 6. CONTACT (The Closer) */}
-      <ContactSection />
+      <ContactCTA />
     </main>
   );
 }
