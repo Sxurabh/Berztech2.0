@@ -15,6 +15,7 @@ import FeaturedCaseStudy from "@/components/FeaturedCaseStudy";
 import ProcessStrip from "@/components/ProcessStrip";
 import Testimonial from "@/components/Testimonial";
 import ContactCTA from "@/components/ContactCTA";
+import TrustBar from "@/components/TrustBar";
 
 
 /* --- NEW: Hero Background Component (The "Element" you requested) --- */
@@ -126,7 +127,7 @@ export default function Home() {
       </div>
 
       {/* 2. CLIENTS (Validation) */}
-      <Clients />
+      <TrustBar/>
 
       {/* 3. CODE SHOWCASE (Engineering Proof) */}
       
