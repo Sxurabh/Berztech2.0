@@ -113,8 +113,7 @@ function ServiceCard({ service, index, isExpanded, onToggle }) {
                 {/* Icon & Title Row */}
                 <div className="flex items-center gap-3 mb-2">
                   <motion.div 
-                    whileHover={{ rotate: 360 }}
-                    transition={{ duration: 0.6 }}
+                    
                     className={`p-2 border ${accentColors[service.color]}`}
                   >
                     {service.icon}

@@ -124,11 +124,7 @@ function StatCard({ stat, index }) {
 
         {/* Icon */}
         <motion.div 
-          animate={{ 
-            rotate: isHovered ? 360 : 0,
-            color: isHovered ? "#171717" : "#9ca3af"
-          }}
-          transition={{ duration: 0.6 }}
+          
           className="mb-4 text-neutral-400"
         >
           {stat.icon}

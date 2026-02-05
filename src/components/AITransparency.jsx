@@ -150,7 +150,7 @@ export default function AITransparency() {
             transition={{ delay: 0.3 }}
             className="relative"
           >
-            <CornerFrame className="bg-neutral-50 border-neutral-200" bracketClassName="w-4 h-4 border-neutral-300">
+            <CornerFrame className="bg-neutral-50 border-neutral-200" bracketClassName="w-4 h-4 border-black">
               <div className="p-4 sm:p-6">
                 {/* Terminal Header */}
                 <div className="flex items-center gap-2 mb-4 pb-3 border-b border-neutral-200">
@@ -181,21 +181,7 @@ export default function AITransparency() {
               </div>
             </CornerFrame>
 
-            {/* Floating Badge */}
-            <motion.div
-              animate={{ y: [0, -8, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -bottom-4 -right-4 sm:bottom-4 sm:-right-8"
-            >
-              <CornerFrame className="px-3 py-2 bg-emerald-50 border-emerald-200 backdrop-blur-sm">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                  <span className="text-[10px] font-jetbrains-mono text-emerald-600 uppercase tracking-wider">
-                    Verified
-                  </span>
-                </div>
-              </CornerFrame>
-            </motion.div>
+          
           </motion.div>
         </div>
 
@@ -255,7 +241,7 @@ export default function AITransparency() {
                 transition={{ duration: 0.3 }}
                 className="h-full"
               >
-                <CornerFrame className="h-full bg-white border-neutral-200 p-6 sm:p-8 lg:p-10" bracketClassName="w-6 h-6 border-neutral-300">
+                <CornerFrame className="h-full bg-white border-neutral-200 p-6 sm:p-8 lg:p-10" bracketClassName="w-6 h-6 border-black">
                   <div className="flex flex-col h-full">
                     {/* Large Metric */}
                     <div className="mb-6">
@@ -278,7 +264,7 @@ export default function AITransparency() {
                     </p>
 
                     {/* Honesty Badge */}
-                    <div className="flex items-start gap-3 pt-6 border-t border-neutral-200">
+                    <div className="flex items-start gap-3 pt-2 border-t border-neutral-200">
                       <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0 mt-0.5">
                         <span className="text-emerald-600 text-xs">✓</span>
                       </div>

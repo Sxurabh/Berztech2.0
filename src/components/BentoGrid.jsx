@@ -2,6 +2,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { CornerFrame } from "@/components/CornerFrame";
+import { motion, AnimatePresence } from "framer-motion"; // ADD THIS LINE
+
 
 /* ---------------- Parallax Hook ---------------- */
 function useParallax(strength = 6) {
@@ -103,93 +105,95 @@ function BentoCard({
 
 
 /* ---------------- Card 1: Architecture (Redesigned with Micro-interactions) ---------------- */
-/* ---------------- Card 1: Architecture (Redesigned - Space Optimized) ---------------- */
+/* ---------------- Card 1: Unified Architecture (Redesigned) ---------------- */
 function CrossPlatformCard() {
-  const [activeLayer, setActiveLayer] = useState(null);
-  const [dataPackets, setDataPackets] = useState([]);
-  const [systemStatus, setSystemStatus] = useState('operational');
+  const [activePlatform, setActivePlatform] = useState(null);
+  const [isCodeDeploying, setIsCodeDeploying] = useState(false);
+  const [deploymentStep, setDeploymentStep] = useState(0);
   
-  // Generate continuous data flow
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const routes = ['client-to-cdn', 'cdn-to-edge', 'edge-to-core', 'core-to-db', 'db-to-cache'];
-      const newPacket = {
-        id: Date.now(),
-        route: routes[Math.floor(Math.random() * routes.length)],
-        progress: 0
-      };
-      setDataPackets(prev => [...prev.slice(-8), newPacket]);
-    }, 600);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Simulate status changes
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const statuses = ['operational', 'scaling', 'optimized'];
-      setSystemStatus(statuses[Math.floor(Math.random() * statuses.length)]);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const layers = [
-    {
-      id: 'clients',
-      label: 'CLIENTS',
-      icon: 'M',
-      y: 15,
-      nodes: [
-        { x: 20, label: 'WEB', color: 'blue' },
-        { x: 40, label: 'IOS', color: 'purple' },
-        { x: 60, label: 'AND', color: 'green' },
-        { x: 80, label: 'DESK', color: 'orange' }
-      ]
+  // Platforms with their specific characteristics and icons
+  const platforms = [
+    { 
+      id: 'web', 
+      label: 'WEB',
+      color: 'blue',
+      position: { x: 15, y: 20 },
+      screens: ['Desktop', 'Tablet', 'Mobile Web'],
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5 sm:w-6 sm:h-6">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+        </svg>
+      )
     },
-    {
-      id: 'edge',
-      label: 'EDGE/CDN',
-      icon: 'E',
-      y: 40,
-      nodes: [
-        { x: 25, label: 'US-E', color: 'emerald' },
-        { x: 50, label: 'EU-W', color: 'emerald' },
-        { x: 75, label: 'AS-S', color: 'emerald' }
-      ]
+    { 
+      id: 'ios', 
+      label: 'iOS',
+      color: 'purple',
+      position: { x: 85, y: 20 },
+      screens: ['iPhone', 'iPad', 'Apple Watch'],
+      icon: (
+        <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 sm:w-6 sm:h-6">
+          <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.2 1.95-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+        </svg>
+      )
     },
-    {
-      id: 'core',
-      label: 'CORE CLUSTER',
-      icon: 'C',
-      y: 65,
-      nodes: [
-        { x: 35, label: 'API', color: 'indigo' },
-        { x: 65, label: 'SRV', color: 'indigo' }
-      ]
+    { 
+      id: 'android', 
+      label: 'ANDROID',
+      color: 'green',
+      position: { x: 15, y: 80 },
+      screens: ['Phone', 'Tablet', 'Wear OS'],
+      icon: (
+        <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 sm:w-6 sm:h-6">
+          <path d="M17.523 15.341c-.51 0-.916.405-.916.906 0 .5.406.905.916.905.51 0 .916-.405.916-.905 0-.501-.405-.906-.916-.906zM6.477 15.341c-.51 0-.916.405-.916.906 0 .5.405.905.916.905.511 0 .917-.405.917-.905 0-.501-.406-.906-.917-.906zM17.663 4.005l1.943-3.372a.313.313 0 00-.11-.427.317.317 0 00-.436.11L17.133 3.67a11.94 11.94 0 00-10.266 0L4.94.316a.318.318 0 00-.436-.11.313.313 0 00-.11.427l1.943 3.372C2.57 5.86.77 8.47.77 11.5h22.46c0-3.03-1.8-5.64-4.567-6.495zm-13.08-.675c.508 0 .918.41.918.916 0 .506-.41.917-.918.917a.919.919 0 01-.917-.917c0-.506.41-.916.917-.916zm10.834 0c.507 0 .917.41.917.916 0 .506-.41.917-.917.917a.919.919 0 01-.917-.917c0-.506.41-.916.917-.916zM.77 12.54v7.176c0 .975.79 1.765 1.765 1.765h1.765V12.54H.77zm4.706 8.94h12.048V12.54H5.476v8.94zm14.118-8.94v8.94h1.765c.975 0 1.765-.79 1.765-1.765V12.54h-3.53z"/>
+        </svg>
+      )
     },
-    {
-      id: 'data',
-      label: 'DATA LAYER',
-      icon: 'D',
-      y: 88,
-      nodes: [
-        { x: 30, label: 'DB', color: 'rose' },
-        { x: 50, label: 'CACHE', color: 'amber' },
-        { x: 70, label: 'STORE', color: 'cyan' }
-      ]
+    { 
+      id: 'desktop', 
+      label: 'DESKTOP',
+      color: 'orange',
+      position: { x: 85, y: 80 },
+      screens: ['Windows', 'macOS', 'Linux'],
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5 sm:w-6 sm:h-6">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+          <line x1="8" y1="21" x2="16" y2="21" />
+          <line x1="12" y1="17" x2="12" y2="21" />
+        </svg>
+      )
     }
   ];
 
-  const getNodeColor = (color) => {
+  // Simulate code deployment animation
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsCodeDeploying(true);
+      setDeploymentStep(0);
+      
+      const steps = setInterval(() => {
+        setDeploymentStep(prev => {
+          if (prev >= 3) {
+            clearInterval(steps);
+            setTimeout(() => setIsCodeDeploying(false), 1000);
+            return 0;
+          }
+          return prev + 1;
+        });
+      }, 400);
+      
+    }, 6000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  const getPlatformColor = (color) => {
     const colors = {
-      blue: 'bg-blue-500 border-blue-400 shadow-blue-500/30',
-      purple: 'bg-purple-500 border-purple-400 shadow-purple-500/30',
-      green: 'bg-emerald-500 border-emerald-400 shadow-emerald-500/30',
-      orange: 'bg-orange-500 border-orange-400 shadow-orange-500/30',
-      emerald: 'bg-emerald-500 border-emerald-400 shadow-emerald-500/30',
-      indigo: 'bg-indigo-500 border-indigo-400 shadow-indigo-500/30',
-      rose: 'bg-rose-500 border-rose-400 shadow-rose-500/30',
-      amber: 'bg-amber-500 border-amber-400 shadow-amber-500/30',
-      cyan: 'bg-cyan-500 border-cyan-400 shadow-cyan-500/30'
+      blue: 'text-blue-500 border-blue-400 shadow-blue-500/40',
+      purple: 'text-purple-500 border-purple-400 shadow-purple-500/40',
+      green: 'text-emerald-500 border-emerald-400 shadow-emerald-500/40',
+      orange: 'text-orange-500 border-orange-400 shadow-orange-500/40'
     };
     return colors[color] || colors.blue;
   };
@@ -198,45 +202,44 @@ function CrossPlatformCard() {
     <BentoCard
       tag="Architecture"
       title="Unified Core"
-      subtitle="Distributed edge computing with centralized core logic. Auto-scaling across 12 regions."
+      subtitle="One codebase. Every platform. Native performance everywhere."
       className="lg:col-span-2 lg:row-span-2"
     >
       <div className="absolute inset-0 flex flex-col p-4 sm:p-6">
         
-        {/* Header Stats - Fills top space */}
-        <div className="flex items-center justify-between mb-4 sm:mb-6 shrink-0">
-          <div className="flex items-center gap-2 sm:gap-4">
+        {/* Header: Codebase Status */}
+        <div className="flex items-center justify-between mb-6 shrink-0">
+          <div className="flex items-center gap-3">
             <div className={clsx(
-              "px-2 sm:px-3 py-1 rounded-full font-jetbrains-mono text-[9px] sm:text-[10px] font-bold border flex items-center gap-1.5 transition-all duration-500",
-              systemStatus === 'operational' && "bg-emerald-500/10 border-emerald-500/30 text-emerald-600",
-              systemStatus === 'scaling' && "bg-amber-500/10 border-amber-500/30 text-amber-600",
-              systemStatus === 'optimized' && "bg-blue-500/10 border-blue-500/30 text-blue-600"
+              "px-3 py-1.5 border font-jetbrains-mono text-[9px] sm:text-[10px] font-bold uppercase tracking-wider flex items-center gap-2 transition-all duration-500",
+              isCodeDeploying 
+                ? "bg-amber-500/10 border-amber-500/40 text-amber-600 animate-pulse" 
+                : "bg-emerald-500/10 border-emerald-500/40 text-emerald-600"
             )}>
               <span className={clsx(
-                "w-1.5 h-1.5 rounded-full animate-pulse",
-                systemStatus === 'operational' && "bg-emerald-500",
-                systemStatus === 'scaling' && "bg-amber-500",
-                systemStatus === 'optimized' && "bg-blue-500"
+                "w-1.5 h-1.5 rounded-full",
+                isCodeDeploying ? "bg-amber-500" : "bg-emerald-500 animate-pulse"
               )} />
-              {systemStatus.toUpperCase()}
+              {isCodeDeploying ? 'DEPLOYING...' : 'SYNCED'}
             </div>
-            <div className="hidden sm:flex items-center gap-2 text-[10px] font-jetbrains-mono text-neutral-400">
-              <span>LATENCY: <span className="text-neutral-600">12ms</span></span>
-              <span className="text-neutral-300">|</span>
-              <span>UPTIME: <span className="text-neutral-600">99.99%</span></span>
+            
+            {/* Codebase Indicator */}
+            <div className="hidden sm:flex items-center gap-2 px-2 py-1 bg-neutral-100 border border-neutral-200">
+              <svg className="w-3 h-3 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+              </svg>
+              <span className="font-jetbrains-mono text-[9px] text-neutral-600">1 CODEBASE</span>
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
-            <div className="text-right">
-              <div className="font-space-grotesk text-lg sm:text-xl font-bold text-neutral-900 leading-none">2.4M</div>
-              <div className="font-jetbrains-mono text-[8px] sm:text-[9px] text-neutral-500">REQ/MIN</div>
-            </div>
+          <div className="text-right">
+            <div className="font-space-grotesk text-lg sm:text-xl font-bold text-neutral-900 leading-none">100%</div>
+            <div className="font-jetbrains-mono text-[8px] sm:text-[9px] text-neutral-500">SHARED LOGIC</div>
           </div>
         </div>
 
-        {/* Main Architecture Diagram - Flexible height */}
-        <div className="flex-1 relative min-h-[280px] sm:min-h-[320px]">
+        {/* Central Architecture Visualization */}
+        <div className="flex-1 relative min-h-[280px] sm:min-h-[320px] flex items-center justify-center">
           
           {/* Background Grid */}
           <div className="absolute inset-0 opacity-[0.03]">
@@ -249,13 +252,12 @@ function CrossPlatformCard() {
             }} />
           </div>
 
-          {/* Connection Lines SVG */}
-          <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none">
+          {/* Connection Lines - Central Hub to Platforms */}
+          <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible" preserveAspectRatio="xMidYMid meet">
             <defs>
-              <linearGradient id="flowGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.2" />
-                <stop offset="50%" stopColor="#3b82f6" stopOpacity="0.6" />
-                <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.2" />
+              <linearGradient id="connectionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.4" />
+                <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.4" />
               </linearGradient>
               <filter id="glow">
                 <feGaussianBlur stdDeviation="2" result="blur" />
@@ -266,184 +268,307 @@ function CrossPlatformCard() {
               </filter>
             </defs>
             
-            {/* Vertical spine */}
-            <line x1="50%" y1="10%" x2="50%" y2="95%" stroke="#e5e5e5" strokeWidth="1" strokeDasharray="4 4" />
-            
-            {/* Layer connections */}
-            {layers.slice(0, -1).map((layer, idx) => {
-              const nextLayer = layers[idx + 1];
-              return layer.nodes.map((node, nIdx) => 
-                nextLayer.nodes.map((target, tIdx) => {
-                  const isActive = dataPackets.some(p => 
-                    (p.route.includes('client') && idx === 0) ||
-                    (p.route.includes('edge') && idx === 1) ||
-                    (p.route.includes('core') && idx === 2)
-                  );
-                  return (
-                    <line
-                      key={`${layer.id}-${nIdx}-${tIdx}`}
-                      x1={`${node.x}%`}
-                      y1={`${layer.y + 8}%`}
-                      x2={`${target.x}%`}
-                      y2={`${nextLayer.y - 5}%`}
-                      stroke={isActive ? "url(#flowGradient)" : "#f0f0f0"}
-                      strokeWidth={isActive ? "1.5" : "1"}
-                      className={clsx("transition-all duration-300", isActive && "animate-pulse")}
-                    />
-                  );
-                })
+            {/* Lines from center to each platform */}
+            {platforms.map((platform, idx) => {
+              const isActive = activePlatform === platform.id || isCodeDeploying;
+              return (
+                <g key={platform.id}>
+                  {/* Static line */}
+                  <line
+                    x1="50%"
+                    y1="50%"
+                    x2={`${platform.position.x}%`}
+                    y2={`${platform.position.y}%`}
+                    stroke={isActive ? "url(#connectionGradient)" : "#e5e5e5"}
+                    strokeWidth={isActive ? "2" : "1"}
+                    className="transition-all duration-500"
+                  />
+                  
+                  {/* Animated data packet when deploying */}
+                  {isCodeDeploying && (
+                    <circle
+                      r="4"
+                      fill={platform.color === 'blue' ? '#3b82f6' : platform.color === 'purple' ? '#8b5cf6' : platform.color === 'green' ? '#10b981' : '#f97316'}
+                      filter="url(#glow)"
+                      className="animate-deploy"
+                      style={{
+                        offsetPath: `path("M50% 50% L${platform.position.x}% ${platform.position.y}%")`,
+                        animationDelay: `${idx * 0.2}s`
+                      }}
+                    >
+                      <animate
+                        attributeName="opacity"
+                        values="0;1;1;0"
+                        dur="1.5s"
+                        begin={`${idx * 0.2}s`}
+                        repeatCount="indefinite"
+                      />
+                    </circle>
+                  )}
+                </g>
               );
             })}
 
-            {/* Data packets */}
-            {dataPackets.map((packet, idx) => (
+            {/* Center Core - The Unified Codebase */}
+            <g>
               <circle
-                key={packet.id}
-                r={window.innerWidth < 640 ? "2" : "3"}
-                fill="#3b82f6"
-                filter="url(#glow)"
-                className="animate-packet-flow"
-                style={{
-                  offsetPath: `path("M50% 15% Q ${30 + (idx * 15)}% 30% 50% 40%")`,
-                  animationDelay: `${idx * 0.1}s`,
-                  animationDuration: '2s'
-                }}
+                cx="50%"
+                cy="50%"
+                r="10%"
+                fill="white"
+                stroke="#171717"
+                strokeWidth="2"
+                className={clsx(
+                  "transition-all duration-500",
+                  isCodeDeploying && "stroke-amber-500"
+                )}
               />
-            ))}
+              <circle
+                cx="50%"
+                cy="50%"
+                r="6%"
+                fill="#171717"
+                className={clsx(
+                  "transition-all duration-500",
+                  isCodeDeploying && "fill-amber-500"
+                )}
+              />
+              
+              {/* Core Code Icon */}
+              <text
+                x="50%"
+                y="50%"
+                textAnchor="middle"
+                dominantBaseline="central"
+                fill="white"
+                fontSize="8"
+                fontFamily="JetBrains Mono"
+                className="font-bold"
+              >
+                {'</>'}
+              </text>
+            </g>
           </svg>
 
-          {/* Architecture Layers */}
-          <div className="relative h-full flex flex-col justify-between py-2">
-            {layers.map((layer, layerIdx) => (
-              <div 
-                key={layer.id}
-                className="relative"
-                style={{ height: `${85 / layers.length}%` }}
-                onMouseEnter={() => setActiveLayer(layer.id)}
-                onMouseLeave={() => setActiveLayer(null)}
-              >
-                {/* Layer Label */}
-                <div className={clsx(
-                  "absolute left-0 sm:left-2 top-1/2 -translate-y-1/2 font-jetbrains-mono text-[8px] sm:text-[10px] font-bold tracking-wider transition-all duration-300 z-10",
-                  activeLayer === layer.id ? "text-neutral-900 translate-x-1" : "text-neutral-400"
-                )}>
-                  <div className="flex items-center gap-1 sm:gap-2">
-                    <span className={clsx(
-                      "w-4 h-4 sm:w-5 sm:h-5 rounded flex items-center justify-center text-[8px] sm:text-[10px] text-white transition-colors",
-                      activeLayer === layer.id ? "bg-neutral-800" : "bg-neutral-400"
-                    )}>
-                      {layer.icon}
-                    </span>
-                    <span className="hidden xs:inline">{layer.label}</span>
-                  </div>
-                </div>
-
-                {/* Nodes Container */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="flex items-center gap-3 sm:gap-6 md:gap-8">
-                    {layer.nodes.map((node, nodeIdx) => (
-                      <div
-                        key={nodeIdx}
-                        className={clsx(
-                          "relative group cursor-pointer transition-all duration-300",
-                          activeLayer === layer.id ? "scale-110" : "hover:scale-105"
-                        )}
-                        style={{ marginLeft: `${(node.x - 50) * 0.1}%` }}
-                      >
-                        {/* Node */}
-                        <div className={clsx(
-                          "relative w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-xl border-2 flex flex-col items-center justify-center transition-all duration-300 shadow-lg",
-                          getNodeColor(node.color),
-                          activeLayer === layer.id ? "shadow-xl scale-105" : "opacity-90"
-                        )}>
-                          {/* Inner content */}
-                          <div className="w-2 h-2 sm:w-3 sm:h-3 bg-white/90 rounded-full mb-0.5 sm:mb-1 animate-pulse" />
-                          <span className="font-jetbrains-mono text-[6px] sm:text-[7px] md:text-[8px] font-bold text-white/90 tracking-wider">
-                            {node.label}
-                          </span>
-                          
-                          {/* Hover tooltip */}
-                          <div className={clsx(
-                            "absolute -top-8 left-1/2 -translate-x-1/2 bg-neutral-900 text-white px-2 py-1 rounded font-jetbrains-mono text-[8px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20",
-                            "after:content-[''] after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:border-4 after:border-transparent after:border-t-neutral-900"
-                          )}>
-                            {node.label}-{(layerIdx + 1) * 10 + nodeIdx}
-                          </div>
-                        </div>
-
-                        {/* Connection dots */}
-                        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 bg-neutral-300 rounded-full" />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Right side metrics */}
-                <div className={clsx(
-                  "absolute right-0 sm:right-2 top-1/2 -translate-y-1/2 font-jetbrains-mono text-[8px] sm:text-[9px] text-neutral-400 transition-opacity",
-                  activeLayer === layer.id ? "opacity-100" : "opacity-0 sm:opacity-50"
-                )}>
-                  <div className="text-right space-y-0.5">
-                    <div>{90 + layerIdx * 3}%</div>
-                    <div className="text-neutral-300">HEALTH</div>
-                  </div>
-                </div>
-              </div>
-            ))}
+          {/* Shared Code Indicators - Positioned absolutely to center */}
+          <div className="absolute top-1/2 left-1/2 w-0 h-0">
+            <div className={clsx(
+              "absolute w-28 h-28 sm:w-36 sm:h-36 -translate-x-1/2 -translate-y-1/2",
+              "rounded-full border border-dashed border-neutral-300",
+              "animate-spin-slow",
+              isCodeDeploying && "border-amber-400"
+            )} />
+            <div className={clsx(
+              "absolute w-20 h-20 sm:w-24 sm:h-24 -translate-x-1/2 -translate-y-1/2",
+              "rounded-full border border-dashed border-neutral-200",
+              "animate-spin-reverse",
+              isCodeDeploying && "border-amber-300"
+            )} />
           </div>
 
-          {/* Floating status indicators */}
-          <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-4 sm:gap-8 pointer-events-none">
-            {['SSL', 'HTTP/2', 'WS', 'gRPC'].map((protocol, idx) => (
-              <div 
-                key={protocol}
-                className="flex items-center gap-1.5 bg-white/80 backdrop-blur-sm border border-neutral-200 px-2 py-1 rounded-full shadow-sm"
-                style={{ animationDelay: `${idx * 0.2}s` }}
+          {/* Platform Nodes */}
+          {platforms.map((platform, idx) => {
+            const isActive = activePlatform === platform.id;
+            const isDeploying = isCodeDeploying && deploymentStep >= idx;
+            
+            return (
+              <div
+                key={platform.id}
+                className="absolute"
+                style={{
+                  left: `${platform.position.x}%`,
+                  top: `${platform.position.y}%`,
+                  transform: 'translate(-50%, -50%)'
+                }}
+                onMouseEnter={() => setActivePlatform(platform.id)}
+                onMouseLeave={() => setActivePlatform(null)}
               >
-                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                <span className="font-jetbrains-mono text-[7px] sm:text-[8px] font-bold text-neutral-600">{protocol}</span>
+                {/* Platform Container */}
+                <motion.div
+                  animate={{ 
+                    scale: isActive || isDeploying ? 1.1 : 1,
+                    rotate: isDeploying ? 360 : 0
+                  }}
+                  transition={{ duration: 0.4 }}
+                  className={clsx(
+                    "relative w-14 h-14 sm:w-16 sm:h-16 cursor-pointer",
+                    "flex flex-col items-center justify-center",
+                    "transition-all duration-300"
+                  )}
+                >
+                  {/* Outer Ring */}
+                  <div className={clsx(
+                    "absolute inset-0 rounded-xl border-2 transition-all duration-500 rotate-45",
+                    isActive || isDeploying 
+                      ? getPlatformColor(platform.color) 
+                      : "border-neutral-300 bg-white",
+                    isDeploying && "animate-ping-slow"
+                  )} />
+                  
+                  {/* Inner Content */}
+                  <div className={clsx(
+                    "relative z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-lg",
+                    "flex items-center justify-center",
+                    "bg-white",
+                    isActive && "border-current",
+                    "transition-colors duration-300",
+                    getPlatformColor(platform.color).split(' ')[0]
+                  )}>
+                    {platform.icon}
+                  </div>
+
+                  {/* Platform Label */}
+                  <div className={clsx(
+                    "absolute -bottom-6 whitespace-nowrap",
+                    "font-jetbrains-mono text-[8px] sm:text-[9px] font-bold uppercase tracking-wider",
+                    "px-2 py-0.5 bg-white border border-neutral-200",
+                    "transition-all duration-300",
+                    isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
+                  )}>
+                    {platform.label}
+                  </div>
+
+                  {/* Screen Variants Tooltip */}
+                  <div className={clsx(
+                    "absolute top-full mt-8 left-1/2 -translate-x-1/2",
+                    "bg-neutral-900 text-white px-3 py-2 rounded shadow-xl",
+                    "whitespace-nowrap z-30 pointer-events-none",
+                    "transition-all duration-300",
+                    isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"
+                  )}>
+                    <div className="font-jetbrains-mono text-[8px] uppercase tracking-wider text-neutral-400 mb-1">
+                      Builds for
+                    </div>
+                    <div className="flex gap-2">
+                      {platform.screens.map((screen, i) => (
+                        <span key={screen} className="text-[10px] font-medium">
+                          {screen}
+                          {i < platform.screens.length - 1 && <span className="text-neutral-600 ml-2">|</span>}
+                        </span>
+                      ))}
+                    </div>
+                    {/* Arrow */}
+                    <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-neutral-900 rotate-45" />
+                  </div>
+
+                  {/* Deployment Success Indicator */}
+                  {isDeploying && (
+                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center animate-bounce">
+                      <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                  )}
+                </motion.div>
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
 
-        {/* Bottom Status Bar */}
-        <div className="mt-4 pt-3 border-t border-neutral-200 flex items-center justify-between text-[9px] sm:text-[10px] font-jetbrains-mono text-neutral-500 shrink-0">
-          <div className="flex items-center gap-2 sm:gap-4 overflow-hidden">
-            <span className="truncate">NODES: <span className="text-neutral-900">12/12</span></span>
-            <span className="text-neutral-300 hidden sm:inline">|</span>
-            <span className="hidden sm:inline">REGIONS: <span className="text-neutral-900">GLOBAL</span></span>
+        {/* Bottom: Tech Stack & Stats */}
+        <div className="mt-4 pt-4 border-t border-neutral-200 shrink-0">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            
+            {/* Shared Tech Stack */}
+            <div className="flex items-center gap-3 overflow-x-auto pb-2 sm:pb-0 w-full sm:w-auto scrollbar-hide">
+              <span className="text-[9px] font-jetbrains-mono text-neutral-400 uppercase shrink-0">
+                Stack:
+              </span>
+              {['React Native', 'Expo', 'TypeScript', 'GraphQL'].map((tech, i) => (
+                <motion.span
+                  key={tech}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  whileHover={{ scale: 1.05, backgroundColor: "#171717", color: "#ffffff" }}
+                  className="px-2 py-1 text-[9px] font-jetbrains-mono uppercase tracking-wider text-neutral-600 bg-neutral-100 border border-neutral-200 whitespace-nowrap cursor-default transition-all"
+                >
+                  {tech}
+                </motion.span>
+              ))}
+            </div>
+
+            {/* Deployment Status */}
+            <div className="flex items-center gap-4 text-[9px] sm:text-[10px] font-jetbrains-mono text-neutral-500">
+              <div className="flex items-center gap-2">
+                <span className={clsx(
+                  "w-1.5 h-1.5 rounded-full",
+                  isCodeDeploying ? "bg-amber-500 animate-pulse" : "bg-emerald-500"
+                )} />
+                <span className="hidden sm:inline">
+                  {isCodeDeploying ? `Deploying to ${platforms[deploymentStep]?.label}...` : 'All Platforms Synced'}
+                </span>
+                <span className="sm:hidden">
+                  {isCodeDeploying ? 'Deploying...' : 'Synced'}
+                </span>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <span className="animate-pulse text-emerald-500">●</span>
-            <span>ACTIVE</span>
+
+          {/* Progress Bar for Deployment */}
+          <div className="mt-3 h-1 bg-neutral-100 rounded-full overflow-hidden">
+            <motion.div 
+              className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-emerald-500"
+              animate={{ 
+                width: isCodeDeploying ? `${((deploymentStep + 1) / platforms.length) * 100}%` : '100%'
+              }}
+              transition={{ duration: 0.4 }}
+            />
           </div>
         </div>
       </div>
 
       <style jsx>{`
-        @keyframes packet-flow {
+        @keyframes deploy {
           0% { offset-distance: 0%; opacity: 0; transform: scale(0.5); }
-          15% { opacity: 1; transform: scale(1); }
-          85% { opacity: 1; transform: scale(1); }
+          20% { opacity: 1; transform: scale(1); }
+          80% { opacity: 1; transform: scale(1); }
           100% { offset-distance: 100%; opacity: 0; transform: scale(0.5); }
         }
-        @media (max-width: 640px) {
-          @keyframes packet-flow {
-            0% { offset-distance: 0%; opacity: 0; }
-            20% { opacity: 1; }
-            80% { opacity: 1; }
-            100% { offset-distance: 100%; opacity: 0; }
-          }
+        @keyframes pulse-slow {
+          0%, 100% { opacity: 0.4; }
+          50% { opacity: 0.8; }
         }
-        .animate-packet-flow {
-          animation: packet-flow 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        @keyframes ping-slow {
+          0% { transform: scale(1) rotate(45deg); opacity: 0.6; }
+          100% { transform: scale(1.3) rotate(45deg); opacity: 0; }
+        }
+        @keyframes spin-slow {
+          from { transform: translate(-50%, -50%) rotate(0deg); }
+          to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        @keyframes spin-reverse {
+          from { transform: translate(-50%, -50%) rotate(0deg); }
+          to { transform: translate(-50%, -50%) rotate(-360deg); }
+        }
+        .animate-deploy {
+          animation: deploy 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+          offset-rotate: 0deg;
+        }
+        .animate-pulse-slow {
+          animation: pulse-slow 3s ease-in-out infinite;
+        }
+        .animate-ping-slow {
+          animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+        .animate-spin-slow {
+          animation: spin-slow 20s linear infinite;
+        }
+        .animate-spin-reverse {
+          animation: spin-reverse 15s linear infinite;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
         }
       `}</style>
     </BentoCard>
   );
 }
-
 /* ---------------- Card 2: Performance (Responsive Terminal) ---------------- */
 /* ---------------- Card 2: Performance (Redesigned Responsive Terminal) ---------------- */
 function RealtimeCard() {
