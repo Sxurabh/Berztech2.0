@@ -1076,8 +1076,8 @@ export default function BentoGrid() {
             <span className="text-neutral-400">Designed for longevity.</span>
           </h2>
           <p className="mt-6 text-lg font-jetbrains-mono text-neutral-500">
-            // We build systems, not just pages.
-          </p>
+  {'// We build systems, not just pages.'}
+</p>
         </div>
 
         {/* Responsive Grid Layout */}

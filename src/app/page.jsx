@@ -1,15 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import ContactSection from "@/components/ContactSection";
 import Container from "@/components/Container";
 import FadeIn from "@/components/FadeIn";
 import Services from "@/components/Services";
 import Button from "@/components/Button";
-import Clients from "@/components/Clients";
-import CodeShowcase from "@/components/CodeShowcase";
 import BentoGrid from "@/components/BentoGrid";
 import { CornerFrame } from "@/components/CornerFrame"; 
-import LogoTicker from "@/components/LogoTicker";// Imported CornerFrame
 import StatsBar from "@/components/StatsBar";
 import FeaturedCaseStudy from "@/components/FeaturedCaseStudy";
 import ProcessStrip from "@/components/ProcessStrip";

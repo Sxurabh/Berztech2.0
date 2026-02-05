@@ -87,7 +87,7 @@ export default function ContactCTA() {
           transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
           className="font-space-grotesk text-4xl sm:text-5xl lg:text-7xl font-medium text-neutral-900 tracking-tight leading-[0.95] mb-8"
         >
-          Let's build something
+          Let&apos;s build something
           <br />
           <span className="text-neutral-400">extraordinary together</span>
         </motion.h2>
@@ -100,7 +100,7 @@ export default function ContactCTA() {
           transition={{ delay: 0.2, duration: 0.6 }}
           className="text-lg sm:text-xl text-neutral-600 max-w-2xl mx-auto mb-12 font-light leading-relaxed"
         >
-          Book a 30-minute discovery call. We'll discuss your challenges, 
+          Book a 30-minute discovery call. We&apos;ll discuss your challenges, 
           explore solutions, and outline a path forward—no commitment required.
         </motion.p>
 

@@ -291,7 +291,7 @@ export default function Services() {
             </div>
             <div>
               <div className="font-jetbrains-mono text-sm text-neutral-900">Not sure what you need?</div>
-              <div className="text-xs text-neutral-500">We'll help you figure it out</div>
+              <div className="text-xs text-neutral-500">We&apos;ll help you figure it out</div>
             </div>
           </div>
 

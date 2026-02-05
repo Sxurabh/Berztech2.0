@@ -55,8 +55,8 @@ export default function Testimonial() {
       {/* Large Background Quote */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none">
         <span className="font-space-grotesk text-[20rem] sm:text-[30rem] font-bold text-white/[0.02] leading-none">
-          "
-        </span>
+  &quot;
+</span>
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
@@ -86,8 +86,8 @@ export default function Testimonial() {
                 >
                   {/* Quote */}
                   <blockquote className="font-space-grotesk text-2xl sm:text-3xl lg:text-4xl font-medium text-white leading-tight tracking-tight mb-8">
-                    "{activeTestimonial.quote}"
-                  </blockquote>
+  &quot;{activeTestimonial.quote}&quot;
+</blockquote>
 
                   {/* Author */}
                   <div className="flex items-center gap-4">
