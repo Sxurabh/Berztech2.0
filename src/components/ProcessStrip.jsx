@@ -114,15 +114,7 @@ function ProcessCard({ process, index, isActive, onHover }) {
         <span className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-neutral-200 group-hover:border-neutral-400 transition-colors" />
 
         {/* Connection Line (not on last) */}
-        {index < processes.length - 1 && (
-          <div className="hidden lg:block absolute top-1/2 -right-6 w-12 h-px bg-neutral-200">
-            <motion.div 
-              animate={{ x: [-12, 12, -12] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              className={`absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full ${process.color === 'blue' ? 'bg-blue-500' : process.color === 'purple' ? 'bg-purple-500' : 'bg-emerald-500'}`}
-            />
-          </div>
-        )}
+       
       </div>
     </motion.div>
   );

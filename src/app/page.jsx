@@ -12,6 +12,7 @@ import ProcessStrip from "@/components/ProcessStrip";
 import Testimonial from "@/components/Testimonial";
 import ContactCTA from "@/components/ContactCTA";
 import TrustBar from "@/components/TrustBar";
+import AITransparency from "@/components/AITransparency";
 
 
 /* --- NEW: Hero Background Component (The "Element" you requested) --- */
@@ -129,6 +130,7 @@ export default function Home() {
       
       <StatsBar />
       <ProcessStrip />
+      <AITransparency />  
       <BentoGrid />
       <Testimonial />
       <FeaturedCaseStudy/>
