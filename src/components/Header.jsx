@@ -18,7 +18,6 @@ import whiteLogo from "../../assets/Logo/WhiteLogo.png";
 import compactLogoblack from "../../assets/Logo/CompactLogo-black.png";
 import compactLogowhite from "../../assets/Logo/CompactLogo-white.png";
 
-// Counter animation for stats
 function Counter({ value, suffix = "" }) {
   const [count, setCount] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
@@ -44,7 +43,6 @@ function Counter({ value, suffix = "" }) {
   );
 }
 
-// Navigation link
 function NavLink({ href, children, index, onClick }) {
   const pathname = usePathname();
   const isActive = pathname === href;
@@ -78,7 +76,6 @@ function NavLink({ href, children, index, onClick }) {
   );
 }
 
-// Menu stat item
 function MenuStat({ value, suffix, label }) {
   return (
     <div className="group cursor-default">
@@ -94,7 +91,17 @@ function MenuStat({ value, suffix, label }) {
 
 export default function Header() {
   const [expanded, setExpanded] = useState(false);
+  const [isAtTop, setIsAtTop] = useState(true);
   const pathname = usePathname();
+
+  // Track scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsAtTop(window.scrollY < 100);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Close menu on route change
   useEffect(() => {
@@ -110,7 +117,7 @@ export default function Header() {
 
   return (
     <>
-      {/* Fixed Header Bar - Aligned with max-w-5xl */}
+      {/* HEADER BAR - Fixed at top, full width white bg */}
       <motion.header
         initial={{ y: -100 }}
         animate={{ y: 0 }}
@@ -120,7 +127,7 @@ export default function Header() {
           expanded ? "bg-neutral-950" : "bg-white"
         )}
       >
-        {/* Inner container matching max-w-5xl with px-4 sm:px-6 lg:px-8 */}
+        {/* Aligned content container */}
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-4 sm:py-6">
             {/* Logo */}
@@ -204,111 +211,115 @@ export default function Header() {
         </div>
       </motion.header>
 
-      {/* EXPANDING MENU - Pushes page content down (Original Behavior) */}
-      <motion.div
-        initial={false}
-        animate={{ 
-          height: expanded ? "auto" : 0,
-        }}
-        transition={{ 
-          height: { duration: 0.4, ease: [0.23, 1, 0.32, 1] },
-        }}
-        className="bg-neutral-950 overflow-hidden"
-        style={{ marginTop: expanded ? "72px" : "0" }} // Push below header
-      >
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <div className="py-10 sm:py-12 lg:py-16">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8">
-              {/* Navigation */}
-              <div className="lg:col-span-7 space-y-1">
-                {navItems.map((item, index) => (
-                  <NavLink 
-                    key={item.href} 
-                    href={item.href} 
-                    index={index}
-                    onClick={() => setExpanded(false)}
-                  >
-                    {item.title}
-                  </NavLink>
-                ))}
-                
-                {/* Mobile CTA */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: expanded ? 1 : 0, y: expanded ? 0 : 20 }}
-                  transition={{ delay: 0.3 }}
-                  className="pt-6 md:hidden"
-                >
-                  <Link
-                    href="/contact"
-                    onClick={() => setExpanded(false)}
-                    className="inline-flex items-center gap-2 px-5 py-3 bg-white text-neutral-950 font-jetbrains-mono text-xs uppercase tracking-widest font-semibold"
-                  >
-                    Start Your Project →
-                  </Link>
-                </motion.div>
-              </div>
+      {/* EXPANDING MENU - Full width black bg, aligned content */}
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ 
+              height: { duration: 0.4, ease: [0.23, 1, 0.32, 1] },
+              opacity: { duration: 0.2 }
+            }}
+            className="fixed left-0 right-0 top-[72px] sm:top-[88px] bg-neutral-950 z-40 overflow-hidden"
+          >
+            {/* Content stays aligned with max-w-5xl */}
+            <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+              <div className="py-10 sm:py-12 lg:py-16">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8">
+                  {/* Navigation */}
+                  <div className="lg:col-span-7 space-y-1">
+                    {navItems.map((item, index) => (
+                      <NavLink 
+                        key={item.href} 
+                        href={item.href} 
+                        index={index}
+                        onClick={() => setExpanded(false)}
+                      >
+                        {item.title}
+                      </NavLink>
+                    ))}
+                    
+                    {/* Mobile CTA */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 }}
+                      className="pt-6 md:hidden"
+                    >
+                      <Link
+                        href="/contact"
+                        onClick={() => setExpanded(false)}
+                        className="inline-flex items-center gap-2 px-5 py-3 bg-white text-neutral-950 font-jetbrains-mono text-xs uppercase tracking-widest font-semibold"
+                      >
+                        Start Your Project →
+                      </Link>
+                    </motion.div>
+                  </div>
 
-              {/* Sidebar Info */}
-              <div className="lg:col-span-5 space-y-8 lg:space-y-10 lg:pl-8 lg:border-l lg:border-white/10">
-                {/* Stats */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: expanded ? 1 : 0, y: expanded ? 0 : 20 }}
-                  transition={{ delay: 0.2 }}
-                  className="flex gap-8"
-                >
-                  <MenuStat value={50} suffix="+" label="Projects" />
-                  <MenuStat value={98} suffix="%" label="Retention" />
-                </motion.div>
+                  {/* Sidebar Info */}
+                  <div className="lg:col-span-5 space-y-8 lg:space-y-10 lg:pl-8 lg:border-l lg:border-white/10">
+                    {/* Stats */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                      className="flex gap-8"
+                    >
+                      <MenuStat value={50} suffix="+" label="Projects" />
+                      <MenuStat value={98} suffix="%" label="Retention" />
+                    </motion.div>
 
-                {/* Office */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: expanded ? 1 : 0, y: expanded ? 0 : 20 }}
-                  transition={{ delay: 0.25 }}
-                >
-                  <h4 className="font-jetbrains-mono text-[10px] uppercase tracking-widest text-neutral-500 mb-3">
-                    Office
-                  </h4>
-                  <Offices invert className="text-neutral-300" />
-                </motion.div>
+                    {/* Office */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.25 }}
+                    >
+                      <h4 className="font-jetbrains-mono text-[10px] uppercase tracking-widest text-neutral-500 mb-3">
+                        Office
+                      </h4>
+                      <Offices invert className="text-neutral-300" />
+                    </motion.div>
 
-                {/* Contact */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: expanded ? 1 : 0, y: expanded ? 0 : 20 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  <h4 className="font-jetbrains-mono text-[10px] uppercase tracking-widest text-neutral-500 mb-3">
-                    Contact
-                  </h4>
-                  <a 
-                    href="mailto:hello@berztech.com"
-                    className="font-space-grotesk text-lg text-white hover:text-neutral-300 transition-colors"
-                  >
-                    hello@berztech.com
-                  </a>
-                </motion.div>
+                    {/* Contact */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 }}
+                    >
+                      <h4 className="font-jetbrains-mono text-[10px] uppercase tracking-widest text-neutral-500 mb-3">
+                        Contact
+                      </h4>
+                      <a 
+                        href="mailto:hello@berztech.com"
+                        className="font-space-grotesk text-lg text-white hover:text-neutral-300 transition-colors"
+                      >
+                        hello@berztech.com
+                      </a>
+                    </motion.div>
 
-                {/* Social */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: expanded ? 1 : 0, y: expanded ? 0 : 20 }}
-                  transition={{ delay: 0.35 }}
-                >
-                  <h4 className="font-jetbrains-mono text-[10px] uppercase tracking-widest text-neutral-500 mb-3">
-                    Follow
-                  </h4>
-                  <SocialMedia invert />
-                </motion.div>
+                    {/* Social */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.35 }}
+                    >
+                      <h4 className="font-jetbrains-mono text-[10px] uppercase tracking-widest text-neutral-500 mb-3">
+                        Follow
+                      </h4>
+                      <SocialMedia invert />
+                    </motion.div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Spacer for fixed header - matches header height */}
+      {/* Spacer for fixed header */}
       <div className="h-[72px] sm:h-[88px]" />
     </>
   );
