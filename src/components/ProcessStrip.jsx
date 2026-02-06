@@ -120,7 +120,7 @@ export default function ProcessStrip() {
                   key={process.number}
                   onClick={() => setActiveTab(index)}
                   className={`
-                    relative flex-1 min-w-[100px] max-w-[160px] px-3 py-3 sm:px-4 sm:py-4 rounded-lg border text-left transition-all duration-300
+                    relative flex-1 min-w-[100px] max-w-[160px] px-3 py-3 sm:px-4 sm:py-4  border text-left transition-all duration-300
                     ${activeTab === index 
                       ? 'bg-neutral-900 text-white border-neutral-900 shadow-lg' 
                       : 'bg-white text-neutral-600 border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50'
@@ -167,7 +167,7 @@ export default function ProcessStrip() {
                   {activeTab === index && (
                     <motion.div
                       layoutId="activeProcess"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/30 rounded-full"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/30 "
                       transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                     />
                   )}
@@ -204,7 +204,7 @@ export default function ProcessStrip() {
                   <div className="lg:col-span-7">
                     <div className="flex items-center gap-3 mb-3">
                       <span className={`
-                        px-2 py-1 rounded text-[10px] font-jetbrains-mono uppercase tracking-wider
+                        px-2 py-1  text-[10px] font-jetbrains-mono uppercase tracking-wider
                         ${colors.bgLight} ${colors.text} border ${colors.border}
                       `}>
                         {activeProcess.duration}
@@ -224,7 +224,7 @@ export default function ProcessStrip() {
                   {/* Right: Deliverables */}
                   <div className="lg:col-span-5">
                     <div className={`
-                      p-3 sm:p-4 rounded-lg border h-full
+                      p-3 sm:p-4  border h-full
                       ${colors.bgLight} ${colors.border}
                     `}>
                       <span className="text-[10px] sm:text-xs font-jetbrains-mono uppercase tracking-wider text-neutral-500 block mb-3">
@@ -240,7 +240,7 @@ export default function ProcessStrip() {
                             className="flex items-start gap-2 text-sm text-neutral-700"
                           >
                             <span className={`
-                              w-1.5 h-1.5 rounded-full mt-1.5 shrink-0
+                              w-1.5 h-1.5  mt-1.5 shrink-0
                               ${colors.bg}
                             `} />
                             <span>{item}</span>
@@ -282,7 +282,7 @@ export default function ProcessStrip() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: 0.4 + i * 0.05 }}
-                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-neutral-200 border-2 border-white flex items-center justify-center"
+                    className="w-7 h-7 sm:w-8 sm:h-8  bg-neutral-200 border-2 border-white flex items-center justify-center"
                   >
                     <span className="text-[10px] font-bold text-neutral-500">{i}</span>
                   </motion.div>

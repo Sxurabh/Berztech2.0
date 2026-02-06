@@ -9,8 +9,7 @@ import { HiMenuAlt4 } from "react-icons/hi";
 import { IoMdClose } from "react-icons/io";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
-import Offices from "./Offices";
-import SocialMedia from "./SocialMedia";
+import { layoutConfig } from "@/config/layout";
 
 // Assets
 import blackLogo from "../../assets/Logo/blacklogo.png";
@@ -18,32 +17,34 @@ import whiteLogo from "../../assets/Logo/WhiteLogo.png";
 import compactLogoblack from "../../assets/Logo/CompactLogo-black.png";
 import compactLogowhite from "../../assets/Logo/CompactLogo-white.png";
 
-function Counter({ value, suffix = "" }) {
-  const [count, setCount] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
+const navItems = [
+  { title: "Work", href: "/work" },
+  { title: "About", href: "/about" },
+  { title: "Process", href: "/process" },
+  { title: "Blog", href: "/blog" },
+];
 
-  useEffect(() => {
-    if (!isVisible) return;
-    let start = 0;
-    const duration = 1500;
-    const step = (timestamp) => {
-      if (!start) start = timestamp;
-      const progress = Math.min((timestamp - start) / duration, 1);
-      const easeOut = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.floor(easeOut * value));
-      if (progress < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  }, [isVisible, value]);
+function DesktopNavLink({ href, children }) {
+  const pathname = usePathname();
+  const isActive = pathname === href;
 
   return (
-    <span ref={(el) => el && setIsVisible(true)} className="tabular-nums">
-      {count}{suffix}
-    </span>
+    <Link href={href} className="group relative py-2">
+      <span className={clsx(
+        "font-jetbrains-mono text-xs uppercase tracking-widest transition-colors duration-300",
+        isActive ? "text-neutral-900 font-semibold" : "text-neutral-500 group-hover:text-neutral-900"
+      )}>
+        {children}
+      </span>
+      <span className={clsx(
+        "absolute -bottom-0.5 left-0 h-px bg-neutral-900 transition-all duration-300",
+        isActive ? "w-full" : "w-0 group-hover:w-full"
+      )} />
+    </Link>
   );
 }
 
-function NavLink({ href, children, index, onClick }) {
+function MobileNavLink({ href, children, index, onClick }) {
   const pathname = usePathname();
   const isActive = pathname === href;
 
@@ -59,7 +60,7 @@ function NavLink({ href, children, index, onClick }) {
             0{index + 1}
           </span>
           <span className={clsx(
-            "font-space-grotesk text-4xl sm:text-5xl md:text-6xl font-medium tracking-tight transition-colors duration-300",
+            "font-space-grotesk text-4xl sm:text-5xl font-medium tracking-tight transition-colors duration-300",
             isActive ? "text-white" : "text-neutral-400 group-hover:text-white"
           )}>
             {children}
@@ -76,119 +77,103 @@ function NavLink({ href, children, index, onClick }) {
   );
 }
 
-function MenuStat({ value, suffix, label }) {
-  return (
-    <div className="group cursor-default">
-      <div className="font-space-grotesk text-3xl font-medium text-white tabular-nums">
-        <Counter value={value} suffix={suffix} />
-      </div>
-      <div className="text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-500 group-hover:text-neutral-400 transition-colors">
-        {label}
-      </div>
-    </div>
-  );
-}
-
 export default function Header() {
-  const [expanded, setExpanded] = useState(false);
-  const [isAtTop, setIsAtTop] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
 
-  // Track scroll position
   useEffect(() => {
-    const handleScroll = () => {
-      setIsAtTop(window.scrollY < 100);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close menu on route change
   useEffect(() => {
-    setExpanded(false);
+    setMobileMenuOpen(false);
   }, [pathname]);
-
-  const navItems = [
-    { title: "Work", href: "/work" },
-    { title: "About", href: "/about" },
-    { title: "Process", href: "/process" },
-    { title: "Blog", href: "/blog" },
-  ];
 
   return (
     <>
-      {/* HEADER BAR - Fixed at top, full width white bg */}
       <motion.header
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
         className={clsx(
-          "fixed top-0 left-0 right-0 z-50 transition-colors duration-300",
-          expanded ? "bg-neutral-950" : "bg-white"
+          "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+          scrolled ? "bg-white/95 backdrop-blur-sm shadow-sm" : "bg-white",
+          mobileMenuOpen && "bg-neutral-950"
         )}
       >
-        {/* Aligned content container */}
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-4 sm:py-6">
-            {/* Logo */}
-            <Link href="/" className="relative z-50 flex-shrink-0">
-              <motion.div whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 400 }}>
-                <Image
-                  src={expanded ? whiteLogo : blackLogo}
-                  alt="Berztech"
-                  className="hidden sm:block h-8 lg:h-9 w-auto object-contain"
-                  priority
-                />
-                <Image
-                  src={expanded ? compactLogowhite : compactLogoblack}
-                  alt="Berztech"
-                  className="block sm:hidden h-6 w-auto object-contain"
-                  priority
-                />
-              </motion.div>
-            </Link>
+        {/* Consistent grid container */}
+        <div className={clsx(
+          "mx-auto",
+          layoutConfig.maxWidth,
+          layoutConfig.padding.mobile,
+          layoutConfig.padding.tablet,
+          layoutConfig.padding.desktop
+        )}>
+          <div className="grid grid-cols-12 gap-4 items-center h-16 sm:h-20 lg:h-24">
+            
+            {/* Logo - spans 3 columns on desktop */}
+            <div className="col-span-6 lg:col-span-3">
+              <Link href="/" className="relative z-50 inline-block">
+                <motion.div whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 400 }}>
+                  <Image
+                    src={mobileMenuOpen ? whiteLogo : blackLogo}
+                    alt="Berztech"
+                    className="hidden sm:block h-7 lg:h-8 w-auto object-contain"
+                    priority
+                  />
+                  <Image
+                    src={mobileMenuOpen ? compactLogowhite : compactLogoblack}
+                    alt="Berztech"
+                    className="block sm:hidden h-6 w-auto object-contain"
+                    priority
+                  />
+                </motion.div>
+              </Link>
+            </div>
 
-            {/* Right Controls */}
-            <div className="flex items-center gap-4 sm:gap-6 flex-shrink-0">
-              {/* Status - Desktop */}
-              <div className="hidden lg:flex items-center gap-2">
-                <span className="relative flex h-1.5 w-1.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
-                </span>
-                <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400">
-                  Available
-                </span>
+            {/* Desktop Navigation - spans 6 columns */}
+            <nav className="hidden lg:flex col-span-6 items-center justify-center gap-8">
+              {navItems.map((item) => (
+                <DesktopNavLink key={item.href} href={item.href}>
+                  {item.title}
+                </DesktopNavLink>
+              ))}
+            </nav>
+
+            {/* Desktop CTA - spans 3 columns */}
+            <div className="hidden lg:flex col-span-3 items-center justify-end gap-6">
+              <div className="flex items-center gap-2">
+               
+                
               </div>
 
-              {/* Hire Button - Desktop */}
-              <Link href="/contact" className="hidden md:block">
+              <Link href="/contact">
                 <motion.span
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className={clsx(
-                    "inline-flex items-center gap-2 px-4 py-2 font-jetbrains-mono text-[10px] uppercase tracking-widest font-semibold border transition-all duration-300",
-                    expanded
-                      ? "border-white text-white hover:bg-white hover:text-neutral-950"
-                      : "border-neutral-900 text-neutral-900 hover:bg-neutral-900 hover:text-white"
-                  )}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-neutral-900 text-white font-jetbrains-mono text-[11px] uppercase tracking-widest font-semibold hover:bg-neutral-800 transition-colors"
                 >
                   Hire Us
                   <motion.span
-                    animate={{ x: [0, 2, 0] }}
+                    animate={{ x: [0, 3, 0] }}
                     transition={{ duration: 1.5, repeat: Infinity }}
                   >
                     →
                   </motion.span>
                 </motion.span>
               </Link>
+            </div>
 
-              {/* Hamburger - All Screens */}
+            {/* Mobile: Hamburger - spans 6 columns */}
+            <div className="col-span-6 lg:hidden flex justify-end">
               <button
-                onClick={() => setExpanded(!expanded)}
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className={clsx(
-                  "relative w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center rounded-full transition-colors duration-300",
-                  expanded
+                  "relative w-10 h-10 flex items-center justify-center rounded-full transition-colors duration-300",
+                  mobileMenuOpen
                     ? "text-white hover:bg-white/10"
                     : "text-neutral-950 hover:bg-neutral-100"
                 )}
@@ -196,10 +181,10 @@ export default function Header() {
               >
                 <motion.div
                   initial={false}
-                  animate={{ rotate: expanded ? 90 : 0 }}
+                  animate={{ rotate: mobileMenuOpen ? 90 : 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  {expanded ? (
+                  {mobileMenuOpen ? (
                     <IoMdClose className="w-5 h-5 sm:w-6 sm:h-6" />
                   ) : (
                     <HiMenuAlt4 className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -209,118 +194,107 @@ export default function Header() {
             </div>
           </div>
         </div>
-      </motion.header>
 
-      {/* EXPANDING MENU - Full width black bg, aligned content */}
-      <AnimatePresence>
-        {expanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ 
-              height: { duration: 0.4, ease: [0.23, 1, 0.32, 1] },
-              opacity: { duration: 0.2 }
-            }}
-            className="fixed left-0 right-0 top-[72px] sm:top-[88px] bg-neutral-950 z-40 overflow-hidden"
-          >
-            {/* Content stays aligned with max-w-5xl */}
-            <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-              <div className="py-10 sm:py-12 lg:py-16">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8">
-                  {/* Navigation */}
-                  <div className="lg:col-span-7 space-y-1">
+        {/* Mobile Menu - uses same grid container */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+              className="lg:hidden bg-neutral-950 overflow-hidden"
+            >
+              <div className={clsx(
+                "mx-auto",
+                layoutConfig.maxWidth,
+                layoutConfig.padding.mobile,
+                layoutConfig.padding.tablet,
+                layoutConfig.padding.desktop
+              )}>
+                <div className="grid grid-cols-12 gap-4 py-8 sm:py-12">
+                  {/* Navigation - full width */}
+                  <div className="col-span-12 space-y-2 mb-10">
                     {navItems.map((item, index) => (
-                      <NavLink 
+                      <MobileNavLink 
                         key={item.href} 
                         href={item.href} 
                         index={index}
-                        onClick={() => setExpanded(false)}
+                        onClick={() => setMobileMenuOpen(false)}
                       >
                         {item.title}
-                      </NavLink>
+                      </MobileNavLink>
                     ))}
-                    
-                    {/* Mobile CTA */}
+                  </div>
+
+                  {/* CTA - full width */}
+                  <div className="col-span-12">
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.3 }}
-                      className="pt-6 md:hidden"
+                      transition={{ delay: 0.35 }}
                     >
                       <Link
                         href="/contact"
-                        onClick={() => setExpanded(false)}
-                        className="inline-flex items-center gap-2 px-5 py-3 bg-white text-neutral-950 font-jetbrains-mono text-xs uppercase tracking-widest font-semibold"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-white text-neutral-950 font-jetbrains-mono text-xs uppercase tracking-widest font-semibold"
                       >
                         Start Your Project →
                       </Link>
                     </motion.div>
                   </div>
 
-                  {/* Sidebar Info */}
-                  <div className="lg:col-span-5 space-y-8 lg:space-y-10 lg:pl-8 lg:border-l lg:border-white/10">
-                    {/* Stats */}
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 }}
-                      className="flex gap-8"
-                    >
-                      <MenuStat value={50} suffix="+" label="Projects" />
-                      <MenuStat value={98} suffix="%" label="Retention" />
-                    </motion.div>
+                  {/* Footer info - spans 12 on mobile, 6+6 on tablet */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                    className="col-span-12 mt-10 pt-8 border-t border-white/10"
+                  >
+                    <div className="grid grid-cols-12 gap-4">
+                      <div className="col-span-12 sm:col-span-6">
+                        <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 block mb-1">
+                          Email
+                        </span>
+                        <a 
+                          href="mailto:hello@berztech.com"
+                          className="font-space-grotesk text-sm text-white hover:text-neutral-300 transition-colors"
+                        >
+                          hello@berztech.com
+                        </a>
+                      </div>
 
-                    {/* Office */}
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.25 }}
-                    >
-                      <h4 className="font-jetbrains-mono text-[10px] uppercase tracking-widest text-neutral-500 mb-3">
-                        Office
-                      </h4>
-                      <Offices invert className="text-neutral-300" />
-                    </motion.div>
+                      <div className="col-span-12 sm:col-span-6">
+                        <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 block mb-1">
+                          Location
+                        </span>
+                        <span className="font-space-grotesk text-sm text-white">
+                          Pune City, India
+                        </span>
+                      </div>
 
-                    {/* Contact */}
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.3 }}
-                    >
-                      <h4 className="font-jetbrains-mono text-[10px] uppercase tracking-widest text-neutral-500 mb-3">
-                        Contact
-                      </h4>
-                      <a 
-                        href="mailto:hello@berztech.com"
-                        className="font-space-grotesk text-lg text-white hover:text-neutral-300 transition-colors"
-                      >
-                        hello@berztech.com
-                      </a>
-                    </motion.div>
-
-                    {/* Social */}
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.35 }}
-                    >
-                      <h4 className="font-jetbrains-mono text-[10px] uppercase tracking-widest text-neutral-500 mb-3">
-                        Follow
-                      </h4>
-                      <SocialMedia invert />
-                    </motion.div>
-                  </div>
+                      <div className="col-span-12 sm:col-span-6 sm:col-start-7 flex items-center gap-4 sm:justify-end">
+                        {["TW", "GH", "LI"].map((social) => (
+                          <a
+                            key={social}
+                            href="#"
+                            className="w-8 h-8 border border-white/20 flex items-center justify-center text-white/60 hover:text-white hover:border-white/40 transition-all text-[10px] font-jetbrains-mono"
+                          >
+                            {social}
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
                 </div>
               </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.header>
 
-      {/* Spacer for fixed header */}
-      <div className="h-[72px] sm:h-[88px]" />
+      {/* Spacer */}
+      <div className="h-16 sm:h-20 lg:h-24" />
     </>
   );
 }

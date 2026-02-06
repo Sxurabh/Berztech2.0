@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { CornerFrame } from "@/components/CornerFrame";
+import GridBackground from "@/components/GridBackground";
 
 const capabilities = [
   {
@@ -110,27 +111,37 @@ export default function AITransparency() {
   const [activeTab, setActiveTab] = useState(0);
   const activeCapability = capabilities[activeTab];
 
+  // Dynamic color schemes for corner frames
   const colorSchemes = {
     blue: {
       bg: "bg-blue-500",
       text: "text-blue-600",
       bgLight: "bg-blue-50",
-      border: "border-blue-200",
-      glow: "shadow-blue-500/20"
+      border: "",
+      glow: "shadow-blue-500/20",
+      frameBg: "bg-blue-50/50",
+      frameBorder: "",
+      bracket: "border-blue-300"
     },
     emerald: {
       bg: "bg-emerald-500",
       text: "text-emerald-600",
       bgLight: "bg-emerald-50",
       border: "border-emerald-200",
-      glow: "shadow-emerald-500/20"
+      glow: "shadow-emerald-500/20",
+      frameBg: "bg-emerald-50/50",
+      frameBorder: "",
+      bracket: "border-emerald-300"
     },
     purple: {
       bg: "bg-purple-500",
       text: "text-purple-600",
       bgLight: "bg-purple-50",
-      border: "border-purple-200",
-      glow: "shadow-purple-500/20"
+      border: "",
+      glow: "shadow-purple-500/20",
+      frameBg: "bg-purple-50/50",
+      frameBorder: "",
+      bracket: "border-purple-300"
     }
   };
 
@@ -138,16 +149,8 @@ export default function AITransparency() {
 
   return (
     <section className="relative py-12 sm:py-16 lg:py-20 bg-white overflow-hidden">
-      {/* Subtle Background */}
-      <div className="absolute inset-0 opacity-[0.015]">
-        <div 
-          className="absolute inset-0"
-          style={{ 
-            backgroundImage: `linear-gradient(#171717 1px, transparent 1px), linear-gradient(90deg, #171717 1px, transparent 1px)`, 
-            backgroundSize: '40px 40px' 
-          }}
-        />
-      </div>
+      {/* Grid Background */}
+      <GridBackground opacity={0.015} size={40} />
 
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         {/* Header + Terminal Row */}
@@ -197,7 +200,7 @@ export default function AITransparency() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="mb-6 sm:mb-8"
         >
-          <div className="flex flex-wrap gap-2 sm:gap-3">
+          <div className="flex flex-wrap gap-2 sm:gap-6">
             {capabilities.map((cap, index) => (
               <button
                 key={cap.id}
@@ -241,7 +244,7 @@ export default function AITransparency() {
           </div>
         </motion.div>
 
-        {/* Active Content */}
+        {/* Active Content - DYNAMIC CORNER FRAME COLOR */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -256,12 +259,13 @@ export default function AITransparency() {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
             >
+              {/* DYNAMIC CORNER FRAME - Changes color based on active tab */}
               <CornerFrame 
                 className={`
-                  bg-white border-neutral-200 p-4 sm:p-5 lg:p-6
-                  ${colors.glow}
+                  ${colors.frameBg} ${colors.frameBorder} ${colors.glow}
+                   p-4 sm:p-5 lg:p-6 transition-colors duration-500
                 `}
-                bracketClassName="w-4 h-4 sm:w-5 sm:h-5 border-neutral-300"
+                bracketClassName={`w-4 h-4 sm:w-5 sm:h-5 ${colors.bracket} transition-colors duration-500`}
               >
                 <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 sm:gap-6 items-center">
                   {/* Metric */}
@@ -274,7 +278,7 @@ export default function AITransparency() {
                     >
                       <span className={`
                         font-space-grotesk text-3xl sm:text-4xl lg:text-5xl font-medium tracking-tighter
-                        ${colors.text}
+                        ${colors.text} transition-colors duration-500
                       `}>
                         {activeCapability.metric}
                       </span>
@@ -290,11 +294,11 @@ export default function AITransparency() {
                       {activeCapability.description}
                     </p>
                     
-                    {/* Honesty Badge */}
+                    {/* Honesty Badge - Dynamic color */}
                     <div className="flex items-start gap-2 mt-4 pt-4 border-t border-neutral-100">
                       <div className={`
                         w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5
-                        ${colors.bgLight} ${colors.text}
+                        ${colors.bgLight} ${colors.text} transition-colors duration-500
                       `}>
                         <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -321,7 +325,7 @@ export default function AITransparency() {
         >
           <div className="flex items-center gap-2">
             <span className={`
-              w-2 h-2 rounded-full animate-pulse
+              w-2 h-2 rounded-full animate-pulse transition-colors duration-500
               ${colors.bg}
             `} />
             <span className="text-[10px] sm:text-xs font-jetbrains-mono text-neutral-500 uppercase tracking-wider">

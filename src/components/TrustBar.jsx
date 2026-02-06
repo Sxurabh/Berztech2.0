@@ -47,11 +47,7 @@ export default function TrustBar() {
             ))}
           </div>
 
-          {/* Count */}
-          <div className="hidden sm:flex items-baseline gap-1 shrink-0">
-            <span className="font-space-grotesk text-lg font-medium text-neutral-900">50+</span>
-            <span className="text-[10px] font-jetbrains-mono text-neutral-400 uppercase">Projects</span>
-          </div>
+        
         </div>
       </div>
     </section>

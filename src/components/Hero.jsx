@@ -1,15 +1,16 @@
 // src/components/Hero.jsx
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { motion, useScroll, useTransform, useSpring, AnimatePresence } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import Link from "next/link";
 import { CornerFrame } from "@/components/CornerFrame";
+import { layoutConfig } from "@/config/layout";
+import clsx from "clsx";
 
-// Smooth counter animation
 function AnimatedCounter({ value, suffix = "", prefix = "" }) {
+  const ref = useRef(null);
   const [count, setCount] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
-  const ref = useRef(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
@@ -24,7 +25,6 @@ function AnimatedCounter({ value, suffix = "", prefix = "" }) {
 
   useEffect(() => {
     if (!isVisible) return;
-    
     let start = 0;
     const duration = 2000;
     const step = (timestamp) => {
@@ -32,40 +32,14 @@ function AnimatedCounter({ value, suffix = "", prefix = "" }) {
       const progress = Math.min((timestamp - start) / duration, 1);
       const easeOut = 1 - Math.pow(1 - progress, 3);
       setCount(Math.floor(easeOut * value));
-      
-      if (progress < 1) {
-        requestAnimationFrame(step);
-      }
+      if (progress < 1) requestAnimationFrame(step);
     };
     requestAnimationFrame(step);
   }, [isVisible, value]);
 
-  return (
-    <span ref={ref} className="tabular-nums">
-      {prefix}{count}{suffix}
-    </span>
-  );
+  return <span ref={ref} className="tabular-nums">{prefix}{count}{suffix}</span>;
 }
 
-// Text reveal animation for headline
-function TextReveal({ children, delay = 0 }) {
-  return (
-    <motion.div
-      initial={{ y: "100%" }}
-      animate={{ y: 0 }}
-      transition={{ 
-        duration: 0.8, 
-        delay, 
-        ease: [0.23, 1, 0.32, 1] 
-      }}
-      className="overflow-hidden"
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-// Magnetic button effect
 function MagneticButton({ children, href, variant = "primary" }) {
   const ref = useRef(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -92,7 +66,7 @@ function MagneticButton({ children, href, variant = "primary" }) {
         transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
       >
         <CornerFrame 
-          className={`inline-block ${variants[variant]} transition-colors duration-300`}
+          className={clsx("inline-block transition-colors duration-300", variants[variant])}
           bracketClassName="w-3 h-3 border-current opacity-40 group-hover:opacity-100 transition-opacity"
         >
           <span className="flex items-center gap-2 px-5 py-3 sm:px-6 sm:py-3.5 font-jetbrains-mono text-[10px] sm:text-xs uppercase tracking-widest font-semibold">
@@ -104,20 +78,11 @@ function MagneticButton({ children, href, variant = "primary" }) {
   );
 }
 
-// Floating decorative elements
 function FloatingElement({ delay, duration, children, className }) {
   return (
     <motion.div
-      animate={{ 
-        y: [0, -10, 0],
-        rotate: [0, 2, -2, 0]
-      }}
-      transition={{ 
-        duration, 
-        delay, 
-        repeat: Infinity,
-        ease: "easeInOut"
-      }}
+      animate={{ y: [0, -10, 0], rotate: [0, 2, -2, 0] }}
+      transition={{ duration, delay, repeat: Infinity, ease: "easeInOut" }}
       className={className}
     >
       {children}
@@ -125,30 +90,21 @@ function FloatingElement({ delay, duration, children, className }) {
   );
 }
 
-// Interactive grid background
 function InteractiveGrid() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   
   useEffect(() => {
-    const handleMouseMove = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
+    const handleMouseMove = (e) => setMousePosition({ x: e.clientX, y: e.clientY });
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
   return (
     <div className="absolute inset-0 -z-10 overflow-hidden bg-white">
-      {/* Base grid */}
-      <div 
-        className="absolute inset-0 opacity-[0.03]"
-        style={{ 
-          backgroundImage: `linear-gradient(#171717 1px, transparent 1px), linear-gradient(90deg, #171717 1px, transparent 1px)`, 
-          backgroundSize: '40px 40px' 
-        }}
-      />
-      
-      {/* Spotlight effect */}
+      <div className="absolute inset-0 opacity-[0.03]" style={{ 
+        backgroundImage: `linear-gradient(#171717 1px, transparent 1px), linear-gradient(90deg, #171717 1px, transparent 1px)`, 
+        backgroundSize: '40px 40px' 
+      }} />
       <motion.div 
         className="pointer-events-none absolute inset-0"
         animate={{
@@ -156,8 +112,6 @@ function InteractiveGrid() {
         }}
         transition={{ type: "spring", stiffness: 50, damping: 20 }}
       />
-      
-      {/* Floating orbs */}
       <FloatingElement delay={0} duration={8} className="absolute top-[20%] left-[10%]">
         <div className="w-64 h-64 rounded-full bg-blue-500/3 blur-[100px]" />
       </FloatingElement>
@@ -168,7 +122,6 @@ function InteractiveGrid() {
   );
 }
 
-// Status badge with pulse
 function StatusBadge() {
   return (
     <motion.div 
@@ -188,6 +141,19 @@ function StatusBadge() {
           </span>
         </div>
       </CornerFrame>
+    </motion.div>
+  );
+}
+
+function TextReveal({ children, delay = 0 }) {
+  return (
+    <motion.div
+      initial={{ y: "100%" }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.8, delay, ease: [0.23, 1, 0.32, 1] }}
+      className="overflow-hidden"
+    >
+      {children}
     </motion.div>
   );
 }
@@ -216,115 +182,98 @@ export default function Hero() {
 
       <motion.div 
         style={{ y: springY, opacity: springOpacity, scale: springScale }}
-        className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8"
+        className="relative z-10 w-full"
       >
-        {/* Main Content */}
-        <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
-          
-          <StatusBadge />
-
-          {/* Headline with text reveal */}
-          <div className="space-y-1 sm:space-y-2 mb-6 sm:mb-8">
-            <TextReveal delay={0.1}>
-              <h1 className="font-space-grotesk text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-medium tracking-tight text-neutral-950 leading-[0.95] sm:leading-[0.9]">
-                Engineering
-              </h1>
-            </TextReveal>
+        {/* Consistent container */}
+        <div className={clsx(
+          "mx-auto",
+          layoutConfig.maxWidth,
+          layoutConfig.padding.mobile,
+          layoutConfig.padding.tablet,
+          layoutConfig.padding.desktop
+        )}>
+          {/* Main 12-column grid */}
+          <div className="grid grid-cols-12 gap-4 sm:gap-6 lg:gap-8">
             
-            <TextReveal delay={0.2}>
-              <h1 className="font-space-grotesk text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-medium tracking-tight leading-[0.95] sm:leading-[0.9]">
-                <span className="text-neutral-400">Digital</span>
-              </h1>
-            </TextReveal>
-            
-            <TextReveal delay={0.3}>
-              <h1 className="font-space-grotesk text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-medium tracking-tight text-neutral-950 leading-[0.95] sm:leading-[0.9] relative inline-block">
-                Excellence
-                <motion.span 
-                  initial={{ scaleX: 0 }}
-                  animate={{ scaleX: 1 }}
-                  transition={{ duration: 0.8, delay: 1, ease: [0.23, 1, 0.32, 1] }}
-                  className="absolute -bottom-2 left-0 right-0 h-2 sm:h-3 bg-neutral-100 origin-left -z-10"
-                />
-              </h1>
-            </TextReveal>
-          </div>
+            {/* Left content - spans 8 columns on desktop */}
+            <div className="col-span-12 lg:col-span-8 flex flex-col justify-center">
+              <StatusBadge />
 
-          {/* Description with fade up */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            className="max-w-xl lg:max-w-lg mb-8 sm:mb-10 relative"
-          >
-            <div className="hidden lg:block absolute -left-6 top-0 bottom-0 w-px bg-neutral-200" />
-            
-            <p className="font-jetbrains-mono text-sm sm:text-base text-neutral-600 leading-relaxed">
-              We are a boutique engineering studio architecting high-performance 
-              web applications for the next generation of digital leaders. 
-              No templates, just pure code.
-            </p>
-          </motion.div>
+              {/* Headline */}
+              <div className="space-y-1 sm:space-y-2 mb-6 sm:mb-8">
+                <TextReveal delay={0.1}>
+                  <h1 className="font-space-grotesk text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-medium tracking-tight text-neutral-950 leading-[0.95] sm:leading-[0.9]">
+                    Engineering
+                  </h1>
+                </TextReveal>
+                <TextReveal delay={0.2}>
+                  <h1 className="font-space-grotesk text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-medium tracking-tight leading-[0.95] sm:leading-[0.9]">
+                    <span className="text-neutral-400">Digital</span>
+                  </h1>
+                </TextReveal>
+                <TextReveal delay={0.3}>
+                  <h1 className="font-space-grotesk text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-medium tracking-tight text-neutral-950 leading-[0.95] sm:leading-[0.9] relative inline-block">
+                    Excellence
+                    <motion.span 
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ duration: 0.8, delay: 1, ease: [0.23, 1, 0.32, 1] }}
+                      className="absolute -bottom-2 left-0 right-0 h-2 sm:h-3 bg-neutral-100 origin-left -z-10"
+                    />
+                  </h1>
+                </TextReveal>
+              </div>
 
-          {/* CTAs with magnetic effect */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto"
-          >
-            <div className="group">
-              <MagneticButton href="/contact" variant="primary">
-                Start your project
-                <motion.span
-                  animate={{ x: [0, 4, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                  className="inline-block"
-                >
-                  →
-                </motion.span>
-              </MagneticButton>
-            </div>
-            
-            <div className="group">
-              <MagneticButton href="/process" variant="secondary">
-                Explore our process
-              </MagneticButton>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Stats Row - Bottom */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
-          className="mt-16 sm:mt-20 lg:mt-24 pt-6 sm:pt-8 border-t border-neutral-100"
-        >
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-            {[
-              { value: 50, suffix: "+", label: "Projects Delivered" },
-              { value: 98, suffix: "%", label: "Client Retention" },
-              { value: 12, suffix: "ms", label: "Avg Response" },
-              { value: 5, suffix: "", label: "Years Experience" }
-            ].map((stat, index) => (
+              {/* Description */}
               <motion.div
-                key={stat.label}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.9 + index * 0.1 }}
-                className="group cursor-default"
+                transition={{ duration: 0.6, delay: 0.5 }}
+                className="max-w-xl mb-8 sm:mb-10 relative"
               >
-                <div className="font-space-grotesk text-2xl sm:text-3xl lg:text-4xl font-medium text-neutral-950 tabular-nums tracking-tight group-hover:text-neutral-600 transition-colors duration-300">
-                  <AnimatedCounter value={stat.value} suffix={stat.suffix} />
+                <div className="hidden lg:block absolute -left-6 top-0 bottom-0 w-px bg-neutral-200" />
+                <p className="font-jetbrains-mono text-sm sm:text-base text-neutral-600 leading-relaxed">
+                  We are a boutique engineering studio architecting high-performance 
+                  web applications for the next generation of digital leaders. 
+                  No templates, just pure code.
+                </p>
+              </motion.div>
+
+              {/* CTAs */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+                className="flex flex-col sm:flex-row gap-3 sm:gap-4"
+              >
+                <div className="group">
+                  <MagneticButton href="/contact" variant="primary">
+                    Start your project
+                    <motion.span
+                      animate={{ x: [0, 4, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                      className="inline-block"
+                    >
+                      →
+                    </motion.span>
+                  </MagneticButton>
                 </div>
-                <div className="mt-1 text-[10px] sm:text-xs font-jetbrains-mono uppercase tracking-wider text-neutral-400 group-hover:text-neutral-500 transition-colors">
-                  {stat.label}
+                <div className="group">
+                  <MagneticButton href="/process" variant="secondary">
+                    Explore our process
+                  </MagneticButton>
                 </div>
               </motion.div>
-            ))}
+            </div>
+
+            {/* Right side - decorative or additional content, spans 4 columns */}
+            <div className="hidden lg:flex col-span-4 items-center justify-end">
+              {/* Optional: Add floating elements or secondary content here */}
+            </div>
+
+           
           </div>
-        </motion.div>
+        </div>
       </motion.div>
 
       {/* Corner Decorations */}
@@ -346,7 +295,7 @@ export default function Hero() {
         <div className="w-full h-full border-b border-l border-neutral-200" />
       </motion.div>
 
-      {/* Scroll indicator - minimal */}
+      {/* Scroll indicator */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

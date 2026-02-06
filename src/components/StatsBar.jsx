@@ -50,9 +50,9 @@ const stats = [
 
 export default function StatsBar() {
   return (
-    <section className="relative py-8 sm:py-10 bg-neutral-50 border-y border-neutral-100">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+    <section className="relative py-8 sm:py-10 ">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 ">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 ">
           {stats.map((stat, index) => (
             <motion.div
               key={stat.label}
@@ -63,7 +63,7 @@ export default function StatsBar() {
             >
               <CornerFrame
                 className="bg-white border-neutral-200 hover:border-neutral-300 transition-colors p-3 sm:p-4"
-                bracketClassName="w-3 h-3 border-neutral-300"
+                bracketClassName="w-3 h-3 border-black"
               >
                 <div className="flex items-baseline gap-1">
                   <span className="font-space-grotesk text-2xl sm:text-3xl font-medium text-neutral-900">
