@@ -1,1234 +1,504 @@
+// src/components/BentoGrid.jsx
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import clsx from "clsx";
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import Link from "next/link";
 import { CornerFrame } from "@/components/CornerFrame";
-import { motion, AnimatePresence } from "framer-motion"; // ADD THIS LINE
 
-
-/* ---------------- Parallax Hook ---------------- */
-function useParallax(strength = 6) {
-  const ref = useRef(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    // Only apply parallax on desktop (lg screens)
-    if (window.innerWidth < 1024) return;
-
-    const move = (e) => {
-      const r = el.getBoundingClientRect();
-      const x = (e.clientX - r.left) / r.width - 0.5;
-      const y = (e.clientY - r.top) / r.height - 0.5;
-      
-      el.style.transform = `perspective(1000px) rotateX(${y * -strength}deg) rotateY(${x * strength}deg)`;
-    };
-
-    const leave = () => {
-      el.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg)";
-    };
-
-    el.addEventListener("mousemove", move);
-    el.addEventListener("mouseleave", leave);
-    return () => {
-      el.removeEventListener("mousemove", move);
-      el.removeEventListener("mouseleave", leave);
-    };
-  }, [strength]);
-
-  return ref;
-}
-
-/* ---------------- Bento Card Wrapper ---------------- */
-function BentoCard({ 
-  title, 
-  subtitle, 
-  tag, 
-  children, 
-  className = "", 
-  dark = false,
-  // CUSTOMIZATION: Default to slightly bolder corners than buttons
-  bracketClass = "w-5 h-5 border-2" 
-}) {
-  const ref = useParallax(4);
+// Platform Icons Component
+function PlatformIcons({ isHovered }) {
+  const platforms = [
+    {
+      name: "iOS",
+      icon: (
+        <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 sm:w-5 sm:h-5">
+          <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+        </svg>
+      ),
+      delay: 0
+    },
+    {
+      name: "Android",
+      icon: (
+        <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 sm:w-5 sm:h-5">
+          <path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v7c0 .83.67 1.5 1.5 1.5S5 17.33 5 16.5v-7C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v7c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-7c0-.83-.67-1.5-1.5-1.5zm-4.97-5.84l1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48C13.85 1.23 12.95 1 12 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C6.97 3.26 6 5.01 6 7h12c0-1.99-.97-3.75-2.47-4.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z"/>
+        </svg>
+      ),
+      delay: 0.1
+    },
+    {
+      name: "Web",
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 sm:w-5 sm:h-5">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
+        </svg>
+      ),
+      delay: 0.2
+    },
+    {
+      name: "Desktop",
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 sm:w-5 sm:h-5">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+          <path d="M8 21h8M12 17v4"/>
+        </svg>
+      ),
+      delay: 0.3
+    }
+  ];
 
   return (
-    <div className={clsx("h-full min-h-[320px]", className)}>
-      <CornerFrame
-        ref={ref}
-        // Pass the custom styling to your CornerFrame component
-        bracketClassName={bracketClass}
-        className={clsx(
-          "h-full w-full transition-all duration-500 ",
-          dark ? "bg-neutral-950 text-blue-400 hover:text-black" : "bg-white text-black"
-        )}
-        style={{ transformStyle: "preserve-3d" }}
-      >
-        <div className={clsx(
-          "relative h-full overflow-hidden p-6 sm:p-8 flex flex-col",
-          dark ? "text-white" : "text-neutral-950"
-        )}>
-          
-          {/* Background Grid Pattern */}
-          <div 
-            className={clsx("absolute inset-0 opacity-[0.03] pointer-events-none", dark ? "bg-white" : "bg-black")}
-            style={{ 
-              backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)', 
-              backgroundSize: '24px 24px' 
-            }} 
-          />
-
-          {/* Header */}
-          <div className="relative z-10 pointer-events-none mb-4">
-            <div className="flex items-center gap-2 mb-3">
-               <div className={clsx("h-1 w-1 rounded-full", dark ? "bg-blue-400" : "bg-neutral-950")} />
-               <p className={clsx("font-jetbrains-mono text-[10px] uppercase tracking-widest font-bold", dark ? "text-blue-400" : "text-neutral-500")}>
-                 {tag}
-               </p>
-            </div>
-            <h3 className="font-space-grotesk text-2xl font-medium tracking-tight">{title}</h3>
-            <p className={clsx("mt-3 text-sm leading-relaxed max-w-[90%]", dark ? "text-neutral-400" : "text-neutral-600")}>
-              {subtitle}
-            </p>
-          </div>
-          
-          {/* Content Area */}
-          <div className="relative w-full flex-1 flex items-end justify-center pointer-events-auto min-h-[180px]">
-             {children}
-          </div>
-        </div>
-      </CornerFrame>
+    <div className="flex items-center gap-2 sm:gap-3">
+      {platforms.map((platform, index) => (
+        <motion.div
+          key={platform.name}
+          initial={{ opacity: 0, y: 10, scale: 0.8 }}
+          animate={{ 
+            opacity: 1, 
+            y: 0, 
+            scale: 1,
+            transition: { delay: platform.delay, duration: 0.4 }
+          }}
+          whileHover={{ 
+            scale: 1.2, 
+            y: -2,
+            transition: { duration: 0.2 }
+          }}
+          className={`
+            relative p-2 sm:p-2.5 rounded-xl border border-neutral-200 
+            bg-white text-neutral-400 cursor-default
+            transition-colors duration-300
+            ${isHovered ? 'border-neutral-300 text-neutral-600 shadow-sm' : ''}
+          `}
+        >
+          {platform.icon}
+          {/* Tooltip */}
+          <motion.span
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 5 }}
+            transition={{ duration: 0.2 }}
+            className="absolute -top-6 left-1/2 -translate-x-1/2 text-[8px] sm:text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-400 whitespace-nowrap pointer-events-none"
+          >
+            {platform.name}
+          </motion.span>
+          {/* Connection dot */}
+          {index < platforms.length - 1 && (
+            <motion.div
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: isHovered ? 1 : 0 }}
+              transition={{ delay: 0.1 * index, duration: 0.3 }}
+              className="absolute -right-3 sm:-right-4 top-1/2 w-2 sm:w-3 h-px bg-neutral-300 origin-left hidden sm:block"
+            />
+          )}
+        </motion.div>
+      ))}
     </div>
   );
 }
 
-
-
-/* ---------------- Card 1: Architecture (Redesigned with Micro-interactions) ---------------- */
-/* ---------------- Card 1: Unified Architecture (Redesigned) ---------------- */
-function CrossPlatformCard() {
-  const [activePlatform, setActivePlatform] = useState(null);
-  const [isCodeDeploying, setIsCodeDeploying] = useState(false);
-  const [deploymentStep, setDeploymentStep] = useState(0);
-  
-  // Platforms with their specific characteristics and icons
-  const platforms = [
-    { 
-      id: 'web', 
-      label: 'WEB',
-      color: 'blue',
-      position: { x: 15, y: 20 },
-      screens: ['Desktop', 'Tablet', 'Mobile Web'],
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5 sm:w-6 sm:h-6">
-          <circle cx="12" cy="12" r="10" />
-          <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
-        </svg>
-      )
-    },
-    { 
-      id: 'ios', 
-      label: 'iOS',
-      color: 'purple',
-      position: { x: 85, y: 20 },
-      screens: ['iPhone', 'iPad', 'Apple Watch'],
-      icon: (
-        <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 sm:w-6 sm:h-6">
-          <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.2 1.95-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
-        </svg>
-      )
-    },
-    { 
-      id: 'android', 
-      label: 'ANDROID',
-      color: 'green',
-      position: { x: 15, y: 80 },
-      screens: ['Phone', 'Tablet', 'Wear OS'],
-      icon: (
-        <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 sm:w-6 sm:h-6">
-          <path d="M17.523 15.341c-.51 0-.916.405-.916.906 0 .5.406.905.916.905.51 0 .916-.405.916-.905 0-.501-.405-.906-.916-.906zM6.477 15.341c-.51 0-.916.405-.916.906 0 .5.405.905.916.905.511 0 .917-.405.917-.905 0-.501-.406-.906-.917-.906zM17.663 4.005l1.943-3.372a.313.313 0 00-.11-.427.317.317 0 00-.436.11L17.133 3.67a11.94 11.94 0 00-10.266 0L4.94.316a.318.318 0 00-.436-.11.313.313 0 00-.11.427l1.943 3.372C2.57 5.86.77 8.47.77 11.5h22.46c0-3.03-1.8-5.64-4.567-6.495zm-13.08-.675c.508 0 .918.41.918.916 0 .506-.41.917-.918.917a.919.919 0 01-.917-.917c0-.506.41-.916.917-.916zm10.834 0c.507 0 .917.41.917.916 0 .506-.41.917-.917.917a.919.919 0 01-.917-.917c0-.506.41-.916.917-.916zM.77 12.54v7.176c0 .975.79 1.765 1.765 1.765h1.765V12.54H.77zm4.706 8.94h12.048V12.54H5.476v8.94zm14.118-8.94v8.94h1.765c.975 0 1.765-.79 1.765-1.765V12.54h-3.53z"/>
-        </svg>
-      )
-    },
-    { 
-      id: 'desktop', 
-      label: 'DESKTOP',
-      color: 'orange',
-      position: { x: 85, y: 80 },
-      screens: ['Windows', 'macOS', 'Linux'],
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5 sm:w-6 sm:h-6">
-          <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
-          <line x1="8" y1="21" x2="16" y2="21" />
-          <line x1="12" y1="17" x2="12" y2="21" />
-        </svg>
-      )
-    }
+// Code Preview Component for Unified Card
+function CodePreview({ isHovered }) {
+  const codeLines = [
+    { text: "export default function App() {", indent: 0, color: "text-neutral-400" },
+    { text: "return (", indent: 1, color: "text-neutral-400" },
+    { text: "<View>", indent: 2, color: "text-blue-400" },
+    { text: "<Component />", indent: 3, color: "text-emerald-400" },
+    { text: "</View>", indent: 2, color: "text-blue-400" },
+    { text: ");", indent: 1, color: "text-neutral-400" },
+    { text: "}", indent: 0, color: "text-neutral-400" },
   ];
 
-  // Simulate code deployment animation
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIsCodeDeploying(true);
-      setDeploymentStep(0);
-      
-      const steps = setInterval(() => {
-        setDeploymentStep(prev => {
-          if (prev >= 3) {
-            clearInterval(steps);
-            setTimeout(() => setIsCodeDeploying(false), 1000);
-            return 0;
-          }
-          return prev + 1;
-        });
-      }, 400);
-      
-    }, 6000);
-    
-    return () => clearInterval(interval);
-  }, []);
-
-  const getPlatformColor = (color) => {
-    const colors = {
-      blue: 'text-blue-500 border-blue-400 shadow-blue-500/40',
-      purple: 'text-purple-500 border-purple-400 shadow-purple-500/40',
-      green: 'text-emerald-500 border-emerald-400 shadow-emerald-500/40',
-      orange: 'text-orange-500 border-orange-400 shadow-orange-500/40'
-    };
-    return colors[color] || colors.blue;
-  };
-
   return (
-    <BentoCard
-      tag="Architecture"
-      title="Unified Core"
-      subtitle="One codebase. Every platform. Native performance everywhere."
-      className="lg:col-span-2 lg:row-span-2"
-    >
-      <div className="absolute inset-0 flex flex-col p-4 sm:p-6">
-        
-        {/* Header: Codebase Status */}
-        <div className="flex items-center justify-between mb-6 shrink-0">
-          <div className="flex items-center gap-3">
-            <div className={clsx(
-              "px-3 py-1.5 border font-jetbrains-mono text-[9px] sm:text-[10px] font-bold uppercase tracking-wider flex items-center gap-2 transition-all duration-500",
-              isCodeDeploying 
-                ? "bg-amber-500/10 border-amber-500/40 text-amber-600 animate-pulse" 
-                : "bg-emerald-500/10 border-emerald-500/40 text-emerald-600"
-            )}>
-              <span className={clsx(
-                "w-1.5 h-1.5 rounded-full",
-                isCodeDeploying ? "bg-amber-500" : "bg-emerald-500 animate-pulse"
-              )} />
-              {isCodeDeploying ? 'DEPLOYING...' : 'SYNCED'}
-            </div>
-            
-            {/* Codebase Indicator */}
-            <div className="hidden sm:flex items-center gap-2 px-2 py-1 bg-neutral-100 border border-neutral-200">
-              <svg className="w-3 h-3 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-              </svg>
-              <span className="font-jetbrains-mono text-[9px] text-neutral-600">1 CODEBASE</span>
-            </div>
-          </div>
-          
-          <div className="text-right">
-            <div className="font-space-grotesk text-lg sm:text-xl font-bold text-neutral-900 leading-none">100%</div>
-            <div className="font-jetbrains-mono text-[8px] sm:text-[9px] text-neutral-500">SHARED LOGIC</div>
-          </div>
-        </div>
-
-        {/* Central Architecture Visualization */}
-        <div className="flex-1 relative min-h-[280px] sm:min-h-[320px] flex items-center justify-center">
-          
-          {/* Background Grid */}
-          <div className="absolute inset-0 opacity-[0.03]">
-            <div className="absolute inset-0" style={{
-              backgroundImage: `
-                linear-gradient(to right, currentColor 1px, transparent 1px),
-                linear-gradient(to bottom, currentColor 1px, transparent 1px)
-              `,
-              backgroundSize: 'clamp(20px, 4vw, 40px) clamp(20px, 4vw, 40px)'
-            }} />
-          </div>
-
-          {/* Connection Lines - Central Hub to Platforms */}
-          <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible" preserveAspectRatio="xMidYMid meet">
-            <defs>
-              <linearGradient id="connectionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.4" />
-                <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.4" />
-              </linearGradient>
-              <filter id="glow">
-                <feGaussianBlur stdDeviation="2" result="blur" />
-                <feMerge>
-                  <feMergeNode in="blur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-            
-            {/* Lines from center to each platform */}
-            {platforms.map((platform, idx) => {
-              const isActive = activePlatform === platform.id || isCodeDeploying;
-              return (
-                <g key={platform.id}>
-                  {/* Static line */}
-                  <line
-                    x1="50%"
-                    y1="50%"
-                    x2={`${platform.position.x}%`}
-                    y2={`${platform.position.y}%`}
-                    stroke={isActive ? "url(#connectionGradient)" : "#e5e5e5"}
-                    strokeWidth={isActive ? "2" : "1"}
-                    className="transition-all duration-500"
-                  />
-                  
-                  {/* Animated data packet when deploying */}
-                  {isCodeDeploying && (
-                    <circle
-                      r="4"
-                      fill={platform.color === 'blue' ? '#3b82f6' : platform.color === 'purple' ? '#8b5cf6' : platform.color === 'green' ? '#10b981' : '#f97316'}
-                      filter="url(#glow)"
-                      className="animate-deploy"
-                      style={{
-                        offsetPath: `path("M50% 50% L${platform.position.x}% ${platform.position.y}%")`,
-                        animationDelay: `${idx * 0.2}s`
-                      }}
-                    >
-                      <animate
-                        attributeName="opacity"
-                        values="0;1;1;0"
-                        dur="1.5s"
-                        begin={`${idx * 0.2}s`}
-                        repeatCount="indefinite"
-                      />
-                    </circle>
-                  )}
-                </g>
-              );
-            })}
-
-            {/* Center Core - The Unified Codebase */}
-            <g>
-              <circle
-                cx="50%"
-                cy="50%"
-                r="10%"
-                fill="white"
-                stroke="#171717"
-                strokeWidth="2"
-                className={clsx(
-                  "transition-all duration-500",
-                  isCodeDeploying && "stroke-amber-500"
-                )}
-              />
-              <circle
-                cx="50%"
-                cy="50%"
-                r="6%"
-                fill="#171717"
-                className={clsx(
-                  "transition-all duration-500",
-                  isCodeDeploying && "fill-amber-500"
-                )}
-              />
-              
-              {/* Core Code Icon */}
-              <text
-                x="50%"
-                y="50%"
-                textAnchor="middle"
-                dominantBaseline="central"
-                fill="white"
-                fontSize="8"
-                fontFamily="JetBrains Mono"
-                className="font-bold"
-              >
-                {'</>'}
-              </text>
-            </g>
-          </svg>
-
-          {/* Shared Code Indicators - Positioned absolutely to center */}
-          <div className="absolute top-1/2 left-1/2 w-0 h-0">
-            <div className={clsx(
-              "absolute w-28 h-28 sm:w-36 sm:h-36 -translate-x-1/2 -translate-y-1/2",
-              "rounded-full border border-dashed border-neutral-300",
-              "animate-spin-slow",
-              isCodeDeploying && "border-amber-400"
-            )} />
-            <div className={clsx(
-              "absolute w-20 h-20 sm:w-24 sm:h-24 -translate-x-1/2 -translate-y-1/2",
-              "rounded-full border border-dashed border-neutral-200",
-              "animate-spin-reverse",
-              isCodeDeploying && "border-amber-300"
-            )} />
-          </div>
-
-          {/* Platform Nodes */}
-          {platforms.map((platform, idx) => {
-            const isActive = activePlatform === platform.id;
-            const isDeploying = isCodeDeploying && deploymentStep >= idx;
-            
-            return (
-              <div
-                key={platform.id}
-                className="absolute"
-                style={{
-                  left: `${platform.position.x}%`,
-                  top: `${platform.position.y}%`,
-                  transform: 'translate(-50%, -50%)'
-                }}
-                onMouseEnter={() => setActivePlatform(platform.id)}
-                onMouseLeave={() => setActivePlatform(null)}
-              >
-                {/* Platform Container */}
-                <motion.div
-                  animate={{ 
-                    scale: isActive || isDeploying ? 1.1 : 1,
-                    rotate: isDeploying ? 360 : 0
-                  }}
-                  transition={{ duration: 0.4 }}
-                  className={clsx(
-                    "relative w-14 h-14 sm:w-16 sm:h-16 cursor-pointer",
-                    "flex flex-col items-center justify-center",
-                    "transition-all duration-300"
-                  )}
-                >
-                  {/* Outer Ring */}
-                  <div className={clsx(
-                    "absolute inset-0 rounded-xl border-2 transition-all duration-500 rotate-45",
-                    isActive || isDeploying 
-                      ? getPlatformColor(platform.color) 
-                      : "border-neutral-300 bg-white",
-                    isDeploying && "animate-ping-slow"
-                  )} />
-                  
-                  {/* Inner Content */}
-                  <div className={clsx(
-                    "relative z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-lg",
-                    "flex items-center justify-center",
-                    "bg-white",
-                    isActive && "border-current",
-                    "transition-colors duration-300",
-                    getPlatformColor(platform.color).split(' ')[0]
-                  )}>
-                    {platform.icon}
-                  </div>
-
-                  {/* Platform Label */}
-                  <div className={clsx(
-                    "absolute -bottom-6 whitespace-nowrap",
-                    "font-jetbrains-mono text-[8px] sm:text-[9px] font-bold uppercase tracking-wider",
-                    "px-2 py-0.5 bg-white border border-neutral-200",
-                    "transition-all duration-300",
-                    isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
-                  )}>
-                    {platform.label}
-                  </div>
-
-                  {/* Screen Variants Tooltip */}
-                  <div className={clsx(
-                    "absolute top-full mt-8 left-1/2 -translate-x-1/2",
-                    "bg-neutral-900 text-white px-3 py-2 rounded shadow-xl",
-                    "whitespace-nowrap z-30 pointer-events-none",
-                    "transition-all duration-300",
-                    isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"
-                  )}>
-                    <div className="font-jetbrains-mono text-[8px] uppercase tracking-wider text-neutral-400 mb-1">
-                      Builds for
-                    </div>
-                    <div className="flex gap-2">
-                      {platform.screens.map((screen, i) => (
-                        <span key={screen} className="text-[10px] font-medium">
-                          {screen}
-                          {i < platform.screens.length - 1 && <span className="text-neutral-600 ml-2">|</span>}
-                        </span>
-                      ))}
-                    </div>
-                    {/* Arrow */}
-                    <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-neutral-900 rotate-45" />
-                  </div>
-
-                  {/* Deployment Success Indicator */}
-                  {isDeploying && (
-                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center animate-bounce">
-                      <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                  )}
-                </motion.div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Bottom: Tech Stack & Stats */}
-        <div className="mt-4 pt-4 border-t border-neutral-200 shrink-0">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            
-            {/* Shared Tech Stack */}
-            <div className="flex items-center gap-3 overflow-x-auto pb-2 sm:pb-0 w-full sm:w-auto scrollbar-hide">
-              <span className="text-[9px] font-jetbrains-mono text-neutral-400 uppercase shrink-0">
-                Stack:
-              </span>
-              {['React Native', 'Expo', 'TypeScript', 'GraphQL'].map((tech, i) => (
-                <motion.span
-                  key={tech}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  whileHover={{ scale: 1.05, backgroundColor: "#171717", color: "#ffffff" }}
-                  className="px-2 py-1 text-[9px] font-jetbrains-mono uppercase tracking-wider text-neutral-600 bg-neutral-100 border border-neutral-200 whitespace-nowrap cursor-default transition-all"
-                >
-                  {tech}
-                </motion.span>
-              ))}
-            </div>
-
-            {/* Deployment Status */}
-            <div className="flex items-center gap-4 text-[9px] sm:text-[10px] font-jetbrains-mono text-neutral-500">
-              <div className="flex items-center gap-2">
-                <span className={clsx(
-                  "w-1.5 h-1.5 rounded-full",
-                  isCodeDeploying ? "bg-amber-500 animate-pulse" : "bg-emerald-500"
-                )} />
-                <span className="hidden sm:inline">
-                  {isCodeDeploying ? `Deploying to ${platforms[deploymentStep]?.label}...` : 'All Platforms Synced'}
-                </span>
-                <span className="sm:hidden">
-                  {isCodeDeploying ? 'Deploying...' : 'Synced'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Progress Bar for Deployment */}
-          <div className="mt-3 h-1 bg-neutral-100 rounded-full overflow-hidden">
-            <motion.div 
-              className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-emerald-500"
-              animate={{ 
-                width: isCodeDeploying ? `${((deploymentStep + 1) / platforms.length) * 100}%` : '100%'
-              }}
-              transition={{ duration: 0.4 }}
-            />
-          </div>
-        </div>
+    <div className="mt-3 sm:mt-4 p-2.5 sm:p-3 rounded-lg bg-neutral-900/5 border border-neutral-200/50 font-jetbrains-mono text-[9px] sm:text-[10px] leading-relaxed overflow-hidden">
+      <div className="flex items-center gap-1.5 mb-2 opacity-50">
+        <div className="w-2 h-2 rounded-full bg-neutral-300" />
+        <div className="w-2 h-2 rounded-full bg-neutral-300" />
+        <div className="w-2 h-2 rounded-full bg-neutral-300" />
       </div>
-
-      <style jsx>{`
-        @keyframes deploy {
-          0% { offset-distance: 0%; opacity: 0; transform: scale(0.5); }
-          20% { opacity: 1; transform: scale(1); }
-          80% { opacity: 1; transform: scale(1); }
-          100% { offset-distance: 100%; opacity: 0; transform: scale(0.5); }
-        }
-        @keyframes pulse-slow {
-          0%, 100% { opacity: 0.4; }
-          50% { opacity: 0.8; }
-        }
-        @keyframes ping-slow {
-          0% { transform: scale(1) rotate(45deg); opacity: 0.6; }
-          100% { transform: scale(1.3) rotate(45deg); opacity: 0; }
-        }
-        @keyframes spin-slow {
-          from { transform: translate(-50%, -50%) rotate(0deg); }
-          to { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-        @keyframes spin-reverse {
-          from { transform: translate(-50%, -50%) rotate(0deg); }
-          to { transform: translate(-50%, -50%) rotate(-360deg); }
-        }
-        .animate-deploy {
-          animation: deploy 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-          offset-rotate: 0deg;
-        }
-        .animate-pulse-slow {
-          animation: pulse-slow 3s ease-in-out infinite;
-        }
-        .animate-ping-slow {
-          animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
-        }
-        .animate-spin-slow {
-          animation: spin-slow 20s linear infinite;
-        }
-        .animate-spin-reverse {
-          animation: spin-reverse 15s linear infinite;
-        }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
-    </BentoCard>
+      <div className="space-y-0.5">
+        {codeLines.map((line, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ 
+              opacity: isHovered ? 1 : 0.6, 
+              x: 0,
+              transition: { delay: i * 0.05 }
+            }}
+            className={`${line.color} pl-${line.indent * 2}`}
+            style={{ paddingLeft: `${line.indent * 8}px` }}
+          >
+            {line.text}
+          </motion.div>
+        ))}
+      </div>
+      {/* Typewriter cursor */}
+      <motion.span
+        animate={{ opacity: [1, 0] }}
+        transition={{ duration: 0.8, repeat: Infinity }}
+        className="inline-block w-1.5 h-3.5 bg-emerald-500 ml-0.5 align-middle"
+      />
+    </div>
   );
 }
-/* ---------------- Card 2: Performance (Responsive Terminal) ---------------- */
-/* ---------------- Card 2: Performance (Redesigned Responsive Terminal) ---------------- */
-function RealtimeCard() {
-  const [logs, setLogs] = useState([
-    { id: 1, text: "> system_init()", type: "info", timestamp: "00:00:01" },
-    { id: 2, text: "> connecting_to_stream...", type: "process", timestamp: "00:00:02" },
-  ]);
-  const [metrics, setMetrics] = useState({
-    cpu: 12,
-    memory: 45,
-    latency: 24,
-    requests: 128
-  });
-  const [cursorVisible, setCursorVisible] = useState(true);
-  const [isTyping, setIsTyping] = useState(false);
-  const terminalRef = useRef(null);
 
-  // Auto-scroll to bottom
-  useEffect(() => {
-    if (terminalRef.current) {
-      terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
-    }
-  }, [logs]);
+const features = [
+  {
+    id: 1,
+    title: "Unified Codebase",
+    description: "Single source of truth for web, mobile, and desktop. React Native + Next.js working in harmony.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 sm:w-5 sm:h-5">
+        <path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+      </svg>
+    ),
+    metric: "70%",
+    metricLabel: "Code Reuse",
+    accent: "blue",
+    size: "large",
+    hasPlatformIcons: true,
+    hasCodePreview: true
+  },
+  {
+    id: 2,
+    title: "Performance",
+    description: "Sub-100ms interactions through intelligent caching and edge deployment.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 sm:w-5 sm:h-5">
+        <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+      </svg>
+    ),
+    metric: "<100ms",
+    metricLabel: "Response",
+    accent: "amber",
+    size: "small"
+  },
+  {
+    id: 3,
+    title: "Security First",
+    description: "SOC 2 Type II compliant infrastructure with automated vulnerability scanning.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 sm:w-5 sm:h-5">
+        <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      </svg>
+    ),
+    metric: "Zero",
+    metricLabel: "Breaches",
+    accent: "emerald",
+    size: "small"
+  },
+  {
+    id: 4,
+    title: "AI-Assisted",
+    description: "Leveraging modern AI tools for 40% faster delivery without compromising quality.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 sm:w-5 sm:h-5">
+        <path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+      </svg>
+    ),
+    metric: "40%",
+    metricLabel: "Faster",
+    accent: "purple",
+    size: "small"
+  },
+  {
+    id: 5,
+    title: "Always On",
+    description: "99.99% uptime SLA with global CDN and automated failover systems across 12 regions.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 sm:w-5 sm:h-5">
+        <path d="M5.636 18.364a9 9 0 010-12.728m12.728 0a9 9 0 010 12.728m-9.9-2.829a5 5 0 010-7.07m7.072 0a5 5 0 010 7.07M13 12a1 1 0 11-2 0 1 1 0 012 0z" />
+      </svg>
+    ),
+    metric: "99.99%",
+    metricLabel: "Uptime",
+    accent: "rose",
+    size: "medium"
+  },
+  
+];
 
-  // Cursor blink
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCursorVisible(prev => !prev);
-    }, 530);
-    return () => clearInterval(interval);
-  }, []);
+const accentColors = {
+  blue: {
+    bg: "group-hover:bg-blue-500/5",
+    border: "group-hover:border-blue-500/20",
+    text: "text-blue-500",
+    glow: "group-hover:shadow-blue-500/10",
+    line: "bg-blue-500"
+  },
+  amber: {
+    bg: "group-hover:bg-amber-500/5",
+    border: "group-hover:border-amber-500/20",
+    text: "text-amber-500",
+    glow: "group-hover:shadow-amber-500/10",
+    line: "bg-amber-500"
+  },
+  emerald: {
+    bg: "group-hover:bg-emerald-500/5",
+    border: "group-hover:border-emerald-500/20",
+    text: "text-emerald-500",
+    glow: "group-hover:shadow-emerald-500/10",
+    line: "bg-emerald-500"
+  },
+  purple: {
+    bg: "group-hover:bg-purple-500/5",
+    border: "group-hover:border-purple-500/20",
+    text: "text-purple-500",
+    glow: "group-hover:shadow-purple-500/10",
+    line: "bg-purple-500"
+  },
+  rose: {
+    bg: "group-hover:bg-rose-500/5",
+    border: "group-hover:border-rose-500/20",
+    text: "text-rose-500",
+    glow: "group-hover:shadow-rose-500/10",
+    line: "bg-rose-500"
+  },
+  cyan: {
+    bg: "group-hover:bg-cyan-500/5",
+    border: "group-hover:border-cyan-500/20",
+    text: "text-cyan-500",
+    glow: "group-hover:shadow-cyan-500/10",
+    line: "bg-cyan-500"
+  }
+};
 
-  // Generate logs and update metrics
-  useEffect(() => {
-    const messages = [
-      { text: "> packet_received [2kb]", type: "success" },
-      { text: "> latency_check: 12ms", type: "info" },
-      { text: "> db_sync: OK", type: "success" },
-      { text: "> cache_invalidate", type: "warning" },
-      { text: "> event: user_login", type: "info" },
-      { text: "> websocket_ping", type: "process" },
-      { text: "> batch_process: 450 items", type: "success" },
-      { text: "> garbage_collect", type: "warning" },
-      { text: "> api_response: 200 OK", type: "success" },
-      { text: "> realtime_update: 1.2ms", type: "info" },
-    ];
-
-    const interval = setInterval(() => {
-      const randomMsg = messages[Math.floor(Math.random() * messages.length)];
-      const now = new Date();
-      const timestamp = `00:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-      
-      setIsTyping(true);
-      
-      // Simulate typing delay
-      setTimeout(() => {
-        setLogs(prev => {
-          const newLogs = [...prev, { 
-            id: Date.now(), 
-            text: randomMsg.text, 
-            type: randomMsg.type,
-            timestamp 
-          }];
-          return newLogs.slice(-6); // Keep last 6 logs
-        });
-        setIsTyping(false);
-        
-        // Update metrics randomly
-        setMetrics(prev => ({
-          cpu: Math.max(5, Math.min(95, prev.cpu + (Math.random() - 0.5) * 20)),
-          memory: Math.max(20, Math.min(90, prev.memory + (Math.random() - 0.5) * 10)),
-          latency: Math.max(8, Math.min(100, prev.latency + (Math.random() - 0.5) * 15)),
-          requests: prev.requests + Math.floor(Math.random() * 5)
-        }));
-      }, 150);
-    }, 1800);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const getLogColor = (type) => {
-    switch(type) {
-      case 'success': return 'text-emerald-400';
-      case 'warning': return 'text-amber-400';
-      case 'error': return 'text-rose-400';
-      case 'process': return 'text-blue-400';
-      default: return 'text-green-400';
-    }
-  };
-
-  const getLogIcon = (type) => {
-    switch(type) {
-      case 'success': return '✓';
-      case 'warning': return '⚠';
-      case 'error': return '✕';
-      case 'process': return '◐';
-      default: return '›';
-    }
-  };
+function BentoCard({ feature, index }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const colors = accentColors[feature.accent];
+  
+  const isLarge = feature.size === "large";
+  const isMedium = feature.size === "medium";
 
   return (
-    <BentoCard
-      tag="Infrastructure"
-      title="Real-Time"
-      subtitle="Event-driven systems built for sub-millisecond updates."
-      dark
-      className="lg:col-span-1"
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ 
+        duration: 0.5, 
+        delay: index * 0.08,
+        ease: [0.23, 1, 0.32, 1]
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`
+        group relative h-full
+        ${isLarge ? "col-span-1 md:col-span-2 lg:col-span-2 row-span-2" : ""}
+        ${isMedium ? "col-span-1 md:col-span-2" : "col-span-1"}
+      `}
     >
-      <div className="w-full h-full flex flex-col gap-3 min-h-[280px] sm:min-h-[320px]">
-        
-        {/* Terminal Window */}
-        <div className="flex-1 bg-neutral-950 border border-neutral-800 rounded-lg overflow-hidden shadow-2xl relative group">
-          {/* Terminal Header */}
-          <div className="bg-neutral-900 border-b border-neutral-800 px-3 py-2 flex items-center justify-between select-none">
-            <div className="flex items-center gap-2">
-              <div className="flex gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-rose-500/80 group-hover:bg-rose-500 transition-colors" />
-                <div className="w-2.5 h-2.5 rounded-full bg-amber-500/80 group-hover:bg-amber-500 transition-colors" />
-                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 group-hover:bg-emerald-500 transition-colors" />
-              </div>
-              <span className="ml-3 font-jetbrains-mono text-[10px] text-neutral-500 uppercase tracking-wider hidden sm:inline">root@server-prod-01</span>
-              <span className="ml-2 font-jetbrains-mono text-[10px] text-neutral-500 uppercase tracking-wider sm:hidden">prod-01</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="font-jetbrains-mono text-[9px] text-emerald-500 animate-pulse">● LIVE</span>
-              <div className="w-12 h-1 bg-neutral-800 rounded-full overflow-hidden">
-                <div className="h-full bg-emerald-500 animate-pulse-width" style={{ width: '60%' }} />
+      <CornerFrame
+        className={`
+          relative h-full min-h-[140px] sm:min-h-[160px] 
+          ${isLarge ? "lg:min-h-[340px]" : "lg:min-h-[160px]"}
+          bg-neutral-50 border-neutral-200 
+          transition-all duration-500 ease-out
+          ${colors.bg} ${colors.border} ${colors.glow}
+          ${isHovered ? "shadow-xl" : "shadow-sm"}
+        `}
+        bracketClassName="w-3 h-3 sm:w-4 sm:h-4 border-neutral-300 group-hover:border-neutral-400 transition-colors duration-300"
+      >
+        <div className={`
+          relative h-full flex flex-col
+          ${isLarge ? "p-4 sm:p-5 lg:p-6" : "p-4 sm:p-5"}
+        `}>
+          {/* Header Row */}
+          <div className={`
+            flex items-start justify-between mb-2 sm:mb-3
+            ${isLarge ? "lg:mb-4" : ""}
+          `}>
+            <motion.div
+              animate={{ 
+                scale: isHovered ? 1.1 : 1,
+                rotate: isHovered ? 5 : 0
+              }}
+              transition={{ duration: 0.3 }}
+              className={`
+                p-2 sm:p-2.5 rounded-lg border border-neutral-200 
+                bg-white text-neutral-400
+                group-hover:border-neutral-300 group-hover:text-neutral-600
+                transition-colors duration-300
+                ${isLarge ? "lg:p-3" : ""}
+              `}
+            >
+              {feature.icon}
+            </motion.div>
+            
+            {/* Metric Badge */}
+            <div className="text-right">
+              <motion.div
+                animate={{ scale: isHovered ? 1.05 : 1 }}
+                transition={{ duration: 0.3 }}
+                className={`
+                  font-space-grotesk text-xl sm:text-2xl font-medium 
+                  text-neutral-900 tracking-tight
+                  ${isLarge ? "lg:text-3xl" : ""}
+                `}
+              >
+                {feature.metric}
+              </motion.div>
+              <div className="text-[9px] sm:text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-400">
+                {feature.metricLabel}
               </div>
             </div>
           </div>
 
-          {/* Terminal Body */}
-          <div 
-            ref={terminalRef}
-            className="p-3 sm:p-4 font-jetbrains-mono text-[10px] sm:text-[11px] leading-relaxed overflow-y-auto h-[140px] sm:h-[160px] scrollbar-hide relative"
-          >
-            {/* Scanline overlay */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden rounded opacity-[0.03]">
-              <div className="w-full h-full bg-gradient-to-b from-transparent via-white to-transparent animate-scanline" />
-            </div>
-            
-            {/* Glow effect */}
-            <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/5 to-transparent pointer-events-none opacity-50" />
+          {/* Content */}
+          <div className="flex-1 flex flex-col">
+            <h3 className={`
+              font-space-grotesk font-medium text-neutral-900 tracking-tight mb-1 sm:mb-2
+              group-hover:text-neutral-800 transition-colors
+              ${isLarge ? "text-xl sm:text-2xl lg:text-2xl" : "text-lg sm:text-xl"}
+            `}>
+              {feature.title}
+            </h3>
+            <p className={`
+              text-neutral-500 leading-relaxed
+              group-hover:text-neutral-600 transition-colors
+              ${isLarge ? "text-sm lg:text-sm line-clamp-3 lg:line-clamp-4" : "text-xs sm:text-sm line-clamp-2 sm:line-clamp-3"}
+            `}>
+              {feature.description}
+            </p>
 
-            {/* Logs */}
-            <div className="flex flex-col gap-1.5 relative z-10">
-              {logs.map((log, index) => (
-                <div 
-                  key={log.id}
-                  className={clsx(
-                    "flex items-start gap-2 opacity-0 animate-fade-in",
-                    index === logs.length - 1 && "animate-highlight"
-                  )}
-                  style={{ animationDelay: `${index * 0.05}s`, animationFillMode: 'forwards' }}
-                >
-                  <span className="text-neutral-600 shrink-0 font-mono text-[9px]">{log.timestamp}</span>
-                  <span className={clsx("shrink-0", getLogColor(log.type))}>
-                    {getLogIcon(log.type)}
+            {/* Special Content for Large Card */}
+            {isLarge && feature.hasPlatformIcons && (
+              <div className="mt-auto pt-4 sm:pt-5">
+                <div className="mb-2 sm:mb-3">
+                  <span className="text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-400">
+                    Write Once, Run Everywhere
                   </span>
-                  <span className={clsx(
-                    "break-all",
-                    getLogColor(log.type),
-                    index === logs.length - 1 && isTyping && "animate-typing"
-                  )}>
-                    {log.text}
+                </div>
+                <PlatformIcons isHovered={isHovered} />
+                {feature.hasCodePreview && (
+                  <CodePreview isHovered={isHovered} />
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Hover Accent Line */}
+          <motion.div
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: isHovered ? 1 : 0 }}
+            transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+            className={`absolute bottom-0 left-0 right-0 h-0.5 origin-left ${colors.line}`}
+          />
+
+          {/* Corner Accent Animation */}
+          <motion.div
+            animate={{ 
+              opacity: isHovered ? 1 : 0,
+              scale: isHovered ? 1 : 0.8
+            }}
+            transition={{ duration: 0.2 }}
+            className={`
+              absolute top-0 right-0 w-20 h-20 opacity-0 group-hover:opacity-100
+              bg-gradient-to-bl from-neutral-100 to-transparent
+              pointer-events-none
+            `}
+          />
+        </div>
+      </CornerFrame>
+    </motion.div>
+  );
+}
+
+export default function BentoGrid() {
+  return (
+    <section className="relative py-16 sm:py-20 lg:py-24 bg-white overflow-hidden">
+      {/* Subtle Background */}
+      <div className="absolute inset-0">
+        <div 
+          className="absolute inset-0 opacity-[0.02]"
+          style={{ 
+            backgroundImage: `radial-gradient(circle, #171717 1px, transparent 1px)`, 
+            backgroundSize: '24px 24px' 
+          }}
+        />
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-10 sm:mb-12 lg:mb-14"
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <div className="h-px w-6 bg-neutral-300" />
+            <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400">
+              Why Choose Us
+            </span>
+          </div>
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+            <h2 className="
+              font-space-grotesk text-2xl sm:text-3xl lg:text-4xl 
+              font-medium text-neutral-900 tracking-tight max-w-md
+            ">
+              Built for <span className="text-neutral-400">scale</span> and <span className="text-neutral-400">speed</span>
+            </h2>
+            <Link 
+              href="/process"
+              className="group inline-flex items-center gap-2 text-xs font-jetbrains-mono uppercase tracking-widest text-neutral-500 hover:text-neutral-900 transition-colors shrink-0"
+            >
+              See our process
+              <motion.span
+                animate={{ x: [0, 3, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                →
+              </motion.span>
+            </Link>
+          </div>
+        </motion.div>
+
+        {/* Bento Grid - Optimized Layout */}
+        <div className="
+          grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 
+          gap-3 sm:gap-4 lg:gap-4
+          auto-rows-fr
+        ">
+          {features.map((feature, index) => (
+            <BentoCard key={feature.id} feature={feature} index={index} />
+          ))}
+        </div>
+
+        {/* Bottom Stats */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.4 }}
+          className="mt-10 sm:mt-12 lg:mt-14 pt-6 border-t border-neutral-100"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-4 sm:gap-6">
+              {[
+                { label: "Active Projects", value: "12" },
+                { label: "Team Members", value: "8" },
+                { label: "Years Experience", value: "7+" }
+              ].map((stat, i) => (
+                <div key={stat.label} className="flex items-baseline gap-1.5">
+                  <span className="font-space-grotesk text-lg sm:text-xl font-medium text-neutral-900">
+                    {stat.value}
+                  </span>
+                  <span className="text-[10px] sm:text-xs font-jetbrains-mono uppercase tracking-wider text-neutral-400">
+                    {stat.label}
                   </span>
                 </div>
               ))}
-              
-              {/* Active cursor line */}
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-neutral-600 text-[9px]">
-                  {`00:${String(new Date().getMinutes()).padStart(2, '0')}:${String(new Date().getSeconds()).padStart(2, '0')}`}
-                </span>
-                <span className="text-green-400">›</span>
-                <span className="text-neutral-400">_</span>
-                <span 
-                  className={clsx(
-                    "w-2 h-4 bg-green-400 ml-0.5",
-                    cursorVisible ? "opacity-100" : "opacity-0"
-                  )}
-                />
-              </div>
             </div>
-          </div>
-
-          {/* Bottom status bar */}
-          <div className="bg-neutral-900 border-t border-neutral-800 px-3 py-1.5 flex items-center justify-between text-[9px] font-jetbrains-mono">
-            <div className="flex items-center gap-3 overflow-hidden">
-              <span className="text-neutral-500 truncate">
-                MODE: <span className="text-emerald-400">INSERT</span>
-              </span>
-              <span className="text-neutral-600 hidden xs:inline">|</span>
-              <span className="text-neutral-500 hidden xs:inline">
-                PID: <span className="text-neutral-300">8,492</span>
-              </span>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="text-neutral-500">UTF-8</span>
-              <span className="text-neutral-600">|</span>
-              <span className="text-neutral-500">LN: {logs.length}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Metrics Grid */}
-        <div className="grid grid-cols-2 gap-2 sm:gap-3">
-          {/* CPU Metric */}
-          <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-2.5 sm:p-3 relative overflow-hidden group hover:border-neutral-700 transition-colors">
-            <div className="flex items-center justify-between mb-2">
-              <span className="font-jetbrains-mono text-[9px] sm:text-[10px] text-neutral-500 uppercase tracking-wider">CPU</span>
-              <svg className="w-3 h-3 text-neutral-600 group-hover:text-emerald-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-              </svg>
-            </div>
-            <div className="flex items-end gap-1">
-              <span className="font-space-grotesk text-lg sm:text-xl font-bold text-white">
-                {Math.round(metrics.cpu)}
-              </span>
-              <span className="font-jetbrains-mono text-[10px] text-neutral-500 mb-1">%</span>
-            </div>
-            <div className="mt-2 h-1 bg-neutral-800 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all duration-500 ease-out rounded-full"
-                style={{ width: `${metrics.cpu}%` }}
-              />
-            </div>
-            {/* Mini sparkline */}
-            <div className="absolute top-2 right-2 w-8 h-4 opacity-30">
-              <svg viewBox="0 0 32 16" className="w-full h-full fill-none stroke-emerald-500 stroke-1">
-                <path d="M0 8 L4 6 L8 10 L12 4 L16 8 L20 6 L24 12 L28 8 L32 10" />
-              </svg>
-            </div>
-          </div>
-
-          {/* Memory Metric */}
-          <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-2.5 sm:p-3 relative overflow-hidden group hover:border-neutral-700 transition-colors">
-            <div className="flex items-center justify-between mb-2">
-              <span className="font-jetbrains-mono text-[9px] sm:text-[10px] text-neutral-500 uppercase tracking-wider">MEM</span>
-              <svg className="w-3 h-3 text-neutral-600 group-hover:text-blue-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-            </div>
-            <div className="flex items-end gap-1">
-              <span className="font-space-grotesk text-lg sm:text-xl font-bold text-white">
-                {Math.round(metrics.memory)}
-              </span>
-              <span className="font-jetbrains-mono text-[10px] text-neutral-500 mb-1">%</span>
-            </div>
-            <div className="mt-2 h-1 bg-neutral-800 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-gradient-to-r from-blue-500 to-blue-400 transition-all duration-500 ease-out rounded-full"
-                style={{ width: `${metrics.memory}%` }}
-              />
-            </div>
-          </div>
-
-          {/* Latency Metric */}
-          <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-2.5 sm:p-3 relative overflow-hidden group hover:border-neutral-700 transition-colors">
-            <div className="flex items-center justify-between mb-2">
-              <span className="font-jetbrains-mono text-[9px] sm:text-[10px] text-neutral-500 uppercase tracking-wider">LATENCY</span>
-              <svg className="w-3 h-3 text-neutral-600 group-hover:text-amber-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            </div>
-            <div className="flex items-end gap-1">
-              <span className="font-space-grotesk text-lg sm:text-xl font-bold text-white">
-                {Math.round(metrics.latency)}
-              </span>
-              <span className="font-jetbrains-mono text-[10px] text-neutral-500 mb-1">ms</span>
-            </div>
-            <div className="flex items-center gap-1 mt-2">
-              <div className={clsx(
-                "w-1.5 h-1.5 rounded-full animate-pulse",
-                metrics.latency < 20 ? "bg-emerald-500" : metrics.latency < 50 ? "bg-amber-500" : "bg-rose-500"
-              )} />
-              <span className="font-jetbrains-mono text-[8px] text-neutral-500">
-                {metrics.latency < 20 ? 'OPTIMAL' : metrics.latency < 50 ? 'NORMAL' : 'ELEVATED'}
-              </span>
-            </div>
-          </div>
-
-          {/* Requests Metric */}
-          <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-2.5 sm:p-3 relative overflow-hidden group hover:border-neutral-700 transition-colors">
-            <div className="flex items-center justify-between mb-2">
-              <span className="font-jetbrains-mono text-[9px] sm:text-[10px] text-neutral-500 uppercase tracking-wider">REQ/SEC</span>
-              <svg className="w-3 h-3 text-neutral-600 group-hover:text-purple-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-              </svg>
-            </div>
-            <div className="flex items-end gap-1">
-              <span className="font-space-grotesk text-lg sm:text-xl font-bold text-white">
-                {metrics.requests}
-              </span>
-              <span className="font-jetbrains-mono text-[10px] text-neutral-500 mb-1">/s</span>
-            </div>
-            <div className="flex items-center gap-1 mt-2">
-              <svg className="w-3 h-3 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-              </svg>
-              <span className="font-jetbrains-mono text-[8px] text-emerald-500">+12%</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <style jsx>{`
-        @keyframes scanline {
-          0% { transform: translateY(-100%); }
-          100% { transform: translateY(100%); }
-        }
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(4px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes highlight {
-          0% { background-color: rgba(16, 185, 129, 0.1); }
-          100% { background-color: transparent; }
-        }
-        @keyframes pulse-width {
-          0%, 100% { opacity: 0.6; }
-          50% { opacity: 1; }
-        }
-        @keyframes typing {
-          0%, 100% { border-right: 2px solid transparent; }
-          50% { border-right: 2px solid #10b981; }
-        }
-        .animate-scanline {
-          animation: scanline 4s linear infinite;
-        }
-        .animate-fade-in {
-          animation: fade-in 0.3s ease-out forwards;
-        }
-        .animate-highlight {
-          animation: highlight 0.5s ease-out;
-        }
-        .animate-pulse-width {
-          animation: pulse-width 2s ease-in-out infinite;
-        }
-        .animate-typing {
-          animation: typing 0.8s ease-in-out infinite;
-        }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
-    </BentoCard>
-  );
-}
-
-/* ---------------- Card 3: Intelligence ---------------- */
-/* ---------------- Card 3: Intelligence (Redesigned with Neural Aesthetic) ---------------- */
-function AICard() {
-  const [neuralState, setNeuralState] = useState('idle'); // idle, processing, complete
-  const [synapseFired, setSynapseFired] = useState([]);
-  
-  // Simulate neural activity
-  useEffect(() => {
-    const interval = setInterval(() => {
-      // Random synapse firing
-      const synapseId = Date.now();
-      setSynapseFired(prev => [...prev.slice(-5), synapseId]);
-      
-      // Occasional state change
-      if (Math.random() > 0.7) {
-        setNeuralState('processing');
-        setTimeout(() => setNeuralState('complete'), 800);
-        setTimeout(() => setNeuralState('idle'), 1500);
-      }
-    }, 2000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const nodes = [
-    { id: 1, x: 20, y: 30, size: 'sm', delay: 0 },
-    { id: 2, x: 80, y: 25, size: 'md', delay: 0.2 },
-    { id: 3, x: 15, y: 70, size: 'md', delay: 0.4 },
-    { id: 4, x: 85, y: 75, size: 'sm', delay: 0.6 },
-    { id: 5, x: 50, y: 85, size: 'sm', delay: 0.8 },
-    { id: 6, x: 50, y: 15, size: 'xs', delay: 1 },
-  ];
-
-  return (
-    <BentoCard
-      tag="Intelligence"
-      title="AI Agents"
-      subtitle="Embed intelligent workflows directly into your platform."
-      className="lg:col-span-1"
-    >
-      <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
-        
-        {/* Neural Network SVG */}
-        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
-          <defs>
-            {/* Gradient for active connections */}
-            <linearGradient id="neuralGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#a855f7" stopOpacity="0.2" />
-              <stop offset="50%" stopColor="#a855f7" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.2" />
-            </linearGradient>
             
-            {/* Glow filter */}
-            <filter id="neuralGlow" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-              <feMerge>
-                <feMergeNode in="coloredBlur"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
-          </defs>
-
-          {/* Dynamic Connection Lines */}
-          <g className="transition-all duration-500">
-            {/* Connections between nodes */}
-            {nodes.map((node, i) => 
-              nodes.slice(i + 1).map((target, j) => {
-                const isActive = synapseFired.some((_, idx) => (idx + i + j) % 3 === 0);
-                return (
-                  <line
-                    key={`${node.id}-${target.id}`}
-                    x1={node.x}
-                    y1={node.y}
-                    x2={target.x}
-                    y2={target.y}
-                    stroke={isActive ? "url(#neuralGrad)" : "#e5e5e5"}
-                    strokeWidth={isActive ? "0.8" : "0.4"}
-                    className={clsx(
-                      "transition-all duration-300",
-                      isActive && "animate-pulse-opacity"
-                    )}
-                  />
-                );
-              })
-            )}
-          </g>
-
-          {/* Traveling Data Packets along connections */}
-          {synapseFired.map((id, idx) => {
-            const fromNode = nodes[idx % nodes.length];
-            const toNode = nodes[(idx + 2) % nodes.length];
-            return (
-              <circle
-                key={id}
-                r="1.2"
-                fill="#a855f7"
-                filter="url(#neuralGlow)"
-                className="animate-synapse-travel"
-                style={{
-                  offsetPath: `path("M${fromNode.x} ${fromNode.y} L${toNode.x} ${toNode.y}")`,
-                  animationDelay: `${idx * 0.1}s`
-                }}
-              />
-            );
-          })}
-        </svg>
-
-        {/* Central Brain/Core */}
-        <div 
-          className="relative z-20 group cursor-pointer"
-          onMouseEnter={() => setNeuralState('processing')}
-          onMouseLeave={() => setNeuralState('idle')}
-        >
-          {/* Outer aura rings */}
-          <div className={clsx(
-            "absolute inset-0 rounded-full border border-purple-500/20 transition-all duration-1000",
-            neuralState === 'processing' ? "scale-150 opacity-0" : "scale-100 opacity-100 animate-ping-slow"
-          )} />
-          
-          <div className={clsx(
-            "absolute -inset-4 rounded-full border border-purple-500/10 transition-all duration-700",
-            neuralState === 'processing' && "scale-110 border-purple-500/30"
-          )} />
-
-          {/* Main brain container */}
-          <div className={clsx(
-            "relative w-20 h-20 bg-white border-2 shadow-2xl transition-all duration-500 flex items-center justify-center",
-            neuralState === 'processing' 
-              ? "border-purple-500 shadow-purple-500/30 scale-110 rotate-3" 
-              : "border-neutral-200 hover:border-purple-400 hover:scale-105",
-            neuralState === 'complete' && "border-green-500 shadow-green-500/20"
-          )}>
-            
-            {/* Brain icon/svg */}
-            <div className="relative w-10 h-10">
-              <svg viewBox="0 0 24 24" fill="none" className="w-full h-full">
-                <path 
-                  d="M12 2C8.13 2 5 5.13 5 9c0 1.74.5 3.37 1.41 4.84.95 1.54 2.2 2.86 3.16 4.4.47.75.93 1.66 1.43 2.76.5 1.1 1 2 1 2s.5-.9 1-2 1.01-1.76 1.43-2.76c.96-1.54 2.21-2.86 3.16-4.4C18.5 12.37 19 10.74 19 9c0-3.87-3.13-7-7-7z" 
-                  className={clsx(
-                    "transition-all duration-500",
-                    neuralState === 'processing' ? "fill-purple-100 stroke-purple-600" : "fill-neutral-100 stroke-neutral-600",
-                    neuralState === 'complete' && "fill-green-100 stroke-green-600"
-                  )}
-                  strokeWidth="1.5"
-                />
-                {/* Neural pathways inside brain */}
-                <path 
-                  d="M8 9c0-1 .5-2 1.5-2.5M16 9c0-1-.5-2-1.5-2.5M12 14v3" 
-                  stroke="currentColor" 
-                  strokeWidth="1" 
-                  strokeLinecap="round"
-                  className={clsx(
-                    "transition-opacity duration-300",
-                    neuralState === 'processing' ? "text-purple-600 opacity-100" : "text-neutral-400 opacity-50"
-                  )}
-                />
-              </svg>
-
-              {/* Processing indicator overlay */}
-              <div className={clsx(
-                "absolute inset-0 flex items-center justify-center transition-opacity duration-300",
-                neuralState === 'processing' ? "opacity-100" : "opacity-0"
-              )}>
-                <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
-              </div>
-            </div>
-
-            {/* Corner tech details */}
-            <div className="absolute -top-1 -left-1 w-2 h-2 border-t-2 border-l-2 border-purple-500/50" />
-            <div className="absolute -bottom-1 -right-1 w-2 h-2 border-b-2 border-r-2 border-purple-500/50" />
-          </div>
-
-          {/* Status label floating below */}
-          <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap">
-            <div className={clsx(
-              "font-jetbrains-mono text-[9px] font-bold tracking-wider px-2 py-1 rounded transition-all duration-300",
-              neuralState === 'processing' && "bg-purple-100 text-purple-700",
-              neuralState === 'complete' && "bg-green-100 text-green-700",
-              neuralState === 'idle' && "bg-neutral-100 text-neutral-500"
-            )}>
-              {neuralState === 'processing' && "PROCESSING..."}
-              {neuralState === 'complete' && "COMPLETE"}
-              {neuralState === 'idle' && "STANDBY"}
+            <div className="flex items-center gap-2 text-[10px] sm:text-xs font-jetbrains-mono text-neutral-400">
+              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+              Available for new projects
             </div>
           </div>
-        </div>
-
-        {/* Orbital Nodes */}
-        {nodes.map((node) => (
-          <div
-            key={node.id}
-            className={clsx(
-              "absolute rounded-full bg-white border transition-all duration-500 shadow-sm hover:scale-125 cursor-pointer",
-              node.size === 'sm' && "w-3 h-3",
-              node.size === 'md' && "w-4 h-4",
-              node.size === 'xs' && "w-2 h-2",
-              synapseFired.some((_, idx) => idx % nodes.length === node.id - 1) 
-                ? "border-purple-500 shadow-purple-500/50 bg-purple-50" 
-                : "border-neutral-300 hover:border-purple-400"
-            )}
-            style={{
-              left: `${node.x}%`,
-              top: `${node.y}%`,
-              transform: 'translate(-50%, -50%)',
-              animationDelay: `${node.delay}s`
-            }}
-          >
-            {/* Node pulse effect */}
-            <div className={clsx(
-              "absolute inset-0 rounded-full bg-purple-500/30 animate-ping",
-              synapseFired.some((_, idx) => idx % nodes.length === node.id - 1) ? "opacity-100" : "opacity-0"
-            )} />
-          </div>
-        ))}
-
-        {/* Floating Data Particles */}
-        <div className="absolute top-[20%] left-[10%] w-1 h-1 bg-purple-400 rounded-full animate-float-particle" />
-        <div className="absolute top-[60%] right-[15%] w-1.5 h-1.5 bg-blue-400 rounded-full animate-float-particle" style={{ animationDelay: '1.5s' }} />
-        <div className="absolute bottom-[25%] left-[20%] w-1 h-1 bg-purple-300 rounded-full animate-float-particle" style={{ animationDelay: '0.7s' }} />
-
-        {/* Background grid subtle effect */}
-        <div className="absolute inset-0 opacity-[0.02] pointer-events-none">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at ${nodes[0].x}% ${nodes[0].y}%, purple 1px, transparent 1px),
-                             radial-gradient(circle at ${nodes[1].x}% ${nodes[1].y}%, purple 1px, transparent 1px),
-                             radial-gradient(circle at ${nodes[2].x}% ${nodes[2].y}%, purple 1px, transparent 1px)`,
-            backgroundSize: '100% 100%'
-          }} />
-        </div>
+        </motion.div>
       </div>
-
-      <style jsx>{`
-        @keyframes ping-slow {
-          0% { transform: scale(1); opacity: 0.6; }
-          100% { transform: scale(2); opacity: 0; }
-        }
-        @keyframes pulse-opacity {
-          0%, 100% { opacity: 0.3; }
-          50% { opacity: 1; }
-        }
-        @keyframes synapse-travel {
-          0% { offset-distance: 0%; opacity: 0; transform: scale(0.5); }
-          20% { opacity: 1; transform: scale(1); }
-          80% { opacity: 1; transform: scale(1); }
-          100% { offset-distance: 100%; opacity: 0; transform: scale(0.5); }
-        }
-        @keyframes float-particle {
-          0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
-          33% { transform: translate(10px, -10px) scale(1.2); opacity: 0.8; }
-          66% { transform: translate(-5px, 5px) scale(0.8); opacity: 0.6; }
-        }
-        .animate-ping-slow {
-          animation: ping-slow 3s cubic-bezier(0, 0, 0.2, 1) infinite;
-        }
-        .animate-pulse-opacity {
-          animation: pulse-opacity 2s ease-in-out infinite;
-        }
-        .animate-synapse-travel {
-          animation: synapse-travel 1.5s ease-in-out forwards;
-        }
-        .animate-float-particle {
-          animation: float-particle 4s ease-in-out infinite;
-        }
-      `}</style>
-    </BentoCard>
-  );
-}
-
-/* ---------------- Main Layout ---------------- */
-export default function BentoGrid() {
-  return (
-    <section className="py-24 px-6 sm:py-32 bg-white">
-      <div className="mx-auto max-w-7xl">
-        <div className="max-w-2xl mb-16">
-          <h2 className="font-space-grotesk text-4xl font-medium tracking-tight text-neutral-950 sm:text-5xl">
-            Engineered for scale. <br/>
-            <span className="text-neutral-400">Designed for longevity.</span>
-          </h2>
-          <p className="mt-6 text-lg font-jetbrains-mono text-neutral-500">
-  {'// We build systems, not just pages.'}
-</p>
-        </div>
-
-        {/* Responsive Grid Layout */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:grid-rows-2 lg:min-h-[600px] auto-rows-fr">
-          <CrossPlatformCard />
-          <RealtimeCard />
-          <AICard />
-        </div>
-      </div>
-
-      <style jsx global>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(5px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.2s ease-out forwards;
-        }
-        @keyframes scan {
-          0% { transform: translateY(-100%); }
-          100% { transform: translateY(100%); }
-        }
-        .animate-scan {
-           animation: scan 2s linear infinite;
-        }
-      `}</style>
     </section>
   );
 }
