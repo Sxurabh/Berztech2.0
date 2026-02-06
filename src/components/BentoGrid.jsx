@@ -405,10 +405,12 @@ function BentoCard({ feature, index }) {
   );
 }
 
+// src/components/BentoGrid.jsx - ALIGNMENT UPDATES ONLY
+
 export default function BentoGrid() {
   return (
-    <section className="relative py-16 sm:py-20 lg:py-24 bg-white overflow-hidden">
-      {/* Subtle Background */}
+    <section className="relative py-12 sm:py-16 lg:py-20 bg-white overflow-hidden">
+      {/* Subtle Background - KEEP AS IS */}
       <div className="absolute inset-0">
         <div 
           className="absolute inset-0 opacity-[0.02]"
@@ -419,25 +421,26 @@ export default function BentoGrid() {
         />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
+      {/* UPDATED: Changed from max-w-6xl to max-w-5xl to match other components */}
+      <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        
+        {/* Section Header - Spacing aligned */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mb-10 sm:mb-12 lg:mb-14"
+          className="mb-8 sm:mb-10" // Aligned margin
         >
-          <div className="flex items-center gap-3 mb-3">
-            <div className="h-px w-6 bg-neutral-300" />
+          <div className="flex items-center gap-2 mb-3">
+            <div className="h-px w-4 bg-neutral-300" />
             <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400">
               Why Choose Us
             </span>
           </div>
+          
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-            <h2 className="
-              font-space-grotesk text-2xl sm:text-3xl lg:text-4xl 
-              font-medium text-neutral-900 tracking-tight max-w-md
-            ">
+            {/* UPDATED: Text sizes aligned with ProcessStrip/Services */}
+            <h2 className="font-space-grotesk text-2xl sm:text-3xl lg:text-4xl font-medium text-neutral-900 tracking-tight max-w-md">
               Built for <span className="text-neutral-400">scale</span> and <span className="text-neutral-400">speed</span>
             </h2>
             <Link 
@@ -455,10 +458,10 @@ export default function BentoGrid() {
           </div>
         </motion.div>
 
-        {/* Bento Grid - Optimized Layout */}
+        {/* Bento Grid - UPDATED gap to match tighter spacing of other components */}
         <div className="
           grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 
-          gap-3 sm:gap-4 lg:gap-4
+          gap-3 sm:gap-4 lg:gap-4  // Reduced from gap-4/6 to match Services component
           auto-rows-fr
         ">
           {features.map((feature, index) => (
@@ -466,13 +469,13 @@ export default function BentoGrid() {
           ))}
         </div>
 
-        {/* Bottom Stats */}
+        {/* Bottom Stats - UPDATED: Aligned border and padding */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.4 }}
-          className="mt-10 sm:mt-12 lg:mt-14 pt-6 border-t border-neutral-100"
+          className="mt-8 sm:mt-10 pt-6 border-t border-neutral-100" // Consistent with Services/ProcessStrip
         >
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-4 sm:gap-6">
@@ -492,6 +495,7 @@ export default function BentoGrid() {
               ))}
             </div>
             
+            {/* Status indicator - matches Services component style */}
             <div className="flex items-center gap-2 text-[10px] sm:text-xs font-jetbrains-mono text-neutral-400">
               <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
               Available for new projects
