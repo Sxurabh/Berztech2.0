@@ -1,4 +1,4 @@
-// src/components/sections/TrustBar.jsx
+// src/components/TrustBar.jsx
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
@@ -14,45 +14,33 @@ const clients = [
 
 export default function TrustBar() {
   return (
-    <section className="relative py-12 sm:py-16 bg-white border-y border-neutral-100">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8">
+    <section className="relative py-4 sm:py-6 bg-white border-b border-neutral-100">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between gap-4 sm:gap-6">
           {/* Label */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="shrink-0"
-          >
-            <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400">
-              Trusted by
-            </span>
-          </motion.div>
+          <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400 shrink-0">
+            Trusted by
+          </span>
 
-          {/* Client Logos - Static Grid */}
-          <div className="flex flex-wrap items-center gap-x-8 gap-y-4 sm:gap-x-12">
+          {/* Client Marks */}
+          <div className="flex items-center gap-3 sm:gap-4 lg:gap-6 overflow-hidden">
             {clients.map((client, index) => (
               <motion.div
                 key={client.name}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.05 }}
                 whileHover={{ scale: 1.05 }}
-                className="group flex items-center gap-2 cursor-default"
+                className="group flex items-center gap-2 shrink-0 cursor-default"
               >
                 {/* Geometric Mark */}
-                <div className="relative w-8 h-8 border border-neutral-200 group-hover:border-neutral-400 transition-colors duration-300 flex items-center justify-center">
-                  <span className="font-jetbrains-mono text-xs font-bold text-neutral-400 group-hover:text-neutral-700 transition-colors">
+                <div className="w-6 h-6 sm:w-7 sm:h-7 border border-neutral-200 group-hover:border-neutral-400 transition-colors rounded flex items-center justify-center">
+                  <span className="font-jetbrains-mono text-[10px] font-bold text-neutral-400 group-hover:text-neutral-600 transition-colors">
                     {client.abbr}
                   </span>
-                  {/* Corner accent on hover */}
-                  <span className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
-                
-                {/* Name - hidden on mobile, visible on sm+ */}
-                <span className="hidden sm:block font-space-grotesk text-sm text-neutral-400 group-hover:text-neutral-700 transition-colors">
+                <span className="hidden sm:block font-space-grotesk text-xs text-neutral-400 group-hover:text-neutral-600 transition-colors">
                   {client.name}
                 </span>
               </motion.div>
@@ -60,15 +48,10 @@ export default function TrustBar() {
           </div>
 
           {/* Count */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="hidden lg:block shrink-0 text-right"
-          >
-            <span className="font-space-grotesk text-2xl font-medium text-neutral-900">50+</span>
-            <span className="block text-[10px] font-jetbrains-mono text-neutral-400 uppercase tracking-wider">Projects</span>
-          </motion.div>
+          <div className="hidden sm:flex items-baseline gap-1 shrink-0">
+            <span className="font-space-grotesk text-lg font-medium text-neutral-900">50+</span>
+            <span className="text-[10px] font-jetbrains-mono text-neutral-400 uppercase">Projects</span>
+          </div>
         </div>
       </div>
     </section>
