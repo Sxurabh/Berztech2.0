@@ -36,6 +36,26 @@ const capabilities = [
     metricLabel: "Bug Reduction",
     icon: "✓",
     color: "purple"
+  },
+  {
+    id: "transparency",
+    label: "TRANSPARENCY",
+    title: "100% Explainable",
+    description: "Every AI suggestion is traceable, documented, and reviewable. Full audit trails for compliance and trust.",
+    metric: "100%",
+    metricLabel: "Traceable",
+    icon: "◉",
+    color: "amber"
+  },
+  {
+    id: "scalability",
+    label: "SCALE",
+    title: "Infinite Scale",
+    description: "AI-accelerated infrastructure that grows with your needs. From prototype to enterprise without rewrites.",
+    metric: "∞",
+    metricLabel: "Growth Ready",
+    icon: "◆",
+    color: "rose"
   }
 ];
 
@@ -111,7 +131,7 @@ export default function AITransparency() {
   const [activeTab, setActiveTab] = useState(0);
   const activeCapability = capabilities[activeTab];
 
-  // Dynamic color schemes for corner frames
+  // Dynamic color schemes for corner frames - now includes amber and rose
   const colorSchemes = {
     blue: {
       bg: "bg-blue-500",
@@ -142,6 +162,26 @@ export default function AITransparency() {
       frameBg: "bg-purple-50/50",
       frameBorder: "",
       bracket: "border-purple-300"
+    },
+    amber: {
+      bg: "bg-amber-500",
+      text: "text-amber-600",
+      bgLight: "bg-amber-50",
+      border: "border-amber-200",
+      glow: "shadow-amber-500/20",
+      frameBg: "bg-amber-50/50",
+      frameBorder: "",
+      bracket: "border-amber-300"
+    },
+    rose: {
+      bg: "bg-rose-500",
+      text: "text-rose-600",
+      bgLight: "bg-rose-50",
+      border: "border-rose-200",
+      glow: "shadow-rose-500/20",
+      frameBg: "bg-rose-50/50",
+      frameBorder: "",
+      bracket: "border-rose-300"
     }
   };
 
@@ -192,7 +232,7 @@ export default function AITransparency() {
           </motion.div>
         </div>
 
-        {/* Tab Navigation - Horizontal Pills */}
+        {/* Tab Navigation - Horizontal Pills - ENHANCED WITH 5 PILLS */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -200,35 +240,42 @@ export default function AITransparency() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="mb-6 sm:mb-8"
         >
-          <div className="flex flex-wrap gap-2 sm:gap-6">
+          {/* 
+            Responsive grid layout:
+            - Mobile: 2 columns (fills space better)
+            - Tablet: 3 columns 
+            - Desktop: 5 columns (all in one row)
+          */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
             {capabilities.map((cap, index) => (
               <button
                 key={cap.id}
                 onClick={() => setActiveTab(index)}
                 className={`
-                  relative px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg border text-left transition-all duration-300
+                  relative px-3 py-3 sm:py-3.5 rounded-lg border text-left transition-all duration-300 w-full
                   ${activeTab === index 
                     ? 'bg-neutral-900 text-white border-neutral-900 shadow-lg' 
                     : 'bg-white text-neutral-600 border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50'
                   }
                 `}
               >
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <span className="text-base sm:text-lg">{cap.icon}</span>
-                  <div>
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base sm:text-lg">{cap.icon}</span>
                     <span className={`
-                      block text-[10px] sm:text-xs font-jetbrains-mono uppercase tracking-wider
+                      text-[9px] sm:text-[10px] font-jetbrains-mono uppercase tracking-wider
                       ${activeTab === index ? 'text-neutral-400' : 'text-neutral-400'}
                     `}>
                       {cap.label}
                     </span>
-                    <span className={`
-                      block text-xs sm:text-sm font-medium mt-0.5
-                      ${activeTab === index ? 'text-white' : 'text-neutral-900'}
-                    `}>
-                      {cap.title}
-                    </span>
                   </div>
+                  <span className={`
+                    block text-xs sm:text-sm font-medium leading-tight
+                    ${activeTab === index ? 'text-white' : 'text-neutral-900'}
+                  `}>
+                    {cap.title.split(' ')[0]}
+                    <span className="hidden sm:inline"> {cap.title.split(' ').slice(1).join(' ')}</span>
+                  </span>
                 </div>
                 
                 {/* Active Indicator */}
@@ -337,7 +384,7 @@ export default function AITransparency() {
             href="/process"
             className="group inline-flex items-center gap-2 font-jetbrains-mono text-xs uppercase tracking-widest text-neutral-500 hover:text-neutral-900 transition-colors"
           >
-            Read full methodology
+            Read full methodology.
             <span className="w-5 h-px bg-neutral-300 group-hover:w-6 group-hover:bg-neutral-900 transition-all" />
           </Link>
         </motion.div>
