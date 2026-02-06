@@ -218,7 +218,7 @@ export default function Hero() {
                       initial={{ scaleX: 0 }}
                       animate={{ scaleX: 1 }}
                       transition={{ duration: 0.8, delay: 1, ease: [0.23, 1, 0.32, 1] }}
-                      className="absolute -bottom-2 left-0 right-0 h-2 sm:h-3 bg-neutral-100 origin-left -z-10"
+                      className="absolute -bottom-2 left-0 right-0 h-2 sm:h-3 bg-emerald-100 origin-left -z-10"
                     />
                   </h1>
                 </TextReveal>
