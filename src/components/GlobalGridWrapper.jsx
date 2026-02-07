@@ -1,17 +1,14 @@
+// src/components/GlobalGridWrapper.jsx
 "use client";
 import React from "react";
 import GridBackground from "@/components/GridBackground";
 
-/**
- * GlobalGridWrapper - Adds consistent grid background to all main sections
- * Use this to wrap main content sections for consistent grid aesthetics
- */
 export default function GlobalGridWrapper({ 
   children, 
   className = "",
   showGrid = true,
-  gridOpacity = 0.05, // Increase default slightly
-  gridSize = 40       // Match the default size used in other sections
+  gridOpacity = 0.05, // 0.05 (5%) is good for subtle texture. Try 0.1 if barely visible.
+  gridSize = 40
 }) {
   if (!showGrid) {
     return <div className={className}>{children}</div>;
@@ -26,4 +23,3 @@ export default function GlobalGridWrapper({
     </div>
   );
 }
-

@@ -293,7 +293,7 @@ export default function Footer() {
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <p className="text-xs font-jetbrains-mono text-neutral-500 text-center sm:text-left">
-              © {currentYear} Berztech. All rights reserved.
+              © {currentYear} Berzcode technologies pvt. ltd. All rights reserved.
             </p>
             
             <div className="flex items-center justify-center sm:justify-end gap-4 sm:gap-6">

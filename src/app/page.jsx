@@ -21,42 +21,43 @@ export default function Home() {
       <Hero />
 
       {/* Stats Bar - With grid background */}
-     <GlobalGridWrapper gridOpacity={0.05} gridSize={40}>
+     <GlobalGridWrapper opacity={0.015} size={40}>
         <StatsBar />
       </GlobalGridWrapper>
       
       {/* Process Overview - With grid background */}
-     
+     <GlobalGridWrapper opacity={0.015} size={40}>
         <ProcessStrip />
-      
+      </GlobalGridWrapper>
       
       {/* AI/Engineering Proof - Already has grid */}
+      <GlobalGridWrapper opacity={0.015} size={40}>
       <AITransparency />  
-      
+      </GlobalGridWrapper>
       {/* Capabilities Grid - With grid background */}
-      
+      <GlobalGridWrapper opacity={0.015} size={40}>
         <BentoGrid />
-     
+     </GlobalGridWrapper>
       
       {/* Social Proof - With grid background */}
-      
+      <GlobalGridWrapper opacity={0.015} size={40}>
         <Testimonial />
       
-      
+      </GlobalGridWrapper>
       {/* Featured Work - With grid background */}
-      
+      <GlobalGridWrapper opacity={0.015} size={40}>
         <FeaturedCaseStudy/>
-     
+     </GlobalGridWrapper>
 
       {/* Services - With grid background */}
-      
+      <GlobalGridWrapper opacity={0.015} size={40}>
         <Services />
-    
+    </GlobalGridWrapper>
 
       {/* Final CTA - With grid background */}
-      
+      <GlobalGridWrapper opacity={0.015} size={40}>
         <ContactCTA />
-     
+     </GlobalGridWrapper>
     </main>
   );
 }
