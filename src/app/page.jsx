@@ -1,5 +1,3 @@
-// src/app/page.jsx
-// src/app/page.jsx
 "use client";
 import React from "react";
 import Hero from "@/components/Hero";
