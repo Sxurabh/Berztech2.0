@@ -104,6 +104,8 @@ function MagneticButton({ children, href, variant = "primary", className }) {
 }
 
 // Optimized background for mobile
+// src/components/Hero.jsx
+
 function OptimizedBackground() {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -118,30 +120,30 @@ function OptimizedBackground() {
 
   useEffect(() => {
     if (isMobile) return;
-    
     const handleMouseMove = (e) => {
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
     };
-    
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [isMobile, mouseX, mouseY]);
 
-  const background = useMotionTemplate`radial-gradient(600px circle at ${mouseX}px ${mouseY}px, rgba(0,0,0,0.03), transparent 40%)`;
+  const background = useMotionTemplate`radial-gradient(600px circle at ${mouseX}px ${mouseY}px, rgba(0,0,0,0.05), transparent 40%)`;
 
   return (
     <div className="absolute inset-0 -z-10 overflow-hidden bg-white">
-      {/* Static grid - always visible */}
+      {/* FIX: Increased opacity to 0.05 and added 'backgroundPosition: center top'.
+         This ensures the grid lines align with your centered max-w-5xl container.
+      */}
       <div 
-        className="absolute inset-0 opacity-[0.025]"
+        className="absolute inset-0 opacity-[0.05]"
         style={{ 
-          backgroundImage: `linear-gradient(#171717 1px, transparent 1px), linear-gradient(90deg, #171717 1px, transparent 1px)`, 
-          backgroundSize: '32px 32px' 
+          backgroundImage: `linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)`, 
+          backgroundSize: '32px 32px',
+          backgroundPosition: 'center top' 
         }}
       />
       
-      {/* Dynamic spotlight - desktop only */}
       {!isMobile && (
         <motion.div 
           className="pointer-events-none absolute inset-0"
@@ -149,7 +151,6 @@ function OptimizedBackground() {
         />
       )}
       
-      {/* Subtle gradient orbs - reduced for mobile */}
       <div className="absolute top-1/4 left-0 w-64 h-64 sm:w-96 sm:h-96 bg-blue-500/5 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-48 h-48 sm:w-72 sm:h-72 bg-purple-500/5 rounded-full blur-[80px] pointer-events-none" />
     </div>
@@ -222,7 +223,7 @@ export default function Hero() {
         minHeight: "auto" // Mobile: natural flow
       }}
     >
-            <GridBackground opacity={0.05} size={40} />
+        
 
       <OptimizedBackground />
 

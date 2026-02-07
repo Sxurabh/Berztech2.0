@@ -7,8 +7,8 @@ export default function GlobalGridWrapper({
   children, 
   className = "",
   showGrid = true,
-  gridOpacity = 0.05, // 0.05 (5%) is good for subtle texture. Try 0.1 if barely visible.
-  gridSize = 40
+  gridOpacity = 0.04, 
+  gridSize = 32 // Syncing this with the Hero's internal grid size
 }) {
   if (!showGrid) {
     return <div className={className}>{children}</div>;
@@ -16,7 +16,13 @@ export default function GlobalGridWrapper({
 
   return (
     <div className={`relative ${className}`}>
-      <GridBackground opacity={gridOpacity} size={gridSize} />
+      {/* We wrap the background in a div that matches your Container's max-width 
+         to ensure the vertical lines align with your content margins.
+      */}
+      <div className="absolute inset-0 overflow-hidden">
+         <GridBackground opacity={gridOpacity} size={gridSize} />
+      </div>
+      
       <div className="relative z-10">
         {children}
       </div>
