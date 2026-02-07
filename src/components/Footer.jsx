@@ -171,11 +171,9 @@ export default function Footer() {
 
   return (
     // 2. Added 'relative' and 'overflow-hidden' to ensure grid stays INSIDE footer
-    <footer className="relative bg-white border-t border-neutral-100 overflow-hidden">
+    <footer className="relative  overflow-hidden">
       
       {/* 3. Add the GridBackground here */}
-      <GridBackground opacity={0.05} size={40} />
-
       {/* Main Footer Content - Added relative z-10 to sit above grid */}
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         

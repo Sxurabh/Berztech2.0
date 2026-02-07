@@ -6,7 +6,6 @@ import Link from "next/link";
 import { CornerFrame } from "@/components/CornerFrame";
 import GridBackground from "@/components/GridBackground";
 
-
 const capabilities = [
   {
     id: "velocity",
@@ -57,6 +56,16 @@ const capabilities = [
     metricLabel: "Growth Ready",
     icon: "◆",
     color: "rose"
+  },
+  {
+    id: "sustainability",
+    label: "SUSTAINABILITY",
+    title: "Green Coding",
+    description: "Optimized algorithms reduce compute costs and carbon footprint. Efficient code that respects resources.",
+    metric: "-60%",
+    metricLabel: "Carbon Reduced",
+    icon: "🌱",
+    color: "cyan"
   }
 ];
 
@@ -132,7 +141,6 @@ export default function AITransparency() {
   const [activeTab, setActiveTab] = useState(0);
   const activeCapability = capabilities[activeTab];
 
-  // Dynamic color schemes for corner frames - now includes amber and rose
   const colorSchemes = {
     blue: {
       bg: "bg-blue-500",
@@ -183,16 +191,24 @@ export default function AITransparency() {
       frameBg: "bg-rose-50/50",
       frameBorder: "",
       bracket: "border-rose-300"
+    },
+    cyan: {
+      bg: "bg-cyan-500",
+      text: "text-cyan-600",
+      bgLight: "bg-cyan-50",
+      border: "border-cyan-200",
+      glow: "shadow-cyan-500/20",
+      frameBg: "bg-cyan-50/50",
+      frameBorder: "",
+      bracket: "border-cyan-300"
     }
   };
 
   const colors = colorSchemes[activeCapability.color];
 
   return (
-    <section className="relative py-12 sm:py-16 lg:py-20 bg-white overflow-hidden">
-      {/* Grid Background */}
-            <GridBackground opacity={0.05} size={40} />
-
+    <section className="relative py-12 sm:py-16 lg:py-20  overflow-hidden">
+     
 
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         {/* Header + Terminal Row */}
@@ -234,7 +250,7 @@ export default function AITransparency() {
           </motion.div>
         </div>
 
-        {/* Tab Navigation - Horizontal Pills - ENHANCED WITH 5 PILLS */}
+        {/* Tab Navigation - 6 Cards Responsive Grid */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -244,17 +260,17 @@ export default function AITransparency() {
         >
           {/* 
             Responsive grid layout:
-            - Mobile: 2 columns (fills space better)
+            - Mobile: 2 columns 
             - Tablet: 3 columns 
-            - Desktop: 5 columns (all in one row)
+            - Desktop: 6 columns (all in one row)
           */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
             {capabilities.map((cap, index) => (
               <button
                 key={cap.id}
                 onClick={() => setActiveTab(index)}
                 className={`
-                  relative px-3 py-3 sm:py-3.5 rounded-lg border text-left transition-all duration-300 w-full
+                  relative px-3 py-3 sm:py-3.5 border text-left transition-all duration-300 w-full
                   ${activeTab === index 
                     ? 'bg-neutral-900 text-white border-neutral-900 shadow-lg' 
                     : 'bg-white text-neutral-600 border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50'
@@ -370,7 +386,7 @@ export default function AITransparency() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.4 }}
-          className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-6 border-t border-neutral-100"
+          className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-6 "
         >
           <div className="flex items-center gap-2">
             <span className={`

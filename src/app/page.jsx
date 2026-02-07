@@ -1,3 +1,4 @@
+// src/app/page.jsx
 "use client";
 import React from "react";
 import Hero from "@/components/Hero";
@@ -9,30 +10,27 @@ import Testimonial from "@/components/Testimonial";
 import ContactCTA from "@/components/ContactCTA";
 import AITransparency from "@/components/AITransparency";
 import FeaturedCaseStudy from "@/components/FeaturedCaseStudy";
-import GlobalGridWrapper from "@/components/GlobalGridWrapper"; 
+import GridBackground from "@/components/GridBackground";
 
 export default function Home() {
   return (
-    <main className="w-full  relative selection:bg-neutral-900 selection:text-white">
-      <Hero />
+    <main className="w-full relative selection:bg-neutral-900 selection:text-white">
+      {/* Single continuous grid background for entire page */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <GridBackground opacity={0.04} size={40} />
+      </div>
       
-      {/* You can now use the components directly since they have their own grids */}
-      
-      {/* Note: StatsBar didn't have a bg-color, so it was the only one working before. 
-          If you want to keep using GlobalGridWrapper just for StatsBar, you can, 
-          OR you can add GridBackground inside StatsBar.jsx too. */}
-          
-      
+      <div className="relative z-10">
+        <Hero />
         <StatsBar />
-      
-      
-      <ProcessStrip />
-      <AITransparency />
-      <BentoGrid />
-      <Testimonial />
-      <FeaturedCaseStudy/>
-      <Services />
-      <ContactCTA />
+        <ProcessStrip />
+        <AITransparency />
+        <BentoGrid />
+        <Testimonial />
+        <FeaturedCaseStudy/>
+        <Services />
+        <ContactCTA />
+      </div>
     </main>
   );
 }

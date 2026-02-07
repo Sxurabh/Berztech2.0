@@ -250,8 +250,7 @@ export default function Services() {
   };
 
   return (
-    <section className="relative py-12 sm:py-16 lg:py-20 bg-white overflow-hidden">
-            <GridBackground opacity={0.05} size={40} />
+    <section className="relative py-12 sm:py-16 lg:py-20 overflow-hidden">
 
 
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">

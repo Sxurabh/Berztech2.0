@@ -9,8 +9,7 @@ import GridBackground from "@/components/GridBackground"; // 1. Import this
 
 export default function ContactCTA() {
   return (
-    <section className="relative py-12 sm:py-16 lg:py-20 bg-white ">
-            <GridBackground opacity={0.05} size={40} />
+    <section className="relative py-12 sm:py-16 lg:py-20  ">
 
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">

@@ -14,7 +14,7 @@ const clients = [
 
 export default function TrustBar() {
   return (
-    <section className="relative py-3 sm:py-4 bg-white border-t border-neutral-100">
+    <section className="relative py-3 sm:py-4  ">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-3 sm:gap-6">
           {/* Label - Responsive text size */}

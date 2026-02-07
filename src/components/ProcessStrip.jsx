@@ -113,9 +113,9 @@ export default function ProcessStrip() {
   const colors = colorSchemes[activeProcess.color];
 
   return (
-    <section className="relative py-12 sm:py-16 lg:py-20 bg-white overflow-hidden">
+    <section className="relative py-12 sm:py-16 lg:py-20  overflow-hidden">
       {/* Grid Background - Consistent with site */}
-            <GridBackground opacity={0.05} size={40} />
+            
 
 
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
@@ -305,7 +305,7 @@ export default function ProcessStrip() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.3 }}
-          className="mt-6 sm:mt-8 pt-6 border-t border-neutral-100"
+          className="mt-6 sm:mt-8 pt-6 "
         >
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3 sm:gap-4">

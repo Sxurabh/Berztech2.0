@@ -210,7 +210,6 @@ export default function Testimonial() {
 
   return (
     <section className="relative py-12 sm:py-16 lg:py-20 overflow-hidden">
-           <GridBackground opacity={0.05} size={40} />
 
 
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
@@ -494,27 +493,7 @@ export default function Testimonial() {
         </motion.div>
 
         {/* CTA - Mobile optimized */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.3 }}
-          className="mt-8 sm:mt-10 text-center"
-        >
-          <p className="text-neutral-600 mb-4 text-sm sm:text-base">
-            Ready to become our next success story?
-          </p>
-          <a
-            href="/contact"
-            className="inline-flex items-center gap-2 px-5 sm:px-6 py-3 bg-neutral-900 text-white font-jetbrains-mono text-xs sm:text-sm uppercase tracking-widest font-semibold hover:bg-neutral-800 transition-colors touch-manipulation"
-            style={{ minHeight: "44px" }}
-          >
-            Start Your Project
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </a>
-        </motion.div>
+        
       </div>
     </section>
   );

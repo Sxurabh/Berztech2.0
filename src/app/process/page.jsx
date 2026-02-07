@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { CornerFrame } from "@/components/CornerFrame";
 import { layoutConfig } from "@/config/layout";
+import GridBackground from "@/components/GridBackground";
 
 const phases = [
   {
@@ -289,7 +290,7 @@ function PhaseDetail({ phase }) {
           </div>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-neutral-100">
+        <div className="mt-3 pt-2 border-t border-neutral-100">
           <div className="flex items-center justify-between text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-400 mb-2">
             <span>Phase Progress</span>
             <span>{parseInt(phase.number) * 16}%</span>
@@ -313,9 +314,9 @@ export default function ProcessPage() {
 
   return (
     <main className="w-full bg-white relative">
-      {/* Header - FIXED: Reduced top spacing */}
+      {/* Header */}
       <section className="pt-8 sm:pt-12 lg:pt-16 pb-8">
-        <div className={layoutConfig.maxWidth + " " + layoutConfig.padding.mobile + " " + layoutConfig.padding.tablet + " " + layoutConfig.padding.desktop + " mx-auto"}>
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -371,11 +372,13 @@ export default function ProcessPage() {
         </div>
       </section>
 
-      {/* Detailed Process */}
+      {/* Detailed Process - FIXED: Equal width columns */}
       <section className="py-16 sm:py-24">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
-            <div className="lg:col-span-5 space-y-3">
+          {/* FIXED: Changed from lg:grid-cols-12 to equal 2-column layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+            {/* Left: Phase Cards */}
+            <div className="space-y-3">
               {phases.map((phase, index) => (
                 <PhaseCard
                   key={phase.id}
@@ -387,7 +390,8 @@ export default function ProcessPage() {
               ))}
             </div>
 
-            <div className="lg:col-span-7">
+            {/* Right: Phase Detail - Now equal width */}
+            <div className="lg:sticky lg:top-24 h-fit">
               <AnimatePresence mode="wait">
                 <PhaseDetail key={activePhase} phase={phases[activePhase]} />
               </AnimatePresence>
@@ -396,27 +400,27 @@ export default function ProcessPage() {
         </div>
       </section>
 
-      {/* Principles Section */}
-      <section className="py-16 sm:py-24 bg-neutral-950 text-white">
+      {/* Principles Section - CHANGED TO WHITE BACKGROUND */}
+      <section className="py-16 sm:py-24 bg-white border-t border-neutral-100">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="h-px w-4 bg-neutral-700" />
-                <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500">
+                <div className="h-px w-4 bg-neutral-300" />
+                <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400">
                   Our Principles
                 </span>
               </div>
-              <h2 className="font-space-grotesk text-3xl sm:text-4xl font-medium tracking-tight mb-6">
-                Collaboration by <span className="text-neutral-500">design</span>
+              <h2 className="font-space-grotesk text-3xl sm:text-4xl font-medium text-neutral-900 tracking-tight mb-6">
+                Collaboration by <span className="text-neutral-400">design</span>
               </h2>
-              <p className="text-neutral-400 leading-relaxed mb-8">
+              <p className="text-neutral-600 leading-relaxed mb-8">
                 We believe the best work happens when teams align. Our process is designed 
                 to keep you informed, involved, and in control at every stage.
               </p>
               <Link
                 href="/contact"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-neutral-950 font-jetbrains-mono text-xs uppercase tracking-widest font-semibold hover:bg-neutral-100 transition-colors"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-neutral-900 text-white font-jetbrains-mono text-xs uppercase tracking-widest font-semibold hover:bg-neutral-800 transition-colors"
               >
                 Start Your Project
                 <span>→</span>
@@ -436,13 +440,13 @@ export default function ProcessPage() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className="flex items-start gap-4 p-4 border border-neutral-800 hover:border-neutral-700 transition-colors"
+                  className="flex items-start gap-4 p-4 border border-neutral-200 hover:border-neutral-300 transition-colors bg-white"
                 >
-                  <div className="w-8 h-8 bg-neutral-900 flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 bg-neutral-100 flex items-center justify-center shrink-0">
                     <span className="text-neutral-500 text-sm">{String(i + 1).padStart(2, '0')}</span>
                   </div>
                   <div>
-                    <h4 className="font-medium text-white mb-1">{item.title}</h4>
+                    <h4 className="font-medium text-neutral-900 mb-1">{item.title}</h4>
                     <p className="text-sm text-neutral-500">{item.desc}</p>
                   </div>
                 </motion.div>
@@ -453,7 +457,7 @@ export default function ProcessPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-16 sm:py-24">
+      <section className="py-16 sm:py-24 bg-neutral-50/50">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="font-space-grotesk text-2xl sm:text-3xl font-medium text-neutral-900 mb-4">
@@ -475,7 +479,7 @@ export default function ProcessPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="p-5 bg-neutral-50 border border-neutral-200"
+                className="p-5 bg-white border border-neutral-200"
               >
                 <h4 className="font-medium text-neutral-900 mb-2 text-sm">{faq.q}</h4>
                 <p className="text-sm text-neutral-600 leading-relaxed">{faq.a}</p>

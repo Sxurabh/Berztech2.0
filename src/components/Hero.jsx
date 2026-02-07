@@ -7,7 +7,6 @@ import { CornerFrame } from "@/components/CornerFrame";
 import { layoutConfig } from "@/config/layout";
 import clsx from "clsx";
 import TrustBar from "./TrustBar";
-import GridBackground from "@/components/GridBackground"; // 1. Import this
 
 
 // Simplified animated counter for mobile performance
@@ -131,18 +130,11 @@ function OptimizedBackground() {
   const background = useMotionTemplate`radial-gradient(600px circle at ${mouseX}px ${mouseY}px, rgba(0,0,0,0.05), transparent 40%)`;
 
   return (
-    <div className="absolute inset-0 z-0 overflow-hidden bg-white">
+    <div className="absolute inset-0 z-0 overflow-hidden">
       {/* FIX: Increased opacity to 0.05 and added 'backgroundPosition: center top'.
          This ensures the grid lines align with your centered max-w-5xl container.
       */}
-      <div 
-        className="absolute inset-0 opacity-[0.05]"
-        style={{ 
-          backgroundImage: `linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)`, 
-          backgroundSize: '40px 40px',
-          backgroundPosition: 'center top' 
-        }}
-      />
+      
       
       {!isMobile && (
         <motion.div 

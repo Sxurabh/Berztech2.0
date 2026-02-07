@@ -3,7 +3,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { CornerFrame } from "@/components/CornerFrame";
-import GridBackground from "@/components/GridBackground"; // 1. Import this
 
 function AnimatedNumber({ value, suffix = "", prefix = "" }) {
   const ref = useRef(null);
@@ -52,9 +51,8 @@ const stats = [
 export default function StatsBar() {
   return (
     <section className="relative py-8 sm:py-10 ">
-            <GridBackground opacity={0.05} size={40} />
 
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 ">
+      <div className="mx-auto max-w-5xl px-4 pt-4 sm:px-6 lg:px-8 ">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 ">
           {stats.map((stat, index) => (
             <motion.div
