@@ -138,7 +138,7 @@ function PhaseCard({ phase, index, isActive, onClick }) {
       <CornerFrame
         className={`
           p-4 sm:p-5 transition-all duration-500
-          ${isActive ? `${colors.bgLight} ${colors.border} border-2` : 'bg-white border-neutral-200 hover:border-neutral-300'}
+          ${isActive ? `${colors.bgLight} ${colors.border} ` : 'bg-white border-neutral-200 hover:border-neutral-300'}
         `}
         bracketClassName={`w-3 h-3 transition-colors ${isActive ? colors.border.replace('border-', 'border-') : 'border-neutral-300'}`}
       >
@@ -313,7 +313,7 @@ export default function ProcessPage() {
   const [activePhase, setActivePhase] = useState(0);
 
   return (
-    <main className="w-full bg-white relative">
+    <main className="w-full  relative">
       {/* Header */}
       <section className="pt-8 sm:pt-12 lg:pt-16 pb-8">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">

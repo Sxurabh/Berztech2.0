@@ -348,10 +348,11 @@ export default function WorkPage() {
   const regularProjects = filteredProjects.filter(p => !p.featured);
 
   return (
-    <main className="w-full bg-white relative">
+    <main className="w-full relative">
       {/* Page Header with Grid */}
       <section className="relative pt-8 sm:pt-12 lg:pt-16 pb-8">
-        <GridBackground opacity={0.015} size={40} />
+           <GridBackground opacity={0.04} size={40} />
+
         
         <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -381,7 +382,8 @@ export default function WorkPage() {
       </section>
 
       <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 pb-20 sm:pb-32">
-        <GridBackground opacity={0.01} size={40} />
+            <GridBackground opacity={0.04} size={40} />
+
         
         <div className="relative z-10">
           {/* Stats Bar */}

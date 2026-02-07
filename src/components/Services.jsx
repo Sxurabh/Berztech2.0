@@ -71,28 +71,28 @@ const services = [
 
 const accentColors = {
   blue: {
-    bg: "group-hover:bg-blue-500/5",
+    bg: "group-hover:bg-blue-50",
     border: "group-hover:border-blue-500/20",
     text: "text-blue-600",
     line: "bg-blue-500",
     bgLight: "bg-blue-50"
   },
   purple: {
-    bg: "group-hover:bg-purple-500/5",
+    bg: "group-hover:bg-purple-50",
     border: "group-hover:border-purple-500/20",
     text: "text-purple-600",
     line: "bg-purple-500",
     bgLight: "bg-purple-50"
   },
   emerald: {
-    bg: "group-hover:bg-emerald-500/5",
+    bg: "group-hover:bg-emerald-50",
     border: "group-hover:border-emerald-500/20",
     text: "text-emerald-600",
     line: "bg-emerald-500",
     bgLight: "bg-emerald-50"
   },
   amber: {
-    bg: "group-hover:bg-amber-500/5",
+    bg: "group-hover:bg-amber-50",
     border: "group-hover:border-amber-500/20",
     text: "text-amber-600",
     line: "bg-amber-500",

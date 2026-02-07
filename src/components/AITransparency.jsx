@@ -142,67 +142,67 @@ export default function AITransparency() {
   const activeCapability = capabilities[activeTab];
 
   const colorSchemes = {
-    blue: {
-      bg: "bg-blue-500",
-      text: "text-blue-600",
-      bgLight: "bg-blue-50",
-      border: "",
-      glow: "shadow-blue-500/20",
-      frameBg: "bg-blue-50/50",
-      frameBorder: "",
-      bracket: "border-blue-300"
-    },
-    emerald: {
-      bg: "bg-emerald-500",
-      text: "text-emerald-600",
-      bgLight: "bg-emerald-50",
-      border: "border-emerald-200",
-      glow: "shadow-emerald-500/20",
-      frameBg: "bg-emerald-50/50",
-      frameBorder: "",
-      bracket: "border-emerald-300"
-    },
-    purple: {
-      bg: "bg-purple-500",
-      text: "text-purple-600",
-      bgLight: "bg-purple-50",
-      border: "",
-      glow: "shadow-purple-500/20",
-      frameBg: "bg-purple-50/50",
-      frameBorder: "",
-      bracket: "border-purple-300"
-    },
-    amber: {
-      bg: "bg-amber-500",
-      text: "text-amber-600",
-      bgLight: "bg-amber-50",
-      border: "border-amber-200",
-      glow: "shadow-amber-500/20",
-      frameBg: "bg-amber-50/50",
-      frameBorder: "",
-      bracket: "border-amber-300"
-    },
-    rose: {
-      bg: "bg-rose-500",
-      text: "text-rose-600",
-      bgLight: "bg-rose-50",
-      border: "border-rose-200",
-      glow: "shadow-rose-500/20",
-      frameBg: "bg-rose-50/50",
-      frameBorder: "",
-      bracket: "border-rose-300"
-    },
-    cyan: {
-      bg: "bg-cyan-500",
-      text: "text-cyan-600",
-      bgLight: "bg-cyan-50",
-      border: "border-cyan-200",
-      glow: "shadow-cyan-500/20",
-      frameBg: "bg-cyan-50/50",
-      frameBorder: "",
-      bracket: "border-cyan-300"
-    }
-  };
+  blue: {
+    bg: "bg-blue-500",
+    text: "text-blue-600",
+    bgLight: "bg-blue-50",
+    border: "border-blue-200",        // ← FIXED: Added proper border class
+    glow: "shadow-blue-500/20",
+    frameBg: "bg-blue-50/50",
+    frameBorder: "border-blue-200",   // ← FIXED: Added proper border class
+    bracket: "border-blue-300"
+  },
+  emerald: {
+    bg: "bg-emerald-500",
+    text: "text-emerald-600",
+    bgLight: "bg-emerald-50",
+    border: "border-emerald-200",
+    glow: "shadow-emerald-500/20",
+    frameBg: "bg-emerald-50/50",
+    frameBorder: "border-emerald-200",
+    bracket: "border-emerald-300"
+  },
+  purple: {
+    bg: "bg-purple-500",
+    text: "text-purple-600",
+    bgLight: "bg-purple-50",
+    border: "border-purple-200",      // ← Was already correct
+    glow: "shadow-purple-500/20",
+    frameBg: "bg-purple-50/50",
+    frameBorder: "border-purple-200", // ← Was already correct
+    bracket: "border-purple-300"
+  },
+  amber: {
+    bg: "bg-amber-500",
+    text: "text-amber-600",
+    bgLight: "bg-amber-50",
+    border: "border-amber-200",
+    glow: "shadow-amber-500/20",
+    frameBg: "bg-amber-50/50",
+    frameBorder: "border-amber-200",  // ← FIXED: Added proper border class
+    bracket: "border-amber-300"
+  },
+  rose: {
+    bg: "bg-rose-500",
+    text: "text-rose-600",
+    bgLight: "bg-rose-50",
+    border: "border-rose-200",
+    glow: "shadow-rose-500/20",
+    frameBg: "bg-rose-50/50",
+    frameBorder: "border-rose-200",
+    bracket: "border-rose-300"
+  },
+  cyan: {
+    bg: "bg-cyan-500",
+    text: "text-cyan-600",
+    bgLight: "bg-cyan-50",
+    border: "border-cyan-200",
+    glow: "shadow-cyan-500/20",
+    frameBg: "bg-cyan-50/50",
+    frameBorder: "border-cyan-200",
+    bracket: "border-cyan-300"
+  }
+};
 
   const colors = colorSchemes[activeCapability.color];
 

@@ -222,43 +222,43 @@ const features = [
 
 const accentColors = {
   blue: {
-    bg: "group-hover:bg-blue-500/5",
-    border: "group-hover:border-blue-500/20",
+    bg: "group-hover:bg-blue-50",           // ← FIXED: Solid color, no opacity
+    border: "group-hover:border-blue-200",
     text: "text-blue-500",
     glow: "group-hover:shadow-blue-500/10",
     line: "bg-blue-500"
   },
   amber: {
-    bg: "group-hover:bg-amber-500/5",
-    border: "group-hover:border-amber-500/20",
+    bg: "group-hover:bg-amber-50",          // ← FIXED: Solid color, no opacity
+    border: "group-hover:border-amber-200",
     text: "text-amber-500",
     glow: "group-hover:shadow-amber-500/10",
     line: "bg-amber-500"
   },
   emerald: {
-    bg: "group-hover:bg-emerald-500/5",
-    border: "group-hover:border-emerald-500/20",
+    bg: "group-hover:bg-emerald-50",        // ← FIXED: Solid color, no opacity
+    border: "group-hover:border-emerald-200",
     text: "text-emerald-500",
     glow: "group-hover:shadow-emerald-500/10",
     line: "bg-emerald-500"
   },
   purple: {
-    bg: "group-hover:bg-purple-500/5",
-    border: "group-hover:border-purple-500/20",
+    bg: "group-hover:bg-purple-50",         // ← FIXED: Solid color, no opacity
+    border: "group-hover:border-purple-200",
     text: "text-purple-500",
     glow: "group-hover:shadow-purple-500/10",
     line: "bg-purple-500"
   },
   rose: {
-    bg: "group-hover:bg-rose-500/5",
-    border: "group-hover:border-rose-500/20",
+    bg: "group-hover:bg-rose-50",           // ← FIXED: Solid color, no opacity
+    border: "group-hover:border-rose-200",
     text: "text-rose-500",
     glow: "group-hover:shadow-rose-500/10",
     line: "bg-rose-500"
   },
   cyan: {
-    bg: "group-hover:bg-cyan-500/5",
-    border: "group-hover:border-cyan-500/20",
+    bg: "group-hover:bg-cyan-50",           // ← FIXED: Solid color, no opacity
+    border: "group-hover:border-cyan-200",
     text: "text-cyan-500",
     glow: "group-hover:shadow-cyan-500/10",
     line: "bg-cyan-500"
@@ -387,19 +387,7 @@ function BentoCard({ feature, index }) {
             className={`absolute bottom-0 left-0 right-0 h-0.5 origin-left ${colors.line}`}
           />
 
-          {/* Corner Accent Animation */}
-          <motion.div
-            animate={{ 
-              opacity: isHovered ? 1 : 0,
-              scale: isHovered ? 1 : 0.8
-            }}
-            transition={{ duration: 0.2 }}
-            className={`
-              absolute top-0 right-0 w-20 h-20 opacity-0 group-hover:opacity-100
-              bg-gradient-to-bl from-neutral-100 to-transparent
-              pointer-events-none
-            `}
-          />
+         
         </div>
       </CornerFrame>
     </motion.div>
@@ -462,38 +450,8 @@ export default function BentoGrid() {
         </div>
 
         {/* Bottom Stats - UPDATED: Aligned border and padding */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.4 }}
-          className="mt-8 sm:mt-10 pt-6 border-t border-neutral-100" // Consistent with Services/ProcessStrip
-        >
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-4 sm:gap-6">
-              {[
-                { label: "Active Projects", value: "12" },
-                { label: "Team Members", value: "8" },
-                { label: "Years Experience", value: "7+" }
-              ].map((stat, i) => (
-                <div key={stat.label} className="flex items-baseline gap-1.5">
-                  <span className="font-space-grotesk text-lg sm:text-xl font-medium text-neutral-900">
-                    {stat.value}
-                  </span>
-                  <span className="text-[10px] sm:text-xs font-jetbrains-mono uppercase tracking-wider text-neutral-400">
-                    {stat.label}
-                  </span>
-                </div>
-              ))}
-            </div>
-            
-            {/* Status indicator - matches Services component style */}
-            <div className="flex items-center gap-2 text-[10px] sm:text-xs font-jetbrains-mono text-neutral-400">
-              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-              Available for new projects
-            </div>
-          </div>
-        </motion.div>
+       
+        
       </div>
     </section>
   );
