@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { CornerFrame } from "@/components/CornerFrame";
+import GridBackground from "@/components/GridBackground"; // 1. Import this
 
 // Platform Icons Component
 function PlatformIcons({ isHovered }) {
@@ -410,16 +411,7 @@ function BentoCard({ feature, index }) {
 export default function BentoGrid() {
   return (
     <section className="relative py-12 sm:py-16 lg:py-20 bg-white overflow-hidden">
-      {/* Subtle Background - KEEP AS IS */}
-      <div className="absolute inset-0">
-        <div 
-          className="absolute inset-0 opacity-[0.02]"
-          style={{ 
-            backgroundImage: `radial-gradient(circle, #171717 1px, transparent 1px)`, 
-            backgroundSize: '24px 24px' 
-          }}
-        />
-      </div>
+      <GridBackground opacity={0.05} size={40} />
 
       {/* UPDATED: Changed from max-w-6xl to max-w-5xl to match other components */}
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">

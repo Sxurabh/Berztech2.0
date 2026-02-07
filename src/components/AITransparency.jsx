@@ -6,6 +6,7 @@ import Link from "next/link";
 import { CornerFrame } from "@/components/CornerFrame";
 import GridBackground from "@/components/GridBackground";
 
+
 const capabilities = [
   {
     id: "velocity",
@@ -190,7 +191,8 @@ export default function AITransparency() {
   return (
     <section className="relative py-12 sm:py-16 lg:py-20 bg-white overflow-hidden">
       {/* Grid Background */}
-      <GridBackground opacity={0.015} size={40} />
+            <GridBackground opacity={0.05} size={40} />
+
 
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         {/* Header + Terminal Row */}

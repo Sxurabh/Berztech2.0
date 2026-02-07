@@ -6,10 +6,14 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { CornerFrame } from "@/components/CornerFrame";
 import { SocialMediaProfiles } from "@/components/SocialMedia";
+// 1. Import the GridBackground
+import GridBackground from "@/components/GridBackground";
 
 // Assets
 import blackLogo from "../../assets/Logo/blacklogo.png";
 import compactLogoblack from "../../assets/Logo/CompactLogo-black.png";
+
+// ... [Keep footerLinks, AccordionSection, DesktopLinkSection, NewsletterCompact exactly as they are] ...
 
 const footerLinks = {
   services: {
@@ -166,12 +170,19 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-white border-t border-neutral-100">
-      {/* Main Footer Content */}
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+    // 2. Added 'relative' and 'overflow-hidden' to ensure grid stays INSIDE footer
+    <footer className="relative bg-white border-t border-neutral-100 overflow-hidden">
+      
+      {/* 3. Add the GridBackground here */}
+      <GridBackground opacity={0.05} size={40} />
+
+      {/* Main Footer Content - Added relative z-10 to sit above grid */}
+      <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+        
+        {/* ... [Rest of the footer content remains exactly the same] ... */}
         
         {/* Top Section - Logo & Newsletter */}
-        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 lg:gap-12 pb-8 sm:pb-12 border-b border-neutral-100">
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 lg:gap-12 pb-8 sm:pb-12">
           {/* Logo & Description */}
           <div className="max-w-sm">
             <Link href="/" className="inline-block mb-4">
@@ -288,8 +299,8 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Bottom Bar */}
-      <div className="border-t border-neutral-100 bg-neutral-50/50">
+      {/* Bottom Bar - Added relative z-10 */}
+      <div className="relative z-10   bg-neutral-50/50">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <p className="text-xs font-jetbrains-mono text-neutral-500 text-center sm:text-left">

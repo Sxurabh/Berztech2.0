@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { CornerFrame } from "@/components/CornerFrame";
+import GridBackground from "@/components/GridBackground"; // 1. Import this
+
 
 const caseStudy = {
   client: "Family Fund",
@@ -25,6 +27,8 @@ export default function FeaturedCaseStudy() {
 
   return (
     <section className="relative py-12 sm:py-16 lg:py-20 bg-white overflow-hidden">
+            <GridBackground opacity={0.05} size={40} />
+
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div

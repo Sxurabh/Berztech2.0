@@ -115,7 +115,8 @@ export default function ProcessStrip() {
   return (
     <section className="relative py-12 sm:py-16 lg:py-20 bg-white overflow-hidden">
       {/* Grid Background - Consistent with site */}
-      <GridBackground opacity={0.015} size={40} />
+            <GridBackground opacity={0.05} size={40} />
+
 
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}

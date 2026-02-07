@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { CornerFrame } from "@/components/CornerFrame";
+import GridBackground from "@/components/GridBackground"; // 1. Import this
+
 
 const services = [
   {
@@ -249,10 +251,8 @@ export default function Services() {
 
   return (
     <section className="relative py-12 sm:py-16 lg:py-20 bg-white overflow-hidden">
-      {/* Subtle Background */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 opacity-[0.015]" style={{ backgroundImage: `radial-gradient(circle, #171717 1px, transparent 1px)`, backgroundSize: '24px 24px' }} />
-      </div>
+            <GridBackground opacity={0.05} size={40} />
+
 
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
@@ -299,7 +299,7 @@ export default function Services() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.3 }}
-          className="mt-8 sm:mt-10 pt-6 border-t border-neutral-100"
+          className="mt-8 sm:mt-10 pt-6 "
         >
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">

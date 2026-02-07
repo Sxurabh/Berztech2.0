@@ -7,6 +7,8 @@ import { CornerFrame } from "@/components/CornerFrame";
 import { layoutConfig } from "@/config/layout";
 import clsx from "clsx";
 import TrustBar from "./TrustBar";
+import GridBackground from "@/components/GridBackground"; // 1. Import this
+
 
 // Simplified animated counter for mobile performance
 function AnimatedCounter({ value, suffix = "", prefix = "" }) {
@@ -220,6 +222,8 @@ export default function Hero() {
         minHeight: "auto" // Mobile: natural flow
       }}
     >
+            <GridBackground opacity={0.05} size={40} />
+
       <OptimizedBackground />
 
       <motion.div 

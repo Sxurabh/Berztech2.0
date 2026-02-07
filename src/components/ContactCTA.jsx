@@ -4,10 +4,14 @@ import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { CornerFrame } from "@/components/CornerFrame";
+import GridBackground from "@/components/GridBackground"; // 1. Import this
+
 
 export default function ContactCTA() {
   return (
-    <section className="relative py-12 sm:py-16 lg:py-20 bg-white border-t border-neutral-100">
+    <section className="relative py-12 sm:py-16 lg:py-20 bg-white ">
+            <GridBackground opacity={0.05} size={40} />
+
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
@@ -105,24 +109,7 @@ export default function ContactCTA() {
           </motion.div>
         </div>
 
-        {/* Bottom Trust Indicators - Minimal */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.3 }}
-          className="mt-10 pt-6 border-t border-neutral-100 flex flex-wrap items-center justify-between gap-4"
-        >
-          <div className="flex items-center gap-2 text-[10px] font-jetbrains-mono text-neutral-400 uppercase tracking-wider">
-            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-            Available Q1 2024
-          </div>
-          
-          <div className="flex items-center gap-6 text-[10px] font-jetbrains-mono text-neutral-400 uppercase tracking-wider">
-            <span>Response within 24h</span>
-            <span className="hidden sm:inline">Free Discovery</span>
-          </div>
-        </motion.div>
+        
       </div>
     </section>
   );

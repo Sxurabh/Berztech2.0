@@ -4,6 +4,8 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import Image from "next/image";
 import { CornerFrame } from "@/components/CornerFrame";
+import GridBackground from "@/components/GridBackground"; // 1. Import this
+
 
 const testimonials = [
   {
@@ -207,17 +209,9 @@ export default function Testimonial() {
   };
 
   return (
-    <section className="relative py-12 sm:py-16 lg:py-20 bg-neutral-50 overflow-hidden">
-      {/* Background Pattern - Subtle */}
-      <div className="absolute inset-0 opacity-[0.02]">
-        <div 
-          className="absolute inset-0"
-          style={{ 
-            backgroundImage: `radial-gradient(circle, #171717 1px, transparent 1px)`, 
-            backgroundSize: '24px 24px' 
-          }}
-        />
-      </div>
+    <section className="relative py-12 sm:py-16 lg:py-20 overflow-hidden">
+           <GridBackground opacity={0.05} size={40} />
+
 
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         
