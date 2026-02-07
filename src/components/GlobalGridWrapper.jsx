@@ -10,8 +10,8 @@ export default function GlobalGridWrapper({
   children, 
   className = "",
   showGrid = true,
-  gridOpacity = 1,
-  gridSize = 10
+  gridOpacity = 0.05, // Increase default slightly
+  gridSize = 40       // Match the default size used in other sections
 }) {
   if (!showGrid) {
     return <div className={className}>{children}</div>;
@@ -26,5 +26,4 @@ export default function GlobalGridWrapper({
     </div>
   );
 }
-
 
