@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { CornerFrame } from "@/components/CornerFrame";
 import { layoutConfig } from "@/config/layout";
+import GridBackground from "@/components/GridBackground";
 
 const projects = [
   {
@@ -121,7 +122,6 @@ function ProjectCard({ project, index }) {
           `}
           bracketClassName="w-4 h-4 border-neutral-300 group-hover:border-neutral-500 transition-colors duration-300"
         >
-          {/* Image Container */}
           <div className="relative aspect-[16/10] overflow-hidden bg-neutral-100">
             <motion.div
               animate={{ scale: isHovered ? 1.05 : 1 }}
@@ -349,9 +349,11 @@ export default function WorkPage() {
 
   return (
     <main className="w-full bg-white relative">
-      {/* Page Header - FIXED: Reduced top spacing to match Hero */}
-      <section className="pt-8 sm:pt-12 lg:pt-16 pb-8">
-        <div className={layoutConfig.maxWidth + " " + layoutConfig.padding.mobile + " " + layoutConfig.padding.tablet + " " + layoutConfig.padding.desktop + " mx-auto"}>
+      {/* Page Header with Grid */}
+      <section className="relative pt-8 sm:pt-12 lg:pt-16 pb-8">
+        <GridBackground opacity={0.015} size={40} />
+        
+        <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -378,101 +380,105 @@ export default function WorkPage() {
         </div>
       </section>
 
-      <div className={layoutConfig.maxWidth + " " + layoutConfig.padding.mobile + " " + layoutConfig.padding.tablet + " " + layoutConfig.padding.desktop + " mx-auto pb-20 sm:pb-32"}>
-        {/* Stats Bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-12 sm:mb-16 pt-8 border-t border-neutral-100"
-        >
-          {[
-            { value: "50+", label: "Projects Delivered" },
-            { value: "12", label: "Industries Served" },
-            { value: "98%", label: "Client Retention" },
-            { value: "4.9", label: "Avg. Rating" }
-          ].map((stat, i) => (
-            <div key={stat.label} className="text-center p-4 bg-neutral-50 border border-neutral-100">
-              <div className="font-space-grotesk text-2xl sm:text-3xl font-medium text-neutral-900">{stat.value}</div>
-              <div className="text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-500 mt-1">{stat.label}</div>
-            </div>
-          ))}
-        </motion.div>
-
-        {/* Featured Projects */}
-        <div className="mb-16 sm:mb-20">
-          <div className="flex items-center gap-2 mb-6 sm:mb-8">
-            <div className="h-px w-4 bg-neutral-300" />
-            <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400">
-              Featured Work
-            </span>
-          </div>
-          {featuredProjects.map((project) => (
-            <FeaturedProject key={project.id} project={project} />
-          ))}
-        </div>
-
-        {/* Filter Tabs */}
-        <div className="mb-8 sm:mb-10">
-          <div className="flex flex-wrap gap-2">
-            {filters.map((filter) => (
-              <motion.button
-                key={filter}
-                onClick={() => setActiveFilter(filter)}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className={`
-                  px-4 py-2 text-[11px] font-jetbrains-mono uppercase tracking-wider transition-all duration-300 border
-                  ${activeFilter === filter
-                    ? 'bg-neutral-900 text-white border-neutral-900'
-                    : 'bg-white text-neutral-600 border-neutral-200 hover:border-neutral-400'
-                  }
-                `}
-              >
-                {filter}
-              </motion.button>
-            ))}
-          </div>
-        </div>
-
-        {/* Projects Grid */}
-        <motion.div 
-          layout
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
-        >
-          <AnimatePresence mode="popLayout">
-            {regularProjects.map((project, index) => (
-              <ProjectCard key={project.id} project={project} index={index} />
-            ))}
-          </AnimatePresence>
-        </motion.div>
-
-        {regularProjects.length === 0 && (
+      <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 pb-20 sm:pb-32">
+        <GridBackground opacity={0.01} size={40} />
+        
+        <div className="relative z-10">
+          {/* Stats Bar */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-20"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-12 sm:mb-16 pt-8 border-t border-neutral-100"
           >
-            <p className="text-neutral-500 font-jetbrains-mono text-sm">No projects found in this category.</p>
+            {[
+              { value: "50+", label: "Projects Delivered" },
+              { value: "12", label: "Industries Served" },
+              { value: "98%", label: "Client Retention" },
+              { value: "4.9", label: "Avg. Rating" }
+            ].map((stat, i) => (
+              <div key={stat.label} className="text-center p-4 bg-neutral-50 border border-neutral-100">
+                <div className="font-space-grotesk text-2xl sm:text-3xl font-medium text-neutral-900">{stat.value}</div>
+                <div className="text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-500 mt-1">{stat.label}</div>
+              </div>
+            ))}
           </motion.div>
-        )}
 
-        {/* Bottom CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mt-16 sm:mt-20 pt-8 border-t border-neutral-100 text-center"
-        >
-          <p className="text-neutral-600 mb-4">Have a project in mind?</p>
-          <Link
-            href="/contact"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-neutral-900 text-white font-jetbrains-mono text-xs uppercase tracking-widest font-semibold hover:bg-neutral-800 transition-colors"
+          {/* Featured Projects */}
+          <div className="mb-16 sm:mb-20">
+            <div className="flex items-center gap-2 mb-6 sm:mb-8">
+              <div className="h-px w-4 bg-neutral-300" />
+              <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400">
+                Featured Work
+              </span>
+            </div>
+            {featuredProjects.map((project) => (
+              <FeaturedProject key={project.id} project={project} />
+            ))}
+          </div>
+
+          {/* Filter Tabs */}
+          <div className="mb-8 sm:mb-10">
+            <div className="flex flex-wrap gap-2">
+              {filters.map((filter) => (
+                <motion.button
+                  key={filter}
+                  onClick={() => setActiveFilter(filter)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className={`
+                    px-4 py-2 text-[11px] font-jetbrains-mono uppercase tracking-wider transition-all duration-300 border
+                    ${activeFilter === filter
+                      ? 'bg-neutral-900 text-white border-neutral-900'
+                      : 'bg-white text-neutral-600 border-neutral-200 hover:border-neutral-400'
+                    }
+                  `}
+                >
+                  {filter}
+                </motion.button>
+              ))}
+            </div>
+          </div>
+
+          {/* Projects Grid */}
+          <motion.div 
+            layout
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
           >
-            Start a Conversation
-            <span>→</span>
-          </Link>
-        </motion.div>
+            <AnimatePresence mode="popLayout">
+              {regularProjects.map((project, index) => (
+                <ProjectCard key={project.id} project={project} index={index} />
+              ))}
+            </AnimatePresence>
+          </motion.div>
+
+          {regularProjects.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-20"
+            >
+              <p className="text-neutral-500 font-jetbrains-mono text-sm">No projects found in this category.</p>
+            </motion.div>
+          )}
+
+          {/* Bottom CTA */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mt-16 sm:mt-20 pt-8 border-t border-neutral-100 text-center"
+          >
+            <p className="text-neutral-600 mb-4">Have a project in mind?</p>
+            <Link
+              href="/contact"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-neutral-900 text-white font-jetbrains-mono text-xs uppercase tracking-widest font-semibold hover:bg-neutral-800 transition-colors"
+            >
+              Start a Conversation
+              <span>→</span>
+            </Link>
+          </motion.div>
+        </div>
       </div>
     </main>
   );

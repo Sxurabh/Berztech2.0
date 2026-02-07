@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { CornerFrame } from "@/components/CornerFrame";
 import { layoutConfig } from "@/config/layout";
+import GridBackground from "@/components/GridBackground";
 
 const values = [
   {
@@ -229,17 +230,15 @@ export default function AboutPage() {
 
   return (
     <main ref={containerRef} className="w-full bg-white relative">
-      {/* Hero Section - FIXED: Reduced top spacing to match main Hero */}
+      {/* Hero Section with Grid Background */}
       <section className="relative pt-8 sm:pt-12 lg:pt-16 pb-12 sm:pb-16 overflow-hidden">
+        <GridBackground opacity={0.015} size={40} />
+        
         <motion.div 
           style={{ y, opacity }}
           className="absolute inset-0 z-0"
         >
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-neutral-100 via-white to-white" />
-          <div className="absolute inset-0 opacity-[0.03]" style={{ 
-            backgroundImage: `linear-gradient(#171717 1px, transparent 1px), linear-gradient(90deg, #171717 1px, transparent 1px)`, 
-            backgroundSize: '40px 40px' 
-          }} />
         </motion.div>
 
         <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
@@ -269,9 +268,11 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-12 sm:py-16 border-y border-neutral-100 bg-neutral-50/50">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      {/* Stats Section with Grid */}
+      <section className="relative py-12 sm:py-16 border-y border-neutral-100 bg-neutral-50/50">
+        <GridBackground opacity={0.01} size={40} />
+        
+        <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {stats.map((stat, index) => (
               <motion.div
@@ -295,9 +296,11 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Story Section */}
-      <section className="py-16 sm:py-24 lg:py-32">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      {/* Story Section with Grid */}
+      <section className="relative py-16 sm:py-24 lg:py-32">
+        <GridBackground opacity={0.015} size={40} />
+        
+        <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
@@ -385,9 +388,11 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Values Section */}
-      <section className="py-16 sm:py-24 bg-neutral-50/30">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      {/* Values Section with Grid */}
+      <section className="relative py-16 sm:py-24 bg-neutral-50/30">
+        <GridBackground opacity={0.01} size={40} />
+        
+        <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2 mb-4">
             <div className="h-px w-4 bg-neutral-300" />
             <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400">
@@ -407,9 +412,11 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Team Section */}
-      <section className="py-16 sm:py-24">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      {/* Team Section with Grid */}
+      <section className="relative py-16 sm:py-24">
+        <GridBackground opacity={0.015} size={40} />
+        
+        <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12">
             <div>
               <div className="flex items-center gap-2 mb-4">
@@ -451,7 +458,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* CTA Section - Dark, no grid needed */}
       <section className="py-16 sm:py-24 bg-neutral-950 text-white">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center">
           <motion.div

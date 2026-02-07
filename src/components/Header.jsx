@@ -10,8 +10,7 @@ import { layoutConfig } from "@/config/layout";
 
 import blackLogo from "../../assets/Logo/blacklogo.png";
 import whiteLogo from "../../assets/Logo/WhiteLogo.png";
-import compactLogoblack from "../../assets/Logo/CompactLogo-black.png";
-import compactLogowhite from "../../assets/Logo/CompactLogo-white.png";
+// Removed compact logo imports - using full logo for all screen sizes
 
 const navItems = [
   { title: "Work", href: "/work" },
@@ -20,7 +19,7 @@ const navItems = [
   { title: "Blog", href: "/blog" },
 ];
 
-function HamburgerIcon({ isOpen, isScrolled }) {
+function HamburgerIcon({ isOpen }) {
   const lineVariants = {
     closed: { rotate: 0, y: 0 },
     open: (custom) => ({
@@ -84,9 +83,15 @@ export default function Header() {
       >
         <div className={clsx("mx-auto", layoutConfig.maxWidth, layoutConfig.padding.mobile, layoutConfig.padding.tablet, layoutConfig.padding.desktop)}>
           <div className="flex items-center justify-between h-16 sm:h-20 lg:h-24">
+            {/* Logo - Full logo for ALL screen sizes */}
             <Link href="/" className="relative z-50">
-              <Image src={mobileMenuOpen ? whiteLogo : blackLogo} alt="Berztech" className="hidden sm:block h-7 lg:h-8 w-auto" priority />
-              <Image src={mobileMenuOpen ? compactLogowhite : compactLogoblack} alt="Berztech" className="block sm:hidden h-6 w-auto" priority />
+              {/* Mobile: Full logo with adjusted height */}
+              <Image 
+                src={mobileMenuOpen ? whiteLogo : blackLogo} 
+                alt="Berztech" 
+                className="h-6 sm:h-7 lg:h-8 w-auto" 
+                priority 
+              />
             </Link>
 
             <nav className="hidden lg:flex items-center gap-8">
@@ -114,7 +119,7 @@ export default function Header() {
               className={clsx("relative z-50 w-12 h-12 flex items-center justify-center rounded-full transition-all duration-300 lg:hidden", mobileMenuOpen ? "bg-white/10 text-white" : "hover:bg-neutral-100 text-neutral-950")}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
             >
-              <HamburgerIcon isOpen={mobileMenuOpen} isScrolled={scrolled} />
+              <HamburgerIcon isOpen={mobileMenuOpen} />
             </button>
           </div>
         </div>
