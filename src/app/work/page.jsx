@@ -1,11 +1,10 @@
-// src/app/work/page.jsx
 "use client";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { CornerFrame } from "@/components/CornerFrame";
-import PageIntro from "@/components/PageIntro";
+import { layoutConfig } from "@/config/layout";
 
 const projects = [
   {
@@ -138,7 +137,6 @@ function ProjectCard({ project, index }) {
               />
             </motion.div>
             
-            {/* Overlay Gradient */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: isHovered ? 1 : 0 }}
@@ -146,7 +144,6 @@ function ProjectCard({ project, index }) {
               className="absolute inset-0 bg-gradient-to-t from-neutral-950/60 via-transparent to-transparent"
             />
 
-            {/* Category Badge */}
             <div className="absolute top-3 left-3">
               <span className={`
                 px-2 py-1 text-[10px] font-jetbrains-mono uppercase tracking-wider
@@ -156,14 +153,12 @@ function ProjectCard({ project, index }) {
               </span>
             </div>
 
-            {/* Year Badge */}
             <div className="absolute top-3 right-3">
               <span className="px-2 py-1 text-[10px] font-jetbrains-mono text-neutral-500 bg-white/90 backdrop-blur-sm border border-neutral-200">
                 {project.year}
               </span>
             </div>
 
-            {/* Hover Stats Overlay */}
             <AnimatePresence>
               {isHovered && (
                 <motion.div
@@ -184,7 +179,6 @@ function ProjectCard({ project, index }) {
             </AnimatePresence>
           </div>
 
-          {/* Content */}
           <div className="p-4 sm:p-5 flex-1 flex flex-col">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-400">
@@ -202,7 +196,6 @@ function ProjectCard({ project, index }) {
               {project.description}
             </p>
 
-            {/* Services Tags */}
             <div className="flex flex-wrap gap-1.5">
               {project.services.map((service, i) => (
                 <motion.span
@@ -218,7 +211,6 @@ function ProjectCard({ project, index }) {
               ))}
             </div>
 
-            {/* Hover Indicator */}
             <motion.div
               initial={{ scaleX: 0 }}
               animate={{ scaleX: isHovered ? 1 : 0 }}
@@ -256,7 +248,6 @@ function FeaturedProject({ project }) {
           onMouseLeave={() => setIsHovered(false)}
         >
           <div className="grid grid-cols-1 lg:grid-cols-2">
-            {/* Image Side */}
             <div className="relative aspect-[16/10] lg:aspect-auto overflow-hidden bg-neutral-100">
               <motion.div
                 animate={{ scale: isHovered ? 1.05 : 1 }}
@@ -274,7 +265,6 @@ function FeaturedProject({ project }) {
               </motion.div>
               <div className="absolute inset-0 bg-gradient-to-r from-transparent to-neutral-50/20 lg:to-neutral-50/50" />
               
-              {/* Featured Badge */}
               <div className="absolute top-4 left-4">
                 <span className={`
                   px-3 py-1.5 text-[10px] font-jetbrains-mono uppercase tracking-wider font-semibold
@@ -285,7 +275,6 @@ function FeaturedProject({ project }) {
               </div>
             </div>
 
-            {/* Content Side */}
             <div className="p-6 sm:p-8 lg:p-10 flex flex-col justify-center">
               <div className="flex items-center gap-3 mb-4">
                 <span className="text-[11px] font-jetbrains-mono uppercase tracking-wider text-neutral-400">
@@ -307,7 +296,6 @@ function FeaturedProject({ project }) {
                 {project.description}
               </p>
 
-              {/* Stats Grid */}
               <div className="grid grid-cols-3 gap-4 mb-6">
                 {Object.entries(project.stats).map(([key, value], i) => (
                   <div key={key} className={`p-3 border ${colors.border} ${colors.bgLight}`}>
@@ -317,7 +305,6 @@ function FeaturedProject({ project }) {
                 ))}
               </div>
 
-              {/* Services */}
               <div className="flex flex-wrap gap-2 mb-6">
                 {project.services.map((service) => (
                   <span key={service} className="px-3 py-1.5 text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-600 bg-white border border-neutral-200">
@@ -326,7 +313,6 @@ function FeaturedProject({ project }) {
                 ))}
               </div>
 
-              {/* CTA */}
               <div className="flex items-center gap-2 text-sm font-jetbrains-mono uppercase tracking-widest text-neutral-900 group-hover:text-neutral-600 transition-colors">
                 <span>View Case Study</span>
                 <motion.span
@@ -339,7 +325,6 @@ function FeaturedProject({ project }) {
             </div>
           </div>
 
-          {/* Accent Line */}
           <motion.div
             initial={{ scaleX: 0 }}
             animate={{ scaleX: isHovered ? 1 : 0 }}
@@ -364,19 +349,36 @@ export default function WorkPage() {
 
   return (
     <main className="w-full bg-white relative">
-      {/* Page Header */}
-      <PageIntro
-        eyebrow="Our Work"
-        title="Proven solutions for real problems"
-        centered
-      >
-        <p className="text-neutral-600 max-w-2xl mx-auto">
-          We partner with ambitious companies to build digital products that matter. 
-          Each project is a testament to our commitment to engineering excellence.
-        </p>
-      </PageIntro>
+      {/* Page Header - FIXED: Reduced top spacing to match Hero */}
+      <section className="pt-8 sm:pt-12 lg:pt-16 pb-8">
+        <div className={layoutConfig.maxWidth + " " + layoutConfig.padding.mobile + " " + layoutConfig.padding.tablet + " " + layoutConfig.padding.desktop + " mx-auto"}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <div className="h-px w-4 bg-neutral-300" />
+              <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400">
+                Our Work
+              </span>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+              <h1 className="font-space-grotesk text-3xl sm:text-4xl lg:text-5xl font-medium text-neutral-900 tracking-tight leading-tight">
+                Proven solutions for<br />
+                <span className="text-neutral-400">real-world problems</span>
+              </h1>
+              <p className="text-sm sm:text-base text-neutral-600 leading-relaxed max-w-sm">
+                We partner with ambitious companies to build digital products that matter. 
+                Each project is a testament to our commitment to engineering excellence.
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      </section>
 
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 pb-20 sm:pb-32">
+      <div className={layoutConfig.maxWidth + " " + layoutConfig.padding.mobile + " " + layoutConfig.padding.tablet + " " + layoutConfig.padding.desktop + " mx-auto pb-20 sm:pb-32"}>
         {/* Stats Bar */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -445,7 +447,6 @@ export default function WorkPage() {
           </AnimatePresence>
         </motion.div>
 
-        {/* Empty State */}
         {regularProjects.length === 0 && (
           <motion.div
             initial={{ opacity: 0 }}

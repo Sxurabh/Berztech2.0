@@ -1,11 +1,10 @@
-// src/app/blog/page.jsx
 "use client";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import PageIntro from "@/components/PageIntro";
 import { CornerFrame } from "@/components/CornerFrame";
+import { layoutConfig } from "@/config/layout";
 
 const categories = ["All", "Engineering", "Design", "Strategy", "Culture"];
 
@@ -115,7 +114,6 @@ function FeaturedPost({ post }) {
           bracketClassName="w-5 h-5 sm:w-6 sm:h-6 border-neutral-300 group-hover:border-neutral-500 transition-colors"
         >
           <div className="grid grid-cols-1 lg:grid-cols-2">
-            {/* Image */}
             <div className="relative aspect-[16/10] lg:aspect-auto overflow-hidden bg-neutral-100">
               <motion.div
                 animate={{ scale: isHovered ? 1.05 : 1 }}
@@ -139,7 +137,6 @@ function FeaturedPost({ post }) {
               </div>
             </div>
 
-            {/* Content */}
             <div className="p-6 sm:p-8 lg:p-10 flex flex-col justify-center">
               <div className="flex items-center gap-3 mb-4">
                 <span className={`px-2 py-1 text-[10px] font-jetbrains-mono uppercase tracking-wider ${colors.bgLight} ${colors.text} border ${colors.border}`}>
@@ -213,7 +210,6 @@ function PostCard({ post, index }) {
           `}
           bracketClassName="w-3 h-3 border-neutral-300 group-hover:border-neutral-500 transition-colors"
         >
-          {/* Image */}
           <div className="relative aspect-[16/10] overflow-hidden bg-neutral-100">
             <motion.div
               animate={{ scale: isHovered ? 1.05 : 1 }}
@@ -235,7 +231,6 @@ function PostCard({ post, index }) {
             </div>
           </div>
 
-          {/* Content */}
           <div className="p-4 sm:p-5 flex-1 flex flex-col">
             <div className="flex items-center gap-2 mb-3 text-[10px] font-jetbrains-mono text-neutral-400">
               <span>{post.date}</span>
@@ -283,16 +278,34 @@ export default function BlogPage() {
 
   return (
     <main className="w-full bg-white relative">
-      <PageIntro
-        eyebrow="Blog"
-        title="The latest articles and insights"
-        centered
-      >
-        <p className="text-neutral-600 max-w-2xl mx-auto">
-          Thoughts on engineering, design, and building digital products that matter. 
-          No fluff, just lessons from the trenches.
-        </p>
-      </PageIntro>
+      {/* Header - FIXED: Reduced top spacing */}
+      <section className="pt-8 sm:pt-12 lg:pt-16 pb-8">
+        <div className={layoutConfig.maxWidth + " " + layoutConfig.padding.mobile + " " + layoutConfig.padding.tablet + " " + layoutConfig.padding.desktop + " mx-auto"}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-center"
+          >
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <div className="h-px w-4 bg-neutral-300" />
+              <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400">
+                Blog
+              </span>
+              <div className="h-px w-4 bg-neutral-300" />
+            </div>
+            
+            <h1 className="font-space-grotesk text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-neutral-900 tracking-tight leading-[0.95] mb-4">
+              The latest articles<br />
+              <span className="text-neutral-400">and insights</span>
+            </h1>
+            <p className="text-base sm:text-lg text-neutral-600 max-w-2xl mx-auto leading-relaxed">
+              Thoughts on engineering, design, and building digital products that matter. 
+              No fluff, just lessons from the trenches.
+            </p>
+          </motion.div>
+        </div>
+      </section>
 
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 pb-20 sm:pb-32">
         {/* Category Filter */}

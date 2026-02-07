@@ -1,21 +1,45 @@
 import ContactDetails from "@/components/ContactDetails";
 import ContactForm from "@/components/ContactForm";
 import Container from "@/components/Container";
-import PageIntro from "@/components/PageIntro";
+import { motion } from "framer-motion";
+import { layoutConfig } from "@/config/layout";
 
 const ContactPage = () => {
   return (
-    <>
-      <PageIntro eyebrow="Contact us" title="Let’s work together">
-        <p>We can not wait to hear from you.</p>
-      </PageIntro>
-      <Container className="mt-24 sm:mt-32 lg:mt-40">
-        <div className="grid grid-cols-1 gap-x-8 gap-y-24 lg:grid-cols-2">
+    <main className="w-full bg-white relative">
+      {/* Header - FIXED: Reduced top spacing */}
+      <section className="pt-8 sm:pt-12 lg:pt-16 pb-8">
+        <div className={layoutConfig.maxWidth + " " + layoutConfig.padding.mobile + " " + layoutConfig.padding.tablet + " " + layoutConfig.padding.desktop + " mx-auto"}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <div className="h-px w-4 bg-neutral-300" />
+              <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400">
+                Contact us
+              </span>
+            </div>
+            
+            <h1 className="font-space-grotesk text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-neutral-900 tracking-tight leading-[0.95] mb-4">
+              Let&apos;s work<br />
+              <span className="text-neutral-400">together</span>
+            </h1>
+            <p className="text-base sm:text-lg text-neutral-600 max-w-xl leading-relaxed">
+              We cannot wait to hear from you. Tell us about your project and let&apos;s build something extraordinary.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      <Container className="mt-16 sm:mt-20 lg:mt-24 pb-20 sm:pb-32">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-16 lg:grid-cols-2">
           <ContactDetails />
           <ContactForm />
         </div>
       </Container>
-    </>
+    </main>
   );
 };
 

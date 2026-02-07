@@ -1,10 +1,9 @@
-// src/app/process/page.jsx
 "use client";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import PageIntro from "@/components/PageIntro";
 import { CornerFrame } from "@/components/CornerFrame";
+import { layoutConfig } from "@/config/layout";
 
 const phases = [
   {
@@ -91,6 +90,23 @@ const phases = [
     ],
     deliverables: ["Production Release", "Team Training", "Support Documentation", "Warranty Period"],
     tools: ["Vercel", "Docker", "GitHub Actions", "DataDog"]
+  },
+  {
+    id: "maintain",
+    number: "06",
+    title: "Maintain",
+    subtitle: "Continuous improvement",
+    description: "Ongoing support, monitoring, and iterative improvements. We stay with you to ensure sustained success and growth.",
+    duration: "Ongoing",
+    color: "cyan",
+    steps: [
+      { title: "24/7 Monitoring", desc: "Real-time performance and error tracking" },
+      { title: "Security Updates", desc: "Regular patches and vulnerability fixes" },
+      { title: "Feature Iteration", desc: "Continuous improvement and new features" },
+      { title: "Performance Tuning", desc: "Ongoing optimization and scaling" }
+    ],
+    deliverables: ["Monthly Reports", "SLA Support", "Feature Releases", "Technical Consultation"],
+    tools: ["Sentry", "Datadog", "GitHub", "Slack"]
   }
 ];
 
@@ -99,7 +115,8 @@ const colorSchemes = {
   purple: { bg: "bg-purple-500", text: "text-purple-600", bgLight: "bg-purple-50", border: "border-purple-200", gradient: "from-purple-500/20" },
   emerald: { bg: "bg-emerald-500", text: "text-emerald-600", bgLight: "bg-emerald-50", border: "border-emerald-200", gradient: "from-emerald-500/20" },
   amber: { bg: "bg-amber-500", text: "text-amber-600", bgLight: "bg-amber-50", border: "border-amber-200", gradient: "from-amber-500/20" },
-  rose: { bg: "bg-rose-500", text: "text-rose-600", bgLight: "bg-rose-50", border: "border-rose-200", gradient: "from-rose-500/20" }
+  rose: { bg: "bg-rose-500", text: "text-rose-600", bgLight: "bg-rose-50", border: "border-rose-200", gradient: "from-rose-500/20" },
+  cyan: { bg: "bg-cyan-500", text: "text-cyan-600", bgLight: "bg-cyan-50", border: "border-cyan-200", gradient: "from-cyan-500/20" }
 };
 
 function PhaseCard({ phase, index, isActive, onClick }) {
@@ -125,7 +142,6 @@ function PhaseCard({ phase, index, isActive, onClick }) {
         bracketClassName={`w-3 h-3 transition-colors ${isActive ? colors.border.replace('border-', 'border-') : 'border-neutral-300'}`}
       >
         <div className="flex items-start gap-4">
-          {/* Number */}
           <div className={`
             font-space-grotesk text-3xl sm:text-4xl font-medium transition-colors
             ${isActive ? colors.text : 'text-neutral-200'}
@@ -133,7 +149,6 @@ function PhaseCard({ phase, index, isActive, onClick }) {
             {phase.number}
           </div>
 
-          {/* Content */}
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
               <h3 className={`font-space-grotesk text-lg font-medium ${isActive ? 'text-neutral-900' : 'text-neutral-600'}`}>
@@ -149,7 +164,6 @@ function PhaseCard({ phase, index, isActive, onClick }) {
             </div>
             <p className="text-sm text-neutral-500 mb-2">{phase.subtitle}</p>
             
-            {/* Duration Badge */}
             <span className={`
               inline-block px-2 py-0.5 text-[9px] font-jetbrains-mono uppercase tracking-wider
               ${isActive ? `bg-white ${colors.text} border ${colors.border}` : 'bg-neutral-100 text-neutral-500'}
@@ -158,7 +172,6 @@ function PhaseCard({ phase, index, isActive, onClick }) {
             </span>
           </div>
 
-          {/* Arrow */}
           <motion.div
             animate={{ rotate: isActive ? 90 : 0, x: isHovered && !isActive ? 3 : 0 }}
             transition={{ duration: 0.3 }}
@@ -169,7 +182,6 @@ function PhaseCard({ phase, index, isActive, onClick }) {
         </div>
       </CornerFrame>
 
-      {/* Active Indicator Line */}
       {isActive && (
         <motion.div
           layoutId="activePhase"
@@ -195,7 +207,6 @@ function PhaseDetail({ phase }) {
         className={`bg-white border-neutral-200 p-5 sm:p-6 lg:p-8 h-full`}
         bracketClassName="w-4 h-4 sm:w-5 sm:h-5 border-neutral-300"
       >
-        {/* Header */}
         <div className="flex items-start justify-between mb-6">
           <div>
             <div className="flex items-center gap-3 mb-2">
@@ -223,7 +234,6 @@ function PhaseDetail({ phase }) {
           {phase.description}
         </p>
 
-        {/* Steps */}
         <div className="mb-8">
           <h4 className="text-[11px] font-jetbrains-mono uppercase tracking-wider text-neutral-400 mb-4">
             Key Activities
@@ -247,7 +257,6 @@ function PhaseDetail({ phase }) {
           </div>
         </div>
 
-        {/* Deliverables & Tools Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
             <h4 className="text-[11px] font-jetbrains-mono uppercase tracking-wider text-neutral-400 mb-3">
@@ -280,16 +289,15 @@ function PhaseDetail({ phase }) {
           </div>
         </div>
 
-        {/* Progress Bar */}
         <div className="mt-8 pt-6 border-t border-neutral-100">
           <div className="flex items-center justify-between text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-400 mb-2">
             <span>Phase Progress</span>
-            <span>{parseInt(phase.number) * 20}%</span>
+            <span>{parseInt(phase.number) * 16}%</span>
           </div>
           <div className="h-1 bg-neutral-100 overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
-              animate={{ width: `${parseInt(phase.number) * 20}%` }}
+              animate={{ width: `${parseInt(phase.number) * 16}%` }}
               transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
               className={`h-full ${colors.bg}`}
             />
@@ -305,21 +313,36 @@ export default function ProcessPage() {
 
   return (
     <main className="w-full bg-white relative">
-      <PageIntro
-        eyebrow="Our Process"
-        title="How we work"
-        centered
-      >
-        <p className="text-neutral-600 max-w-2xl mx-auto">
-          A battle-tested methodology refined over 50+ projects. Transparent, 
-          collaborative, and relentlessly focused on delivering value.
-        </p>
-      </PageIntro>
+      {/* Header - FIXED: Reduced top spacing */}
+      <section className="pt-8 sm:pt-12 lg:pt-16 pb-8">
+        <div className={layoutConfig.maxWidth + " " + layoutConfig.padding.mobile + " " + layoutConfig.padding.tablet + " " + layoutConfig.padding.desktop + " mx-auto"}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <div className="h-px w-4 bg-neutral-300" />
+              <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400">
+                Our Process
+              </span>
+            </div>
+            
+            <h1 className="font-space-grotesk text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-neutral-900 tracking-tight leading-[0.95] mb-4">
+              How we work
+            </h1>
+            <p className="text-base sm:text-lg text-neutral-600 max-w-2xl leading-relaxed">
+              A battle-tested methodology refined over 50+ projects. Transparent, 
+              collaborative, and relentlessly focused on delivering value.
+            </p>
+          </motion.div>
+        </div>
+      </section>
 
-      {/* Process Overview */}
+      {/* Process Overview - Now 6 items in horizontal bar */}
       <section className="py-12 sm:py-16 border-y border-neutral-100 bg-neutral-50/30">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-5 gap-2 sm:gap-4">
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-4">
             {phases.map((phase, index) => (
               <motion.div
                 key={phase.id}
@@ -329,14 +352,16 @@ export default function ProcessPage() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="text-center"
               >
-                <div className={`
-                  w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 flex items-center justify-center
-                  font-space-grotesk text-sm sm:text-base font-medium
-                  ${index <= activePhase ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-400 border border-neutral-200'}
-                  transition-colors duration-300
-                `}>
+                <button
+                  onClick={() => setActivePhase(index)}
+                  className={`
+                    w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 flex items-center justify-center
+                    font-space-grotesk text-sm sm:text-base font-medium transition-all duration-300
+                    ${index <= activePhase ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-400 border border-neutral-200 hover:border-neutral-400'}
+                  `}
+                >
                   {phase.number}
-                </div>
+                </button>
                 <div className="hidden sm:block text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-500">
                   {phase.title}
                 </div>
@@ -350,7 +375,6 @@ export default function ProcessPage() {
       <section className="py-16 sm:py-24">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
-            {/* Phase Navigation */}
             <div className="lg:col-span-5 space-y-3">
               {phases.map((phase, index) => (
                 <PhaseCard
@@ -363,7 +387,6 @@ export default function ProcessPage() {
               ))}
             </div>
 
-            {/* Phase Detail */}
             <div className="lg:col-span-7">
               <AnimatePresence mode="wait">
                 <PhaseDetail key={activePhase} phase={phases[activePhase]} />

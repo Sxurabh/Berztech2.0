@@ -1,12 +1,10 @@
-// src/app/about/page.jsx
 "use client";
 import React, { useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import PageIntro from "@/components/PageIntro";
 import { CornerFrame } from "@/components/CornerFrame";
-import Container from "@/components/Container";
+import { layoutConfig } from "@/config/layout";
 
 const values = [
   {
@@ -165,7 +163,6 @@ function TeamCard({ member, index }) {
         `}
         bracketClassName="w-3 h-3 border-neutral-300 group-hover:border-neutral-500 transition-colors"
       >
-        {/* Image */}
         <div className="relative aspect-[4/5] overflow-hidden bg-neutral-100">
           <motion.div
             animate={{ scale: isHovered ? 1.05 : 1 }}
@@ -188,7 +185,6 @@ function TeamCard({ member, index }) {
             )}
           </motion.div>
           
-          {/* Overlay */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: isHovered ? 1 : 0 }}
@@ -196,7 +192,6 @@ function TeamCard({ member, index }) {
             className="absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-neutral-950/20 to-transparent"
           />
           
-          {/* Bio on Hover */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 20 }}
@@ -209,7 +204,6 @@ function TeamCard({ member, index }) {
           </motion.div>
         </div>
 
-        {/* Info */}
         <div className="p-4">
           <h3 className="font-space-grotesk text-base font-medium text-neutral-900 mb-1">
             {member.name}
@@ -235,8 +229,8 @@ export default function AboutPage() {
 
   return (
     <main ref={containerRef} className="w-full bg-white relative">
-      {/* Hero Section with Parallax */}
-      <div className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
+      {/* Hero Section - FIXED: Reduced top spacing to match main Hero */}
+      <section className="relative pt-8 sm:pt-12 lg:pt-16 pb-12 sm:pb-16 overflow-hidden">
         <motion.div 
           style={{ y, opacity }}
           className="absolute inset-0 z-0"
@@ -248,33 +242,32 @@ export default function AboutPage() {
           }} />
         </motion.div>
 
-        <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-20 text-center">
+        <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="flex items-center justify-center gap-2 mb-6">
-              <div className="h-px w-8 bg-neutral-300" />
+            <div className="flex items-center gap-2 mb-4">
+              <div className="h-px w-4 bg-neutral-300" />
               <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400">
                 About Us
               </span>
-              <div className="h-px w-8 bg-neutral-300" />
             </div>
 
-            <h1 className="font-space-grotesk text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-medium text-neutral-900 tracking-tight leading-[0.95] mb-6">
+            <h1 className="font-space-grotesk text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-neutral-900 tracking-tight leading-[0.95] mb-6">
               Engineering
               <br />
               <span className="text-neutral-400">Excellence</span>
             </h1>
 
-            <p className="text-lg sm:text-xl text-neutral-600 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-lg lg:text-xl text-neutral-600 max-w-2xl leading-relaxed">
               We are a boutique digital agency crafting high-performance web applications 
               for ambitious companies. No templates. No shortcuts. Just pure code.
             </p>
           </motion.div>
         </div>
-      </div>
+      </section>
 
       {/* Stats Section */}
       <section className="py-12 sm:py-16 border-y border-neutral-100 bg-neutral-50/50">
@@ -374,13 +367,11 @@ export default function AboutPage() {
                   <div className="absolute inset-0 flex items-center justify-center">
                     <span className="font-space-grotesk text-6xl font-bold text-neutral-300">B</span>
                   </div>
-                  {/* Decorative Elements */}
                   <div className="absolute top-4 right-4 w-20 h-20 border border-neutral-300/50" />
                   <div className="absolute bottom-4 left-4 w-32 h-32 border border-neutral-300/50" />
                 </div>
               </CornerFrame>
               
-              {/* Floating Badge */}
               <motion.div
                 animate={{ y: [0, -10, 0] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}

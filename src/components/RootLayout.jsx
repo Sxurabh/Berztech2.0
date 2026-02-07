@@ -1,38 +1,51 @@
-// src/components/RootLayout.jsx
 "use client";
 
 import { usePathname } from "next/navigation";
-import { motion, MotionConfig, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import Header from "./Header";
 import Footer from "./Footer";
 
+const pageVariants = {
+  initial: { opacity: 0, y: 20, scale: 0.98 },
+  animate: { 
+    opacity: 1, 
+    y: 0, 
+    scale: 1,
+    transition: { duration: 0.5, ease: [0.23, 1, 0.32, 1] }
+  },
+  exit: { 
+    opacity: 0, 
+    y: -20, 
+    scale: 0.98,
+    transition: { duration: 0.3, ease: [0.23, 1, 0.32, 1] }
+  },
+};
+
 const RootLayoutInner = ({ children }) => {
   const shouldReduceMotion = useReducedMotion();
+  const pathname = usePathname();
 
   return (
-    <MotionConfig transition={shouldReduceMotion ? { duration: 0 } : undefined}>
-      <div className="relative min-h-screen bg-white">
-        {/* Header with integrated expanding menu */}
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.div
+        key={pathname}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        variants={shouldReduceMotion ? {} : pageVariants}
+        className="relative min-h-screen bg-white"
+      >
         <Header />
-        
-        {/* Main content - gets pushed down naturally */}
-        <motion.main
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
+        <motion.main variants={shouldReduceMotion ? {} : { animate: { opacity: 1, y: 0 } }}>
           {children}
         </motion.main>
-        
         <Footer />
-      </div>
-    </MotionConfig>
+      </motion.div>
+    </AnimatePresence>
   );
 };
 
-const RootLayout = ({ children }) => {
+export default function RootLayout({ children }) {
   const pathName = usePathname();
   return <RootLayoutInner key={pathName}>{children}</RootLayoutInner>;
-};
-
-export default RootLayout;
+}
