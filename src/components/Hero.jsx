@@ -131,7 +131,7 @@ function OptimizedBackground() {
   const background = useMotionTemplate`radial-gradient(600px circle at ${mouseX}px ${mouseY}px, rgba(0,0,0,0.05), transparent 40%)`;
 
   return (
-    <div className="absolute inset-0 -z-10 overflow-hidden bg-white">
+    <div className="absolute inset-0 z-0 overflow-hidden bg-white">
       {/* FIX: Increased opacity to 0.05 and added 'backgroundPosition: center top'.
          This ensures the grid lines align with your centered max-w-5xl container.
       */}
@@ -139,7 +139,7 @@ function OptimizedBackground() {
         className="absolute inset-0 opacity-[0.05]"
         style={{ 
           backgroundImage: `linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)`, 
-          backgroundSize: '32px 32px',
+          backgroundSize: '40px 40px',
           backgroundPosition: 'center top' 
         }}
       />
@@ -217,10 +217,10 @@ export default function Hero() {
   return (
     <section 
       ref={containerRef}
-      className="relative w-full bg-white overflow-hidden"
-      // ✅ KEY CHANGE: Only force full height on desktop (lg+)
+      // REMOVED "bg-white" from the class list below
+      className="relative w-full overflow-hidden" 
       style={{ 
-        minHeight: "auto" // Mobile: natural flow
+        minHeight: "auto" 
       }}
     >
         

@@ -13,7 +13,7 @@ import GlobalGridWrapper from "@/components/GlobalGridWrapper";
 
 export default function Home() {
   return (
-    <main className="w-full bg-white relative selection:bg-neutral-900 selection:text-white">
+    <main className="w-full  relative selection:bg-neutral-900 selection:text-white">
       <Hero />
       
       {/* You can now use the components directly since they have their own grids */}
