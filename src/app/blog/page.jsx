@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { CornerFrame } from "@/components/CornerFrame";
 import { layoutConfig } from "@/config/layout";
+import GridBackground from "@/components/GridBackground";
 
 const categories = ["All", "Engineering", "Design", "Strategy", "Culture"];
 
@@ -278,8 +279,13 @@ export default function BlogPage() {
 
   return (
     <main className="w-full bg-white relative">
-      {/* Header - FIXED: Reduced top spacing */}
-      <section className="pt-8 sm:pt-12 lg:pt-16 pb-8">
+      {/* Grid Background - Fixed like homepage */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <GridBackground opacity={0.04} size={40} />
+      </div>
+      
+      {/* Header */}
+      <section className="relative pt-8 sm:pt-12 lg:pt-16 pb-8 z-10">
         <div className={layoutConfig.maxWidth + " " + layoutConfig.padding.mobile + " " + layoutConfig.padding.tablet + " " + layoutConfig.padding.desktop + " mx-auto"}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -307,7 +313,7 @@ export default function BlogPage() {
         </div>
       </section>
 
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 pb-20 sm:pb-32">
+      <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 pb-20 sm:pb-32 z-10">
         {/* Category Filter */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -313,9 +313,14 @@ export default function ProcessPage() {
   const [activePhase, setActivePhase] = useState(0);
 
   return (
-    <main className="w-full  relative">
+    <main className="w-full relative">
+      {/* Grid Background - Fixed like homepage */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <GridBackground opacity={0.04} size={40} />
+      </div>
+      
       {/* Header */}
-      <section className="pt-8 sm:pt-12 lg:pt-16 pb-8">
+      <section className="relative pt-8 sm:pt-12 lg:pt-16 pb-8 z-10">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -341,7 +346,7 @@ export default function ProcessPage() {
       </section>
 
       {/* Process Overview - Now 6 items in horizontal bar */}
-      <section className="py-12 sm:py-16 border-y border-neutral-100 bg-neutral-50/30">
+      <section className="relative py-12 sm:py-16 border-y border-neutral-100 bg-neutral-50/30 z-10">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-4">
             {phases.map((phase, index) => (
@@ -373,7 +378,7 @@ export default function ProcessPage() {
       </section>
 
       {/* Detailed Process - FIXED: Equal width columns */}
-      <section className="py-16 sm:py-24">
+      <section className="relative py-16 sm:py-24 z-10">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           {/* FIXED: Changed from lg:grid-cols-12 to equal 2-column layout */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
@@ -401,7 +406,7 @@ export default function ProcessPage() {
       </section>
 
       {/* Principles Section - CHANGED TO WHITE BACKGROUND */}
-      <section className="py-16 sm:py-24 bg-white border-t border-neutral-100">
+      <section className="relative py-16 sm:py-24 bg-white border-t border-neutral-100 z-10">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
             <div>
@@ -457,7 +462,7 @@ export default function ProcessPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-16 sm:py-24 bg-neutral-50/50">
+      <section className="relative py-16 sm:py-24 bg-neutral-50/50 z-10">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="font-space-grotesk text-2xl sm:text-3xl font-medium text-neutral-900 mb-4">

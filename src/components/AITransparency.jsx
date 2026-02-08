@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { CornerFrame } from "@/components/CornerFrame";
-import GridBackground from "@/components/GridBackground";
 
 const capabilities = [
   {
@@ -141,75 +140,77 @@ export default function AITransparency() {
   const [activeTab, setActiveTab] = useState(0);
   const activeCapability = capabilities[activeTab];
 
+  // FIXED: Complete color schemes with proper Tailwind classes for dynamic CornerFrame
   const colorSchemes = {
-  blue: {
-    bg: "bg-blue-500",
-    text: "text-blue-600",
-    bgLight: "bg-blue-50",
-    border: "border-blue-200",        // ← FIXED: Added proper border class
-    glow: "shadow-blue-500/20",
-    frameBg: "bg-blue-50/50",
-    frameBorder: "border-blue-200",   // ← FIXED: Added proper border class
-    bracket: "border-blue-300"
-  },
-  emerald: {
-    bg: "bg-emerald-500",
-    text: "text-emerald-600",
-    bgLight: "bg-emerald-50",
-    border: "border-emerald-200",
-    glow: "shadow-emerald-500/20",
-    frameBg: "bg-emerald-50/50",
-    frameBorder: "border-emerald-200",
-    bracket: "border-emerald-300"
-  },
-  purple: {
-    bg: "bg-purple-500",
-    text: "text-purple-600",
-    bgLight: "bg-purple-50",
-    border: "border-purple-200",      // ← Was already correct
-    glow: "shadow-purple-500/20",
-    frameBg: "bg-purple-50/50",
-    frameBorder: "border-purple-200", // ← Was already correct
-    bracket: "border-purple-300"
-  },
-  amber: {
-    bg: "bg-amber-500",
-    text: "text-amber-600",
-    bgLight: "bg-amber-50",
-    border: "border-amber-200",
-    glow: "shadow-amber-500/20",
-    frameBg: "bg-amber-50/50",
-    frameBorder: "border-amber-200",  // ← FIXED: Added proper border class
-    bracket: "border-amber-300"
-  },
-  rose: {
-    bg: "bg-rose-500",
-    text: "text-rose-600",
-    bgLight: "bg-rose-50",
-    border: "border-rose-200",
-    glow: "shadow-rose-500/20",
-    frameBg: "bg-rose-50/50",
-    frameBorder: "border-rose-200",
-    bracket: "border-rose-300"
-  },
-  cyan: {
-    bg: "bg-cyan-500",
-    text: "text-cyan-600",
-    bgLight: "bg-cyan-50",
-    border: "border-cyan-200",
-    glow: "shadow-cyan-500/20",
-    frameBg: "bg-cyan-50/50",
-    frameBorder: "border-cyan-200",
-    bracket: "border-cyan-300"
-  }
-};
+    blue: {
+      bg: "bg-blue-500",
+      text: "text-blue-600",
+      bgLight: "bg-blue-50",
+      border: "border-blue-200",
+      glow: "shadow-blue-500/20",
+      // For CornerFrame background (with opacity)
+      frameBg: "bg-blue-50/50",
+      // For CornerFrame border - MUST be a solid color, not opacity
+      frameBorder: "border-blue-200",
+      // For bracket borders
+      bracket: "border-blue-400"
+    },
+    emerald: {
+      bg: "bg-emerald-500",
+      text: "text-emerald-600",
+      bgLight: "bg-emerald-50",
+      border: "border-emerald-200",
+      glow: "shadow-emerald-500/20",
+      frameBg: "bg-emerald-50/50",
+      frameBorder: "border-emerald-200",
+      bracket: "border-emerald-400"
+    },
+    purple: {
+      bg: "bg-purple-500",
+      text: "text-purple-600",
+      bgLight: "bg-purple-50",
+      border: "border-purple-200",
+      glow: "shadow-purple-500/20",
+      frameBg: "bg-purple-50/50",
+      frameBorder: "border-purple-200",
+      bracket: "border-purple-400"
+    },
+    amber: {
+      bg: "bg-amber-500",
+      text: "text-amber-600",
+      bgLight: "bg-amber-50",
+      border: "border-amber-200",
+      glow: "shadow-amber-500/20",
+      frameBg: "bg-amber-50/50",
+      frameBorder: "border-amber-200",
+      bracket: "border-amber-400"
+    },
+    rose: {
+      bg: "bg-rose-500",
+      text: "text-rose-600",
+      bgLight: "bg-rose-50",
+      border: "border-rose-200",
+      glow: "shadow-rose-500/20",
+      frameBg: "bg-rose-50/50",
+      frameBorder: "border-rose-200",
+      bracket: "border-rose-400"
+    },
+    cyan: {
+      bg: "bg-cyan-500",
+      text: "text-cyan-600",
+      bgLight: "bg-cyan-50",
+      border: "border-cyan-200",
+      glow: "shadow-cyan-500/20",
+      frameBg: "bg-cyan-50/50",
+      frameBorder: "border-cyan-200",
+      bracket: "border-cyan-400"
+    }
+  };
 
   const colors = colorSchemes[activeCapability.color];
 
   return (
-    <section className="relative py-12 sm:py-16 lg:py-20  overflow-hidden">
-     
-
+    <section className="relative py-12 sm:py-16 lg:py-20 overflow-hidden">
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         {/* Header + Terminal Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 mb-8 sm:mb-10">
@@ -258,12 +259,6 @@ export default function AITransparency() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="mb-6 sm:mb-8"
         >
-          {/* 
-            Responsive grid layout:
-            - Mobile: 2 columns 
-            - Tablet: 3 columns 
-            - Desktop: 6 columns (all in one row)
-          */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
             {capabilities.map((cap, index) => (
               <button
@@ -328,9 +323,9 @@ export default function AITransparency() {
               <CornerFrame 
                 className={`
                   ${colors.frameBg} ${colors.frameBorder} ${colors.glow}
-                   p-4 sm:p-5 lg:p-6 transition-colors duration-500
+                  p-4 sm:p-5 lg:p-6 transition-all duration-500
                 `}
-                bracketClassName={`w-4 h-4 sm:w-5 sm:h-5 ${colors.bracket} transition-colors duration-500`}
+                bracketClassName={`w-4 h-4 sm:w-5 sm:h-5 ${colors.bracket} transition-all duration-500`}
               >
                 <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 sm:gap-6 items-center">
                   {/* Metric */}
@@ -360,7 +355,7 @@ export default function AITransparency() {
                     </p>
                     
                     {/* Honesty Badge - Dynamic color */}
-                    <div className="flex items-start gap-2 mt-4 pt-4 border-t border-neutral-100">
+                    <div className="flex items-start gap-2 mt-4 pt-4 border-t border-neutral-200/50">
                       <div className={`
                         w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5
                         ${colors.bgLight} ${colors.text} transition-colors duration-500
@@ -386,7 +381,7 @@ export default function AITransparency() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.4 }}
-          className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-6 "
+          className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-6"
         >
           <div className="flex items-center gap-2">
             <span className={`

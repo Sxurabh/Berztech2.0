@@ -349,11 +349,13 @@ export default function WorkPage() {
 
   return (
     <main className="w-full relative">
+      {/* Grid Background - Fixed position like homepage */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <GridBackground opacity={0.04} size={40} />
+      </div>
+      
       {/* Page Header with Grid */}
-      <section className="relative pt-8 sm:pt-12 lg:pt-16 pb-8">
-           <GridBackground opacity={0.04} size={40} />
-
-        
+      <section className="relative pt-8 sm:pt-12 lg:pt-16 pb-8 z-10">
         <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -381,10 +383,7 @@ export default function WorkPage() {
         </div>
       </section>
 
-      <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 pb-20 sm:pb-32">
-            <GridBackground opacity={0.04} size={40} />
-
-        
+      <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 pb-20 sm:pb-32 z-10">
         <div className="relative z-10">
           {/* Stats Bar */}
           <motion.div
