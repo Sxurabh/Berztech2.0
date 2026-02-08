@@ -47,7 +47,7 @@ const stats = [
   { value: 50, suffix: "+", label: "Projects", description: "Delivered" },
   { value: 98, suffix: "%", label: "Client", description: "Retention" },
   { value: 12, suffix: "ms", label: "Avg", description: "Response" },
-  { value: 5, suffix: "", label: "Years", description: "Experience" }
+  { value: 7, suffix: "+", label: "Years", description: "Experience" }
 ];
 
 export default function StatsBar() {

@@ -92,8 +92,11 @@ function AnimatedCounter({ value, suffix }) {
   }, [value, isVisible]);
 
   return (
-    <span id={`counter-${value}`} className="tabular-nums">
-      {count}{suffix}
+    <span className="tabular-nums">
+      <span className="sr-only">{value}{suffix}</span>
+      <span aria-hidden="true" id={`counter-${value}`}>
+        {count}{suffix}
+      </span>
     </span>
   );
 }
@@ -179,7 +182,11 @@ function TeamCard({ member, index }) {
                 className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-neutral-200">
+              <div 
+                className="w-full h-full flex items-center justify-center bg-neutral-200"
+                role="img"
+                aria-label={`Portrait of ${member.name}`}
+              >
                 <span className="font-space-grotesk text-4xl font-bold text-neutral-400">
                   {member.name.charAt(0)}
                 </span>

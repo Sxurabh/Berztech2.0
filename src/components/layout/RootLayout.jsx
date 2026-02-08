@@ -36,7 +36,12 @@ const RootLayoutInner = ({ children }) => {
         className="relative min-h-screen bg-white"
       >
         <Header />
-        <motion.main variants={shouldReduceMotion ? {} : { animate: { opacity: 1, y: 0 } }}>
+        <motion.main 
+          id="main-content"
+          variants={shouldReduceMotion ? {} : { animate: { opacity: 1, y: 0 } }}
+          className="focus:outline-none"
+          tabIndex={-1}
+        >
           {children}
         </motion.main>
         <Footer />

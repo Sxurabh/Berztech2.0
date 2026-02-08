@@ -1,16 +1,19 @@
 // src/app/page.jsx
 "use client";
 import React from "react";
+import dynamic from "next/dynamic";
 import Hero from "@/components/sections/Hero";
-import Services from "@/components/sections/Services";
-import BentoGrid from "@/components/sections/BentoGrid";
 import StatsBar from "@/components/sections/StatsBar";
 import ProcessStrip from "@/components/sections/ProcessStrip";
-import Testimonial from "@/components/sections/Testimonial";
-import ContactCTA from "@/components/sections/ContactCTA";
 import AITransparency from "@/components/sections/AITransparency";
-import FeaturedCaseStudy from "@/components/sections/FeaturedCaseStudy";
 import GridBackground from "@/components/ui/GridBackground";
+
+// Dynamic imports for heavy below-the-fold components
+const BentoGrid = dynamic(() => import("@/components/sections/BentoGrid"));
+const Testimonial = dynamic(() => import("@/components/sections/Testimonial"));
+const FeaturedCaseStudy = dynamic(() => import("@/components/sections/FeaturedCaseStudy"));
+const Services = dynamic(() => import("@/components/sections/Services"));
+const ContactCTA = dynamic(() => import("@/components/sections/ContactCTA"));
 
 export default function Home() {
   return (

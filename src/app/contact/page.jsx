@@ -4,6 +4,7 @@ import Container from "@/components/ui/Container";
 import { motion } from "framer-motion";
 import { layoutConfig } from "@/config/layout";
 import GridBackground from "@/components/ui/GridBackground";
+import ContactForm from "@/components/features/contact/ContactForm";
 
 const ContactPage = () => {
   return (

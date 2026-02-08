@@ -481,7 +481,7 @@ export default function Hero() {
                   </h1>
                 </TextReveal>
                 <TextReveal delay={0.2}>
-                  <h1 className="font-space-grotesk text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-medium tracking-tight leading-[0.95] text-neutral-400">
+                  <h1 className="font-space-grotesk text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-medium tracking-tight leading-[0.95] text-neutral-500">
                     Digital
                   </h1>
                 </TextReveal>

@@ -106,7 +106,10 @@ function FeaturedPost({ post }) {
       onMouseLeave={() => setIsHovered(false)}
       className="mb-12 sm:mb-16"
     >
-      <Link href={`/blog/${post.id}`}>
+      <Link 
+        href={`/blog/${post.id}`}
+        className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-4 rounded-sm"
+      >
         <CornerFrame
           className={`
             relative overflow-hidden bg-white border-neutral-200 transition-all duration-500
@@ -203,7 +206,10 @@ function PostCard({ post, index }) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Link href={`/blog/${post.id}`}>
+      <Link 
+        href={`/blog/${post.id}`}
+        className="block h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-4 rounded-sm"
+      >
         <CornerFrame
           className={`
             h-full flex flex-col bg-white border-neutral-200 transition-all duration-500
@@ -269,6 +275,20 @@ function PostCard({ post, index }) {
 
 export default function BlogPage() {
   const [activeCategory, setActiveCategory] = useState("All");
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [newsletterStatus, setNewsletterStatus] = useState("idle");
+
+  const handleNewsletterSubmit = (e) => {
+    e.preventDefault();
+    if (!newsletterEmail) return;
+    setNewsletterStatus("loading");
+    // Simulate API call
+    setTimeout(() => {
+      setNewsletterStatus("success");
+      setNewsletterEmail("");
+      setTimeout(() => setNewsletterStatus("idle"), 3000);
+    }, 1500);
+  };
   
   const filteredPosts = activeCategory === "All" 
     ? posts 
@@ -325,8 +345,10 @@ export default function BlogPage() {
             <button
               key={category}
               onClick={() => setActiveCategory(category)}
+              aria-pressed={activeCategory === category}
               className={`
                 px-4 py-2 text-[11px] font-jetbrains-mono uppercase tracking-wider transition-all duration-300 border
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2
                 ${activeCategory === category
                   ? 'bg-neutral-900 text-white border-neutral-900'
                   : 'bg-white text-neutral-600 border-neutral-200 hover:border-neutral-400'
@@ -344,7 +366,7 @@ export default function BlogPage() {
         )}
 
         {/* Posts Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {regularPosts.map((post, index) => (
             <PostCard key={post.id} post={post} index={index} />
           ))}
@@ -368,18 +390,35 @@ export default function BlogPage() {
                 </p>
               </div>
               
-              <form className="flex gap-2" onSubmit={(e) => e.preventDefault()}>
+              <form className="relative flex gap-2" onSubmit={handleNewsletterSubmit}>
+                <label htmlFor="blog-newsletter-email" className="sr-only">Email address</label>
                 <input
+                  id="blog-newsletter-email"
                   type="email"
+                  value={newsletterEmail}
+                  onChange={(e) => setNewsletterEmail(e.target.value)}
                   placeholder="your@email.com"
-                  className="flex-1 px-4 py-3 bg-neutral-900 border border-neutral-800 text-white text-sm font-jetbrains-mono placeholder:text-neutral-600 focus:outline-none focus:border-neutral-600 transition-colors"
+                  required
+                  disabled={newsletterStatus === "loading" || newsletterStatus === "success"}
+                  className="flex-1 px-4 py-3 bg-neutral-900 border border-neutral-800 text-white text-sm font-jetbrains-mono placeholder:text-neutral-600 focus:outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600 transition-colors disabled:opacity-70"
                 />
                 <button
                   type="submit"
-                  className="px-5 py-3 bg-white text-neutral-950 font-jetbrains-mono text-xs uppercase tracking-widest font-semibold hover:bg-neutral-100 transition-colors"
+                  disabled={newsletterStatus === "loading" || newsletterStatus === "success"}
+                  className="px-5 py-3 bg-white text-neutral-950 font-jetbrains-mono text-xs uppercase tracking-widest font-semibold hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-neutral-950 transition-colors disabled:opacity-70 disabled:cursor-not-allowed min-w-[100px]"
                 >
-                  Subscribe
+                  {newsletterStatus === "loading" ? "..." : newsletterStatus === "success" ? "Joined" : "Subscribe"}
                 </button>
+                
+                {newsletterStatus === "success" && (
+                  <motion.p
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="absolute top-full left-0 mt-2 text-xs text-emerald-500 font-medium"
+                  >
+                    Thanks for subscribing!
+                  </motion.p>
+                )}
               </form>
             </div>
           </CornerFrame>
