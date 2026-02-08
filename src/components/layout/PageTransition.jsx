@@ -9,13 +9,13 @@ const pageVariants = {
     opacity: 1, 
     y: 0, 
     scale: 1,
-    transition: { duration: 0.5, ease: [0.23, 1, 0.32, 1] }
+    transition: { duration: 0.3, ease: "easeOut" } // Reduced from 0.5
   },
   exit: { 
     opacity: 0, 
     y: -20, 
     scale: 0.98,
-    transition: { duration: 0.3, ease: [0.23, 1, 0.32, 1] }
+    transition: { duration: 0.2, ease: "easeIn" } // Reduced from 0.3
   },
 };
 
@@ -24,7 +24,8 @@ export default function PageTransition({ children }) {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <AnimatePresence mode="wait" initial={false}>
+    // CHANGE 1: Remove mode="wait" to allow overlap, or use "popLayout"
+    <AnimatePresence mode="popLayout" initial={false}>
       <motion.div
         key={pathname}
         initial="initial"
