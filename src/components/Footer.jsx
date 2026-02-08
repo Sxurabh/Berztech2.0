@@ -75,69 +75,7 @@ const footerLinks = {
 
 // REPLACE the NewsletterForm component in your Footer.jsx with this:
 
-function NewsletterForm() {
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState("idle"); // idle, loading, success
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!email) return;
-    setStatus("loading");
-    setTimeout(() => {
-      setStatus("success");
-      setEmail("");
-      setTimeout(() => setStatus("idle"), 3000);
-    }, 1000);
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
-      {/* Input with CornerFrame - unchanged */}
-      <CornerFrame 
-        className="flex-1 bg-white border-neutral-200"
-        bracketClassName="w-2 h-2 border-neutral-300"
-      >
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="your@email.com"
-          disabled={status === "loading" || status === "success"}
-          className={`
-            w-full px-3 py-2.5 text-sm font-jetbrains-mono bg-transparent 
-            focus:outline-none placeholder:text-neutral-400
-            ${status === "success" ? "text-emerald-600" : "text-neutral-900"}
-          `}
-        />
-      </CornerFrame>
-      
-      {/* FIXED: Join button - always visible with CornerFrame styling */}
-      <CornerFrame
-        className={`
-          shrink-0 transition-all duration-300
-          ${status === "success" 
-            ? "bg-emerald-500 border-emerald-500" 
-            : "bg-neutral-900 border-neutral-900 hover:bg-neutral-800"
-          }
-        `}
-        bracketClassName="w-2 h-2 border-white/30"
-      >
-        <motion.button
-          type="submit"
-          disabled={status === "loading" || status === "success"}
-          whileTap={{ scale: 0.98 }}
-          className={`
-            px-5 py-2.5 font-jetbrains-mono text-xs uppercase tracking-widest font-semibold
-            text-white transition-colors min-w-[80px]
-            ${status === "loading" ? "cursor-wait" : ""}
-          `}
-        >
-          {status === "loading" ? "..." : status === "success" ? "Joined ✓" : "Join"}
-        </motion.button>
-      </CornerFrame>
-    </form>
-  );
-}
 
 function LinkSection({ title, links }) {
   return (
@@ -300,7 +238,7 @@ export default function Footer() {
                 </p>
               </div>
               
-              <NewsletterForm />
+              
               
               <div className="pt-4 space-y-2">
                 <div className="flex items-center gap-2 text-xs text-neutral-500">

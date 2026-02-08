@@ -76,7 +76,7 @@ function EcosystemVisual() {
             bracketClassName="w-2 h-2 border-neutral-600"
           >
             <div className="flex justify-between items-center mb-3">
-              <span className="text-[9px] font-jetbrains-mono text-neutral-500 uppercase">iOS / Android</span>
+              <span className="text-[9px] font-jetbrains-mono text-neutral-300 uppercase">iOS / Android</span>
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
             </div>
             <div className="flex items-center gap-3 mb-3">
@@ -91,7 +91,7 @@ function EcosystemVisual() {
                </div>
             </div>
             <div className="space-y-1">
-               <div className="flex justify-between text-[8px] text-neutral-500">
+               <div className="flex justify-between text-[8px] text-neutral-300">
                   <span>Rating</span>
                   <span>5.0 ★</span>
                </div>
@@ -118,7 +118,7 @@ function EcosystemVisual() {
             className="bg-white/95 backdrop-blur-md border-neutral-200 shadow-xl p-3 min-w-[140px]"
             bracketClassName="w-2 h-2 border-purple-500"
           >
-            <div className="text-[9px] font-jetbrains-mono text-neutral-400 uppercase tracking-wider mb-2">Identity</div>
+            <div className="text-[9px] font-jetbrains-mono text-neutral-600 uppercase tracking-wider mb-2">Identity</div>
             <div className="flex gap-2 justify-between">
                {[
                  { bg: 'bg-neutral-900', label: 'Aa' },
@@ -127,7 +127,7 @@ function EcosystemVisual() {
                  { bg: 'bg-purple-500', label: '#' }
                ].map((item, i) => (
                  <div key={i} className="flex flex-col items-center gap-1">
-                    <div className={`w-6 h-6 rounded-md shadow-sm ${item.bg} flex items-center justify-center text-[8px] text-white/50`}>
+                    <div className={`w-6 h-6 rounded-md shadow-sm ${item.bg} flex items-center justify-center text-[8px] text-white`}>
                        {item.label}
                     </div>
                  </div>
@@ -155,7 +155,7 @@ function EcosystemVisual() {
                 <div className="w-2.5 h-2.5 rounded-full bg-amber-400/20 border border-amber-400/30" />
                 <div className="w-2.5 h-2.5 rounded-full bg-emerald-400/20 border border-emerald-400/30" />
              </div>
-             <div className="flex-1 bg-neutral-100/50 rounded-md text-[9px] text-neutral-400 py-1.5 px-3 text-center font-jetbrains-mono">
+             <div className="flex-1 bg-neutral-100/50 rounded-md text-[9px] text-neutral-600 py-1.5 px-3 text-center font-jetbrains-mono">
                 berztech.com/build
              </div>
           </div>
