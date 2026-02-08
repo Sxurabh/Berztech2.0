@@ -223,13 +223,13 @@ export default function Testimonial() {
         >
           <div className="flex items-center gap-2">
             <div className="h-px w-4 bg-neutral-300" />
-            <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400">
+            <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-600">
               Client Stories
             </span>
           </div>
           
           {/* Auto-play indicator - Desktop only */}
-          <div className="hidden sm:flex items-center gap-2 text-[10px] font-jetbrains-mono text-neutral-400">
+          <div className="hidden sm:flex items-center gap-2 text-[10px] font-jetbrains-mono text-neutral-600">
             <motion.span
               animate={{ opacity: isAutoPlaying ? [1, 0.5, 1] : 1 }}
               transition={{ duration: 2, repeat: Infinity }}
@@ -345,7 +345,7 @@ export default function Testimonial() {
                       </blockquote>
 
                       {/* Mobile-only: Swipe hint */}
-                      <div className="mt-6 flex items-center gap-2 text-neutral-400 sm:hidden">
+                      <div className="mt-6 flex items-center gap-2 text-neutral-600 sm:hidden">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
                         </svg>

@@ -17,7 +17,7 @@ const ContactCTA = dynamic(() => import("@/components/sections/ContactCTA"));
 
 export default function Home() {
   return (
-    <main className="w-full relative selection:bg-neutral-900 selection:text-white">
+    <div className="w-full relative selection:bg-neutral-900 selection:text-white">
       {/* Single continuous grid background for entire page */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <GridBackground opacity={0.04} size={40} />
@@ -34,6 +34,6 @@ export default function Home() {
         <Services />
         <ContactCTA />
       </div>
-    </main>
+    </div>
   );
 }

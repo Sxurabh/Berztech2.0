@@ -290,7 +290,7 @@ function PhaseDetail({ phase }) {
         </p>
 
         <div className="mb-8">
-          <h4 className="text-[11px] font-jetbrains-mono uppercase tracking-wider text-neutral-400 mb-4">
+          <h4 className="text-[11px] font-jetbrains-mono uppercase tracking-wider text-neutral-600 mb-4">
             Key Activities
           </h4>
           <div className="space-y-3">
@@ -314,7 +314,7 @@ function PhaseDetail({ phase }) {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
-            <h4 className="text-[11px] font-jetbrains-mono uppercase tracking-wider text-neutral-400 mb-3">
+            <h4 className="text-[11px] font-jetbrains-mono uppercase tracking-wider text-neutral-600 mb-3">
               Deliverables
             </h4>
             <ul className="space-y-2">
@@ -328,7 +328,7 @@ function PhaseDetail({ phase }) {
           </div>
           
           <div>
-            <h4 className="text-[11px] font-jetbrains-mono uppercase tracking-wider text-neutral-400 mb-3">
+            <h4 className="text-[11px] font-jetbrains-mono uppercase tracking-wider text-neutral-600 mb-3">
               Tools We Use
             </h4>
             <div className="flex flex-wrap gap-2">
@@ -345,7 +345,7 @@ function PhaseDetail({ phase }) {
         </div>
 
         <div className="mt-3 pt-2 border-t border-neutral-100">
-          <div className="flex items-center justify-between text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-400 mb-2">
+          <div className="flex items-center justify-between text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-600 mb-2">
             <span>Phase Progress</span>
             <span>{parseInt(phase.number) * 16}%</span>
           </div>
@@ -367,33 +367,36 @@ export default function ProcessPage() {
   const [activePhase, setActivePhase] = useState(0);
 
   return (
-    <main className="w-full relative">
-      {/* Grid Background - Fixed like homepage */}
+    <div className="w-full relative">
+      {/* Grid Background - Fixed */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <GridBackground opacity={0.04} size={40} />
       </div>
-      
-      {/* Header */}
-      <section className="relative pt-8 sm:pt-12 lg:pt-16 pb-8 z-10">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+
+      {/* Hero Section */}
+      <section className="relative pt-8 sm:pt-12 lg:pt-16 pb-12 sm:pb-16 overflow-hidden z-10">
+        <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.6 }}
           >
-            <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-2 mb-4">
               <div className="h-px w-4 bg-neutral-300" />
-              <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400">
-                Our Process
+              <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-600">
+                How We Work
               </span>
             </div>
-            
-            <h1 className="font-space-grotesk text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-neutral-900 tracking-tight leading-[0.95] mb-4">
-              How we work
+
+            <h1 className="font-space-grotesk text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-neutral-900 tracking-tight leading-[0.95] mb-6">
+              Process over
+              <br />
+              <span className="text-neutral-500">Chaos</span>
             </h1>
-            <p className="text-base sm:text-lg text-neutral-600 max-w-2xl leading-relaxed">
-              A battle-tested methodology refined over 50+ projects. Transparent, 
-              collaborative, and relentlessly focused on delivering value.
+
+            <p className="text-base sm:text-lg lg:text-xl text-neutral-600 max-w-2xl leading-relaxed">
+              We don't believe in black boxes. Our process is transparent, collaborative, 
+              and designed to mitigate risk while maximizing velocity.
             </p>
           </motion.div>
         </div>
@@ -501,8 +504,8 @@ export default function ProcessPage() {
                   transition={{ duration: 0.5, delay: i * 0.1 }}
                   className="flex items-start gap-4 p-4 border border-neutral-200 hover:border-neutral-300 transition-colors bg-white"
                 >
-                  <div className="w-8 h-8 bg-neutral-100 flex items-center justify-center shrink-0">
-                    <span className="text-neutral-500 text-sm">{String(i + 1).padStart(2, '0')}</span>
+                  <div className="w-8 h-8 bg-neutral-200 flex items-center justify-center shrink-0">
+                    <span className="text-neutral-700 text-sm">{String(i + 1).padStart(2, '0')}</span>
                   </div>
                   <div>
                     <h4 className="font-medium text-neutral-900 mb-1">{item.title}</h4>
@@ -547,6 +550,6 @@ export default function ProcessPage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

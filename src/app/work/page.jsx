@@ -6,98 +6,7 @@ import Image from "next/image";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 import { layoutConfig } from "@/config/layout";
 import GridBackground from "@/components/ui/GridBackground";
-
-const projects = [
-  {
-    id: "family-fund",
-    client: "Family Fund",
-    title: "Skip the bank, borrow from those you trust",
-    description: "A crowdfunding platform enabling friends and family to lend without traditional banking friction. Built with Next.js, Node.js, and integrated payment infrastructure.",
-    image: "/images/laptop.jpg",
-    category: "Fintech",
-    year: "2023",
-    services: ["Web Development", "UI/UX Design", "Payment Integration"],
-    stats: { users: "1.5M", volume: "$2M+", rating: "4.9" },
-    color: "blue",
-    featured: true
-  },
-  {
-    id: "unseal",
-    client: "Unseal",
-    title: "Get a double-check on your SSL certificates",
-    description: "First NFT platform for personal health records. Custom blockchain explorer with real-time transaction verification.",
-    image: "/images/meeting.jpg",
-    category: "Blockchain",
-    year: "2022",
-    services: ["Blockchain", "Web3", "Smart Contracts"],
-    stats: { nfts: "50K+", volume: "$5M+", users: "12K" },
-    color: "purple",
-    featured: true
-  },
-  {
-    id: "phobia",
-    client: "Phobia",
-    title: "Overcome your fears, find your match",
-    description: "Dating app matching users based on mutual phobias. React Native app with custom onboarding flow and ML matching algorithm.",
-    image: "/images/whiteboard.jpg",
-    category: "Mobile",
-    year: "2022",
-    services: ["Mobile App", "React Native", "ML Integration"],
-    stats: { downloads: "100K+", matches: "2M+", retention: "45%" },
-    color: "emerald",
-    featured: false
-  },
-  {
-    id: "bright-path",
-    client: "Bright Path",
-    title: "Illuminating educational journeys",
-    description: "AI-powered learning platform with personalized curriculum paths. Real-time progress tracking and adaptive assessments.",
-    image: "/images/laptop.jpg",
-    category: "EdTech",
-    year: "2023",
-    services: ["Platform Development", "AI Integration", "Analytics"],
-    stats: { students: "50K+", courses: "500+", completion: "85%" },
-    color: "amber",
-    featured: false
-  },
-  {
-    id: "green-life",
-    client: "Green Life",
-    title: "Sustainable living made simple",
-    description: "Carbon footprint tracking app with IoT device integration. Gamified sustainability challenges and community features.",
-    image: "/images/meeting.jpg",
-    category: "Sustainability",
-    year: "2023",
-    services: ["Mobile App", "IoT Integration", "Data Viz"],
-    stats: { users: "200K+", co2: "1.2M tons", actions: "5M+" },
-    color: "rose",
-    featured: false
-  },
-  {
-    id: "north-adventures",
-    client: "North Adventures",
-    title: "Expedition planning reimagined",
-    description: "Adventure tourism platform with real-time weather, gear recommendations, and expert-guided trip planning.",
-    image: "/images/whiteboard.jpg",
-    category: "Travel",
-    year: "2022",
-    services: ["Web Platform", "API Development", "Maps Integration"],
-    stats: { trips: "10K+", guides: "500+", satisfaction: "98%" },
-    color: "cyan",
-    featured: false
-  }
-];
-
-const filters = ["All", "Fintech", "Blockchain", "Mobile", "EdTech", "Sustainability", "Travel"];
-
-const colorSchemes = {
-  blue: { bg: "bg-blue-500", text: "text-blue-600", bgLight: "bg-blue-50", border: "border-blue-200" },
-  purple: { bg: "bg-purple-500", text: "text-purple-600", bgLight: "bg-purple-50", border: "border-purple-200" },
-  emerald: { bg: "bg-emerald-500", text: "text-emerald-600", bgLight: "bg-emerald-50", border: "border-emerald-200" },
-  amber: { bg: "bg-amber-500", text: "text-amber-600", bgLight: "bg-amber-50", border: "border-amber-200" },
-  rose: { bg: "bg-rose-500", text: "text-rose-600", bgLight: "bg-rose-50", border: "border-rose-200" },
-  cyan: { bg: "bg-cyan-500", text: "text-cyan-600", bgLight: "bg-cyan-50", border: "border-cyan-200" }
-};
+import { projects, filters, colorSchemes } from "@/data/projects";
 
 function ProjectCard({ project, index }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -181,11 +90,11 @@ function ProjectCard({ project, index }) {
 
           <div className="p-4 sm:p-5 flex-1 flex flex-col">
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-400">
+              <span className="text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-600">
                 {project.client}
               </span>
               <span className="w-1 h-1 rounded-full bg-neutral-300" />
-              <span className="text-[10px] font-jetbrains-mono text-neutral-400">{project.year}</span>
+              <span className="text-[10px] font-jetbrains-mono text-neutral-600">{project.year}</span>
             </div>
 
             <h3 className="font-space-grotesk text-lg sm:text-xl font-medium text-neutral-900 tracking-tight mb-2 group-hover:text-neutral-700 transition-colors line-clamp-2">
@@ -277,11 +186,11 @@ function FeaturedProject({ project }) {
 
             <div className="p-6 sm:p-8 lg:p-10 flex flex-col justify-center">
               <div className="flex items-center gap-3 mb-4">
-                <span className="text-[11px] font-jetbrains-mono uppercase tracking-wider text-neutral-400">
+                <span className="text-[11px] font-jetbrains-mono uppercase tracking-wider text-neutral-600">
                   {project.client}
                 </span>
                 <span className="w-1.5 h-1.5 rounded-full bg-neutral-300" />
-                <span className="text-[11px] font-jetbrains-mono text-neutral-400">{project.year}</span>
+                <span className="text-[11px] font-jetbrains-mono text-neutral-600">{project.year}</span>
                 <span className="w-1.5 h-1.5 rounded-full bg-neutral-300" />
                 <span className={`text-[11px] font-jetbrains-mono uppercase tracking-wider ${colors.text}`}>
                   {project.category}
@@ -348,7 +257,7 @@ export default function WorkPage() {
   const regularProjects = filteredProjects.filter(p => !p.featured);
 
   return (
-    <main className="w-full relative">
+    <div className="w-full relative">
       {/* Grid Background - Fixed position like homepage */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <GridBackground opacity={0.04} size={40} />
@@ -364,7 +273,7 @@ export default function WorkPage() {
           >
             <div className="flex items-center gap-2 mb-3">
               <div className="h-px w-4 bg-neutral-300" />
-              <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400">
+              <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-600">
                 Our Work
               </span>
             </div>
@@ -372,7 +281,7 @@ export default function WorkPage() {
             <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
               <h1 className="font-space-grotesk text-3xl sm:text-4xl lg:text-5xl font-medium text-neutral-900 tracking-tight leading-tight">
                 Proven solutions for<br />
-                <span className="text-neutral-400">real-world problems</span>
+                <span className="text-neutral-500">real-world problems</span>
               </h1>
               <p className="text-sm sm:text-base text-neutral-600 leading-relaxed max-w-sm">
                 We partner with ambitious companies to build digital products that matter. 
@@ -409,7 +318,7 @@ export default function WorkPage() {
           <div className="mb-16 sm:mb-20">
             <div className="flex items-center gap-2 mb-6 sm:mb-8">
               <div className="h-px w-4 bg-neutral-300" />
-              <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400">
+              <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-600">
                 Featured Work
               </span>
             </div>
@@ -481,6 +390,6 @@ export default function WorkPage() {
           </motion.div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

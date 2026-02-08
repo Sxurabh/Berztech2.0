@@ -38,6 +38,7 @@ const RootLayoutInner = ({ children }) => {
         <Header />
         <motion.main 
           id="main-content"
+          aria-label="Page content"
           variants={shouldReduceMotion ? {} : { animate: { opacity: 1, y: 0 } }}
           className="focus:outline-none"
           tabIndex={-1}

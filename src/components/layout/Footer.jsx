@@ -172,12 +172,12 @@ function MobileAccordion({ sections }) {
               {section.title}
             </span>
             <motion.span
-              animate={{ rotate: openSection === key ? 45 : 0 }}
-              transition={{ duration: 0.2 }}
-              className="text-neutral-400 text-lg font-light"
-            >
-              +
-            </motion.span>
+                animate={{ rotate: openSection === key ? 45 : 0 }}
+                transition={{ duration: 0.2 }}
+                className="text-neutral-600 text-lg font-light"
+              >
+                +
+              </motion.span>
           </button>
           
           <AnimatePresence initial={false}>
@@ -256,7 +256,7 @@ export default function Footer() {
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
-                    className="w-10 h-10 flex items-center justify-center text-neutral-400 hover:text-neutral-900 hover:bg-neutral-50 rounded transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
+                    className="w-10 h-10 flex items-center justify-center text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
                     aria-label={social.name}
                   >
                     <social.icon />
@@ -328,7 +328,7 @@ export default function Footer() {
                 <span className="text-xs text-neutral-500">Pune, India</span>
               </div>
               
-              <div className="flex items-center gap-4 text-xs font-jetbrains-mono text-neutral-400">
+              <div className="flex items-center gap-4 text-xs font-jetbrains-mono text-neutral-500">
                 <span className="uppercase tracking-wider">Response time: ~4hrs</span>
               </div>
             </div>
@@ -338,7 +338,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="py-3">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <p className="text-xs font-jetbrains-mono text-neutral-400">
+            <p className="text-xs font-jetbrains-mono text-neutral-500">
               © {currentYear} Berzcode technologies pvt. ltd.
             </p>
             

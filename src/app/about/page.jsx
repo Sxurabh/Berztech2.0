@@ -7,6 +7,7 @@ import Link from "next/link";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 import { layoutConfig } from "@/config/layout";
 import GridBackground from "@/components/ui/GridBackground";
+import { aboutStats as stats } from "@/config/stats";
 
 const values = [
   {
@@ -56,13 +57,6 @@ const team = [
     bio: "Former McKinsey. Translates business goals into roadmaps.",
     image: "/images/team/emma.jpg"
   }
-];
-
-const stats = [
-  { value: 7, suffix: "+", label: "Years Active", sublabel: "Since 2017" },
-  { value: 50, suffix: "+", label: "Projects", sublabel: "Delivered" },
-  { value: 12, suffix: "", label: "Team Members", sublabel: "Engineers & Designers" },
-  { value: 98, suffix: "%", label: "Retention", sublabel: "Client Rate" }
 ];
 
 function AnimatedCounter({ value, suffix }) {
@@ -237,7 +231,7 @@ export default function AboutPage() {
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
   return (
-    <main ref={containerRef} className="w-full relative">
+    <div ref={containerRef} className="w-full relative">
       {/* Grid Background - Fixed like homepage */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <GridBackground opacity={0.04} size={40} />
@@ -263,7 +257,7 @@ export default function AboutPage() {
           >
             <div className="flex items-center gap-2 mb-4">
               <div className="h-px w-4 bg-neutral-300" />
-              <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400">
+              <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-600">
                 About Us
               </span>
             </div>
@@ -271,7 +265,7 @@ export default function AboutPage() {
             <h1 className="font-space-grotesk text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-neutral-900 tracking-tight leading-[0.95] mb-6">
               Engineering
               <br />
-              <span className="text-neutral-400">Excellence</span>
+              <span className="text-neutral-500">Excellence</span>
             </h1>
 
             <p className="text-base sm:text-lg lg:text-xl text-neutral-600 max-w-2xl leading-relaxed">
@@ -299,7 +293,7 @@ export default function AboutPage() {
                   <AnimatedCounter value={stat.value} suffix={stat.suffix} />
                 </div>
                 <div className="text-sm font-medium text-neutral-900 mb-1">{stat.label}</div>
-                <div className="text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-400">
+                <div className="text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-600">
                   {stat.sublabel}
                 </div>
               </motion.div>
@@ -320,7 +314,7 @@ export default function AboutPage() {
             >
               <div className="flex items-center gap-2 mb-4">
                 <div className="h-px w-4 bg-neutral-300" />
-                <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400">
+                <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-600">
                   Our Story
                 </span>
               </div>
@@ -328,7 +322,7 @@ export default function AboutPage() {
               <h2 className="font-space-grotesk text-3xl sm:text-4xl font-medium text-neutral-900 tracking-tight mb-6 leading-tight">
                 Built by engineers,
                 <br />
-                <span className="text-neutral-400">for innovators</span>
+                <span className="text-neutral-500">for innovators</span>
               </h2>
 
               <div className="space-y-4 text-neutral-600 leading-relaxed">
@@ -403,13 +397,13 @@ export default function AboutPage() {
         <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2 mb-4">
             <div className="h-px w-4 bg-neutral-300" />
-            <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400">
+            <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-600">
               Our Values
             </span>
           </div>
           
           <h2 className="font-space-grotesk text-2xl sm:text-3xl lg:text-4xl font-medium text-neutral-900 tracking-tight mb-12">
-            Principles that guide <span className="text-neutral-400">our work</span>
+            Principles that guide <span className="text-neutral-500">our work</span>
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -427,12 +421,12 @@ export default function AboutPage() {
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <div className="h-px w-4 bg-neutral-300" />
-                <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400">
+                <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-600">
                   The Team
                 </span>
               </div>
               <h2 className="font-space-grotesk text-2xl sm:text-3xl lg:text-4xl font-medium text-neutral-900 tracking-tight">
-                Meet the <span className="text-neutral-400">builders</span>
+                Meet the <span className="text-neutral-500">builders</span>
               </h2>
             </div>
             <p className="text-sm text-neutral-600 max-w-sm">
@@ -488,6 +482,6 @@ export default function AboutPage() {
           </motion.div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }
