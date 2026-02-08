@@ -6,7 +6,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 import { layoutConfig } from "@/config/layout";
-import GridBackground from "@/components/ui/GridBackground";
 import { aboutStats as stats } from "@/config/stats";
 
 const values = [
@@ -232,11 +231,6 @@ export default function AboutPage() {
 
   return (
     <div ref={containerRef} className="w-full relative">
-      {/* Grid Background - Fixed like homepage */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <GridBackground opacity={0.04} size={40} />
-      </div>
-      
       {/* Hero Section with Grid Background */}
       <section className="relative pt-8 sm:pt-12 lg:pt-16 pb-12 sm:pb-16 overflow-hidden z-10">
         {/* FIXED: Removed the opaque radial gradient background that was hiding the grid.

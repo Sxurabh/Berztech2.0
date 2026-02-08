@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { CornerFrame } from "@/components/ui/CornerFrame";
-import GridBackground from "@/components/ui/GridBackground"; // 1. Import this
 
 // Platform Icons Component
 function PlatformIcons({ isHovered }) {

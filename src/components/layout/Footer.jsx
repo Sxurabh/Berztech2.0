@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { CornerFrame } from "@/components/ui/CornerFrame";
-import GridBackground from "@/components/ui/GridBackground";
 
 // Assets
 import blackLogo from "../../../assets/Logo/blacklogo.png";
@@ -215,11 +214,6 @@ export default function Footer() {
 
   return (
     <footer className="relative  overflow-hidden">
-      {/* Subtle Grid Background */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.02]">
-        <GridBackground size={32} />
-      </div>
-
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         
         {/* Main Footer Content */}

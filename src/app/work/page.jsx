@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 import { layoutConfig } from "@/config/layout";
-import GridBackground from "@/components/ui/GridBackground";
 import { projects, filters, colorSchemes } from "@/data/projects";
 
 function ProjectCard({ project, index }) {
@@ -258,11 +257,6 @@ export default function WorkPage() {
 
   return (
     <div className="w-full relative">
-      {/* Grid Background - Fixed position like homepage */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <GridBackground opacity={0.04} size={40} />
-      </div>
-      
       {/* Page Header with Grid */}
       <section className="relative pt-8 sm:pt-12 lg:pt-16 pb-8 z-10">
         <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">

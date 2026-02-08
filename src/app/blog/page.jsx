@@ -1,5 +1,4 @@
 import { layoutConfig } from "@/config/layout";
-import GridBackground from "@/components/ui/GridBackground";
 import BlogHeader from "@/components/features/blog/BlogHeader";
 import BlogFeed from "@/components/features/blog/BlogFeed";
 import Newsletter from "@/components/features/blog/Newsletter";
@@ -11,12 +10,7 @@ export const metadata = {
 
 export default function BlogPage() {
   return (
-    <div className="w-full bg-white relative">
-      {/* Grid Background - Fixed like homepage */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <GridBackground opacity={0.04} size={40} />
-      </div>
-      
+    <div className="w-full  relative">
       {/* Header */}
       <section className="relative pt-8 sm:pt-12 lg:pt-16 pb-8 z-10">
         <div className={layoutConfig.maxWidth + " " + layoutConfig.padding.mobile + " " + layoutConfig.padding.tablet + " " + layoutConfig.padding.desktop + " mx-auto"}>

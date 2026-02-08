@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 import { layoutConfig } from "@/config/layout";
-import GridBackground from "@/components/ui/GridBackground";
 
 const phases = [
   {
@@ -368,10 +367,6 @@ export default function ProcessPage() {
 
   return (
     <div className="w-full relative">
-      {/* Grid Background - Fixed */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <GridBackground opacity={0.04} size={40} />
-      </div>
 
       {/* Hero Section */}
       <section className="relative pt-8 sm:pt-12 lg:pt-16 pb-12 sm:pb-16 overflow-hidden z-10">

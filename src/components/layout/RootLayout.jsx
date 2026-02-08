@@ -1,57 +1,28 @@
-"use client";
-
-import { usePathname } from "next/navigation";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import Header from "./Header";
 import Footer from "./Footer";
-
-const pageVariants = {
-  initial: { opacity: 0, y: 20, scale: 0.98 },
-  animate: { 
-    opacity: 1, 
-    y: 0, 
-    scale: 1,
-    transition: { duration: 0.5, ease: [0.23, 1, 0.32, 1] }
-  },
-  exit: { 
-    opacity: 0, 
-    y: -20, 
-    scale: 0.98,
-    transition: { duration: 0.3, ease: [0.23, 1, 0.32, 1] }
-  },
-};
-
-const RootLayoutInner = ({ children }) => {
-  const shouldReduceMotion = useReducedMotion();
-  const pathname = usePathname();
-
-  return (
-    <AnimatePresence mode="wait" initial={false}>
-      <motion.div
-        key={pathname}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        variants={shouldReduceMotion ? {} : pageVariants}
-        className="relative min-h-screen bg-white"
-      >
-        <Header />
-        <motion.main 
-          id="main-content"
-          aria-label="Page content"
-          variants={shouldReduceMotion ? {} : { animate: { opacity: 1, y: 0 } }}
-          className="focus:outline-none"
-          tabIndex={-1}
-        >
-          {children}
-        </motion.main>
-        <Footer />
-      </motion.div>
-    </AnimatePresence>
-  );
-};
+import PageTransition from "./PageTransition";
+import GridBackground from "@/components/ui/GridBackground";
 
 export default function RootLayout({ children }) {
-  const pathName = usePathname();
-  return <RootLayoutInner key={pathName}>{children}</RootLayoutInner>;
+  return (
+    <div className="relative min-h-screen bg-white">
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <GridBackground opacity={0.04} size={40} />
+      </div>
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <Header />
+        <main 
+          id="main-content"
+          aria-label="Page content"
+          className="flex-grow focus:outline-none flex flex-col"
+          tabIndex={-1}
+        >
+          <PageTransition>
+            {children}
+          </PageTransition>
+        </main>
+        <Footer />
+      </div>
+    </div>
+  );
 }

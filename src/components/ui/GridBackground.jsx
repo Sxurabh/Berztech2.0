@@ -1,6 +1,4 @@
 // src/components/GridBackground.jsx
-"use client";
-
 export default function GridBackground({ opacity = 0.05, size = 32 }) {
   return (
     <div className="absolute inset-0 pointer-events-none select-none" style={{ opacity }}>

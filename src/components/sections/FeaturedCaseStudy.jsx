@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { CornerFrame } from "@/components/ui/CornerFrame";
-import GridBackground from "@/components/ui/GridBackground"; // 1. Import this
 
 
 const caseStudy = {

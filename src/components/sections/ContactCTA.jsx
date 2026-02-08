@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { CornerFrame } from "@/components/ui/CornerFrame";
-import GridBackground from "@/components/ui/GridBackground";
 import { companyStats } from "@/config/stats";
 
 const quickInfoItems = [
@@ -183,9 +182,6 @@ export default function ContactCTA() {
     <section className="relative py-12 sm:py-16 lg:py-20 xl:py-24 overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute inset-0 opacity-[0.015]">
-          <GridBackground size={32} />
-        </div>
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-neutral-50/30 to-transparent" />
       </div>
 
