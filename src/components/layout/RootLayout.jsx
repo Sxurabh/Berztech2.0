@@ -17,9 +17,9 @@ export default function RootLayout({ children }) {
           className="flex-grow focus:outline-none flex flex-col"
           tabIndex={-1}
         >
-          <PageTransition>
+          {/* <PageTransition> */}
             {children}
-          </PageTransition>
+          {/* </PageTransition> */}
         </main>
         <Footer />
       </div>
