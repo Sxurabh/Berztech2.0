@@ -6,7 +6,8 @@ import { CornerFrame } from "@/components/CornerFrame";
 
 function AnimatedNumber({ value, suffix = "", prefix = "" }) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
+  // FIXED: Reduced margin to ensure it triggers easily on mobile
+  const isInView = useInView(ref, { once: true, margin: "-10px" });
   const [displayValue, setDisplayValue] = useState("0");
 
   useEffect(() => {
@@ -35,7 +36,8 @@ function AnimatedNumber({ value, suffix = "", prefix = "" }) {
   }, [isInView, value, suffix, prefix]);
 
   return (
-    <span ref={ref} className="tabular-nums tracking-tight">
+    // FIXED: Added inline-block to ensure consistent intersection observation
+    <span ref={ref} className="tabular-nums tracking-tight inline-block min-w-[2ch]">
       {displayValue}
     </span>
   );
@@ -50,10 +52,9 @@ const stats = [
 
 export default function StatsBar() {
   return (
-    <section className="relative py-8 sm:py-10 ">
-
-      <div className="mx-auto max-w-5xl px-4 pt-4 sm:px-6 lg:px-8 ">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 ">
+    <section className="relative py-8 sm:py-10">
+      <div className="mx-auto max-w-5xl px-4 pt-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {stats.map((stat, index) => (
             <motion.div
               key={stat.label}
