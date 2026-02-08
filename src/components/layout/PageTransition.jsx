@@ -4,18 +4,16 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
 const pageVariants = {
-  initial: { opacity: 0, y: 20, scale: 0.98 },
+  initial: { opacity: 0, y: 10 },
   animate: { 
     opacity: 1, 
-    y: 0, 
-    scale: 1,
-    transition: { duration: 0.3, ease: "easeOut" } // Reduced from 0.5
+    y: 0,
+    transition: { duration: 0.3, ease: "easeOut" }
   },
   exit: { 
     opacity: 0, 
-    y: -20, 
-    scale: 0.98,
-    transition: { duration: 0.2, ease: "easeIn" } // Reduced from 0.3
+    y: -10,
+    transition: { duration: 0.2, ease: "easeIn" }
   },
 };
 
@@ -24,10 +22,10 @@ export default function PageTransition({ children }) {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    // CHANGE 1: Remove mode="wait" to allow overlap, or use "popLayout"
-    <AnimatePresence mode="popLayout" initial={false}>
+    // Reverting to "wait" ensures the DOM is cleared before the new page enters
+    <AnimatePresence mode="wait">
       <motion.div
-        key={pathname}
+        key={pathname} // Ensure this key is definitely changing on click
         initial="initial"
         animate="animate"
         exit="exit"
