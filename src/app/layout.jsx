@@ -1,4 +1,4 @@
-import RootLayout from "@/components/RootLayout";
+import RootLayout from "@/components/layout/RootLayout";
 import "./globals.css";
 
 export const metadata = {

@@ -3,8 +3,8 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import Image from "next/image";
-import { CornerFrame } from "@/components/CornerFrame";
-import GridBackground from "@/components/GridBackground"; // 1. Import this
+import { CornerFrame } from "@/components/ui/CornerFrame";
+import GridBackground from "@/components/ui/GridBackground"; // 1. Import this
 
 
 const testimonials = [

@@ -8,8 +8,8 @@ import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { layoutConfig } from "@/config/layout";
 
-import blackLogo from "../../assets/Logo/blacklogo.png";
-import whiteLogo from "../../assets/Logo/WhiteLogo.png";
+import blackLogo from "../../../assets/Logo/blacklogo.png";
+import whiteLogo from "../../../assets/Logo/WhiteLogo.png";
 
 const navItems = [
   { title: "Work", href: "/work" },

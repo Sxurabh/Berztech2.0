@@ -1,16 +1,16 @@
 // src/app/page.jsx
 "use client";
 import React from "react";
-import Hero from "@/components/Hero";
-import Services from "@/components/Services";
-import BentoGrid from "@/components/BentoGrid";
-import StatsBar from "@/components/StatsBar";
-import ProcessStrip from "@/components/ProcessStrip";
-import Testimonial from "@/components/Testimonial";
-import ContactCTA from "@/components/ContactCTA";
-import AITransparency from "@/components/AITransparency";
-import FeaturedCaseStudy from "@/components/FeaturedCaseStudy";
-import GridBackground from "@/components/GridBackground";
+import Hero from "@/components/sections/Hero";
+import Services from "@/components/sections/Services";
+import BentoGrid from "@/components/sections/BentoGrid";
+import StatsBar from "@/components/sections/StatsBar";
+import ProcessStrip from "@/components/sections/ProcessStrip";
+import Testimonial from "@/components/sections/Testimonial";
+import ContactCTA from "@/components/sections/ContactCTA";
+import AITransparency from "@/components/sections/AITransparency";
+import FeaturedCaseStudy from "@/components/sections/FeaturedCaseStudy";
+import GridBackground from "@/components/ui/GridBackground";
 
 export default function Home() {
   return (

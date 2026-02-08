@@ -1,5 +1,5 @@
 // src/app/not-found.jsx (Fixed Version)
-import Container from "@/components/Container";
+import Container from "@/components/ui/Container";
 import Link from "next/link";
 import React from "react";
 

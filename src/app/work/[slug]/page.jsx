@@ -5,8 +5,8 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { CornerFrame } from "@/components/CornerFrame";
-import Container from "@/components/Container";
+import { CornerFrame } from "@/components/ui/CornerFrame";
+import Container from "@/components/ui/Container";
 
 // This would typically come from a CMS or API
 const projectsData = {

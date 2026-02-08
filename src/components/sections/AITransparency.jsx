@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion"; // Removed AnimatePresence
 import Link from "next/link";
-import { CornerFrame } from "@/components/CornerFrame";
+import { CornerFrame } from "@/components/ui/CornerFrame";
 
 const capabilities = [
   {

@@ -2,7 +2,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
-import { CornerFrame } from "@/components/CornerFrame";
+import { CornerFrame } from "@/components/ui/CornerFrame";
 
 function AnimatedNumber({ value, suffix = "", prefix = "" }) {
   const ref = useRef(null);

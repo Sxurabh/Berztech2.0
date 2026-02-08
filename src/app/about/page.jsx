@@ -4,9 +4,9 @@ import React, { useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { CornerFrame } from "@/components/CornerFrame";
+import { CornerFrame } from "@/components/ui/CornerFrame";
 import { layoutConfig } from "@/config/layout";
-import GridBackground from "@/components/GridBackground";
+import GridBackground from "@/components/ui/GridBackground";
 
 const values = [
   {

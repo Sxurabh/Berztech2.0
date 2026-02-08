@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { CornerFrame } from "@/components/CornerFrame";
-import GridBackground from "@/components/GridBackground";
+import { CornerFrame } from "@/components/ui/CornerFrame";
+import GridBackground from "@/components/ui/GridBackground";
 
 const quickInfoItems = [
   {

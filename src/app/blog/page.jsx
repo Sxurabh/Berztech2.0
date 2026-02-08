@@ -3,9 +3,9 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { CornerFrame } from "@/components/CornerFrame";
+import { CornerFrame } from "@/components/ui/CornerFrame";
 import { layoutConfig } from "@/config/layout";
-import GridBackground from "@/components/GridBackground";
+import GridBackground from "@/components/ui/GridBackground";
 
 const categories = ["All", "Engineering", "Design", "Strategy", "Culture"];
 

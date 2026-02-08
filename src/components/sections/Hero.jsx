@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, useSpring, useMotionValue, useMotionTemplate } from "framer-motion";
 import Link from "next/link";
-import { CornerFrame } from "@/components/CornerFrame";
+import { CornerFrame } from "@/components/ui/CornerFrame";
 import clsx from "clsx";
 import TrustBar from "./TrustBar";
 

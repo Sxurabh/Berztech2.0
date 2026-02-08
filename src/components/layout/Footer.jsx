@@ -4,12 +4,12 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { CornerFrame } from "@/components/CornerFrame";
-import GridBackground from "@/components/GridBackground";
+import { CornerFrame } from "@/components/ui/CornerFrame";
+import GridBackground from "@/components/ui/GridBackground";
 
 // Assets
-import blackLogo from "../../assets/Logo/blacklogo.png";
-import compactLogoblack from "../../assets/Logo/CompactLogo-black.png";
+import blackLogo from "../../../assets/Logo/blacklogo.png";
+import compactLogoblack from "../../../assets/Logo/CompactLogo-black.png";
 
 // Social icons as components for consistency
 const SocialIcons = {
