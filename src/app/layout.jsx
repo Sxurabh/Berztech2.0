@@ -1,5 +1,18 @@
 import RootLayout from "@/components/layout/RootLayout";
+import { JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
 
 export const metadata = {
   metadataBase: new URL('https://berztech.com'),
@@ -51,7 +64,7 @@ export default function Layout({ children }) {
   return (
     <html
       lang="en"
-      className="h-full bg-neutral-950 text-base antialiased"
+      className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} h-full bg-neutral-950 text-base antialiased`}
     >
       <body className="flex min-h-full flex-col bg-neutral-950">
         <RootLayout>{children}</RootLayout>
