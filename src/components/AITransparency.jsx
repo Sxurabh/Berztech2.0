@@ -1,7 +1,7 @@
 // src/components/AITransparency.jsx
 "use client";
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion"; // Removed AnimatePresence
 import Link from "next/link";
 import { CornerFrame } from "@/components/CornerFrame";
 
@@ -140,7 +140,7 @@ export default function AITransparency() {
   const [activeTab, setActiveTab] = useState(0);
   const activeCapability = capabilities[activeTab];
 
-  // FIXED: Complete color schemes with proper Tailwind classes for dynamic CornerFrame
+  // FIXED: Added !important prefix (!) to bracket borders to ensure they override default styles
   const colorSchemes = {
     blue: {
       bg: "bg-blue-500",
@@ -148,12 +148,9 @@ export default function AITransparency() {
       bgLight: "bg-blue-50",
       border: "border-blue-200",
       glow: "shadow-blue-500/20",
-      // For CornerFrame background (with opacity)
       frameBg: "bg-blue-50/50",
-      // For CornerFrame border - MUST be a solid color, not opacity
       frameBorder: "border-blue-200",
-      // For bracket borders
-      bracket: "border-blue-400"
+      bracket: "!border-blue-400"
     },
     emerald: {
       bg: "bg-emerald-500",
@@ -163,7 +160,7 @@ export default function AITransparency() {
       glow: "shadow-emerald-500/20",
       frameBg: "bg-emerald-50/50",
       frameBorder: "border-emerald-200",
-      bracket: "border-emerald-400"
+      bracket: "!border-emerald-400"
     },
     purple: {
       bg: "bg-purple-500",
@@ -173,7 +170,7 @@ export default function AITransparency() {
       glow: "shadow-purple-500/20",
       frameBg: "bg-purple-50/50",
       frameBorder: "border-purple-200",
-      bracket: "border-purple-400"
+      bracket: "!border-purple-400"
     },
     amber: {
       bg: "bg-amber-500",
@@ -183,7 +180,7 @@ export default function AITransparency() {
       glow: "shadow-amber-500/20",
       frameBg: "bg-amber-50/50",
       frameBorder: "border-amber-200",
-      bracket: "border-amber-400"
+      bracket: "!border-amber-400"
     },
     rose: {
       bg: "bg-rose-500",
@@ -193,7 +190,7 @@ export default function AITransparency() {
       glow: "shadow-rose-500/20",
       frameBg: "bg-rose-50/50",
       frameBorder: "border-rose-200",
-      bracket: "border-rose-400"
+      bracket: "!border-rose-400"
     },
     cyan: {
       bg: "bg-cyan-500",
@@ -203,7 +200,7 @@ export default function AITransparency() {
       glow: "shadow-cyan-500/20",
       frameBg: "bg-cyan-50/50",
       frameBorder: "border-cyan-200",
-      bracket: "border-cyan-400"
+      bracket: "!border-cyan-400"
     }
   };
 
@@ -305,74 +302,67 @@ export default function AITransparency() {
         </motion.div>
 
         {/* Active Content - DYNAMIC CORNER FRAME COLOR */}
+        {/* FIXED: Removed AnimatePresence and motion wrapper to remove switch animation */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeTab}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
+          <div key={activeTab}>
+            {/* DYNAMIC CORNER FRAME - Changes color based on active tab */}
+            <CornerFrame 
+              className={`
+                ${colors.frameBg} ${colors.frameBorder} ${colors.glow}
+                p-4 sm:p-5 lg:p-6 transition-all duration-500
+              `}
+              bracketClassName={`w-4 h-4 sm:w-5 sm:h-5 ${colors.bracket} transition-all duration-500`}
             >
-              {/* DYNAMIC CORNER FRAME - Changes color based on active tab */}
-              <CornerFrame 
-                className={`
-                  ${colors.frameBg} ${colors.frameBorder} ${colors.glow}
-                  p-4 sm:p-5 lg:p-6 transition-all duration-500
-                `}
-                bracketClassName={`w-4 h-4 sm:w-5 sm:h-5 ${colors.bracket} transition-all duration-500`}
-              >
-                <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 sm:gap-6 items-center">
-                  {/* Metric */}
-                  <div className="sm:col-span-4 lg:col-span-3">
-                    <motion.div
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ delay: 0.1, duration: 0.4 }}
-                      className="flex items-baseline gap-2 sm:block"
-                    >
-                      <span className={`
-                        font-space-grotesk text-3xl sm:text-4xl lg:text-5xl font-medium tracking-tighter
-                        ${colors.text} transition-colors duration-500
-                      `}>
-                        {activeCapability.metric}
-                      </span>
-                      <span className="text-[10px] sm:text-xs font-jetbrains-mono uppercase tracking-wider text-neutral-400 sm:block sm:mt-1">
-                        {activeCapability.metricLabel}
-                      </span>
-                    </motion.div>
-                  </div>
+              <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 sm:gap-6 items-center">
+                {/* Metric */}
+                <div className="sm:col-span-4 lg:col-span-3">
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.1, duration: 0.4 }}
+                    className="flex items-baseline gap-2 sm:block"
+                  >
+                    <span className={`
+                      font-space-grotesk text-3xl sm:text-4xl lg:text-5xl font-medium tracking-tighter
+                      ${colors.text} transition-colors duration-500
+                    `}>
+                      {activeCapability.metric}
+                    </span>
+                    <span className="text-[10px] sm:text-xs font-jetbrains-mono uppercase tracking-wider text-neutral-400 sm:block sm:mt-1">
+                      {activeCapability.metricLabel}
+                    </span>
+                  </motion.div>
+                </div>
 
-                  {/* Description */}
-                  <div className="sm:col-span-8 lg:col-span-9">
-                    <p className="text-sm sm:text-base text-neutral-600 leading-relaxed">
-                      {activeCapability.description}
-                    </p>
-                    
-                    {/* Honesty Badge - Dynamic color */}
-                    <div className="flex items-start gap-2 mt-4 pt-4 border-t border-neutral-200/50">
-                      <div className={`
-                        w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5
-                        ${colors.bgLight} ${colors.text} transition-colors duration-500
-                      `}>
-                        <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      <p className="text-xs text-neutral-500 leading-relaxed">
-                        <span className="font-medium text-neutral-700">Honest note:</span> We never ship AI-generated code without senior engineer review. Architecture decisions remain human-owned.
-                      </p>
+                {/* Description */}
+                <div className="sm:col-span-8 lg:col-span-9">
+                  <p className="text-sm sm:text-base text-neutral-600 leading-relaxed">
+                    {activeCapability.description}
+                  </p>
+                  
+                  {/* Honesty Badge - Dynamic color */}
+                  <div className="flex items-start gap-2 mt-4 pt-4 border-t border-neutral-200/50">
+                    <div className={`
+                      w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5
+                      ${colors.bgLight} ${colors.text} transition-colors duration-500
+                    `}>
+                      <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
                     </div>
+                    <p className="text-xs text-neutral-500 leading-relaxed">
+                      <span className="font-medium text-neutral-700">Honest note:</span> We never ship AI-generated code without senior engineer review. Architecture decisions remain human-owned.
+                    </p>
                   </div>
                 </div>
-              </CornerFrame>
-            </motion.div>
-          </AnimatePresence>
+              </div>
+            </CornerFrame>
+          </div>
         </motion.div>
 
         {/* Footer CTA */}

@@ -1,3 +1,4 @@
+// src/app/process/page.jsx
 "use client";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -111,13 +112,56 @@ const phases = [
   }
 ];
 
+// FIXED: Added specific 'bracket' property with !important and 400 shade to match AITransparency fix
 const colorSchemes = {
-  blue: { bg: "bg-blue-500", text: "text-blue-600", bgLight: "bg-blue-50", border: "border-blue-200", gradient: "from-blue-500/20" },
-  purple: { bg: "bg-purple-500", text: "text-purple-600", bgLight: "bg-purple-50", border: "border-purple-200", gradient: "from-purple-500/20" },
-  emerald: { bg: "bg-emerald-500", text: "text-emerald-600", bgLight: "bg-emerald-50", border: "border-emerald-200", gradient: "from-emerald-500/20" },
-  amber: { bg: "bg-amber-500", text: "text-amber-600", bgLight: "bg-amber-50", border: "border-amber-200", gradient: "from-amber-500/20" },
-  rose: { bg: "bg-rose-500", text: "text-rose-600", bgLight: "bg-rose-50", border: "border-rose-200", gradient: "from-rose-500/20" },
-  cyan: { bg: "bg-cyan-500", text: "text-cyan-600", bgLight: "bg-cyan-50", border: "border-cyan-200", gradient: "from-cyan-500/20" }
+  blue: { 
+    bg: "bg-blue-500", 
+    text: "text-blue-600", 
+    bgLight: "bg-blue-50", 
+    border: "border-blue-200", 
+    bracket: "!border-blue-400",
+    gradient: "from-blue-500/20" 
+  },
+  purple: { 
+    bg: "bg-purple-500", 
+    text: "text-purple-600", 
+    bgLight: "bg-purple-50", 
+    border: "border-purple-200", 
+    bracket: "!border-purple-400",
+    gradient: "from-purple-500/20" 
+  },
+  emerald: { 
+    bg: "bg-emerald-500", 
+    text: "text-emerald-600", 
+    bgLight: "bg-emerald-50", 
+    border: "border-emerald-200", 
+    bracket: "!border-emerald-400",
+    gradient: "from-emerald-500/20" 
+  },
+  amber: { 
+    bg: "bg-amber-500", 
+    text: "text-amber-600", 
+    bgLight: "bg-amber-50", 
+    border: "border-amber-200", 
+    bracket: "!border-amber-400",
+    gradient: "from-amber-500/20" 
+  },
+  rose: { 
+    bg: "bg-rose-500", 
+    text: "text-rose-600", 
+    bgLight: "bg-rose-50", 
+    border: "border-rose-200", 
+    bracket: "!border-rose-400",
+    gradient: "from-rose-500/20" 
+  },
+  cyan: { 
+    bg: "bg-cyan-500", 
+    text: "text-cyan-600", 
+    bgLight: "bg-cyan-50", 
+    border: "border-cyan-200", 
+    bracket: "!border-cyan-400",
+    gradient: "from-cyan-500/20" 
+  }
 };
 
 function PhaseCard({ phase, index, isActive, onClick }) {
@@ -140,7 +184,8 @@ function PhaseCard({ phase, index, isActive, onClick }) {
           p-4 sm:p-5 transition-all duration-500
           ${isActive ? `${colors.bgLight} ${colors.border} ` : 'bg-white border-neutral-200 hover:border-neutral-300'}
         `}
-        bracketClassName={`w-3 h-3 transition-colors ${isActive ? colors.border.replace('border-', 'border-') : 'border-neutral-300'}`}
+        // FIXED: Uses the explicit darker bracket color defined in colorSchemes
+        bracketClassName={`w-3 h-3 transition-colors ${isActive ? colors.bracket : 'border-neutral-300'}`}
       >
         <div className="flex items-start gap-4">
           <div className={`
