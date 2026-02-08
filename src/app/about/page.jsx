@@ -1,3 +1,4 @@
+// src/app/about/page.jsx
 "use client";
 import React, { useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -11,7 +12,7 @@ const values = [
   {
     title: "Precision",
     description: "Every line of code is intentional. We measure twice, cut once, and never ship debt.",
-    icon: "◈"
+    icon: "◆"
   },
   {
     title: "Transparency",
@@ -21,12 +22,12 @@ const values = [
   {
     title: "Partnership",
     description: "We don't have clients, we have collaborators. Your success is our success.",
-    icon: "◆"
+    icon: "❖"
   },
   {
     title: "Innovation",
     description: "We stay ahead of the curve so you can lead the market. Continuous learning is our baseline.",
-    icon: "◇"
+    icon: "⚡"
   }
 ];
 
@@ -229,7 +230,7 @@ export default function AboutPage() {
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
   return (
-    <main ref={containerRef} className="w-full  relative">
+    <main ref={containerRef} className="w-full relative">
       {/* Grid Background - Fixed like homepage */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <GridBackground opacity={0.04} size={40} />
@@ -237,11 +238,14 @@ export default function AboutPage() {
       
       {/* Hero Section with Grid Background */}
       <section className="relative pt-8 sm:pt-12 lg:pt-16 pb-12 sm:pb-16 overflow-hidden z-10">
+        {/* FIXED: Removed the opaque radial gradient background that was hiding the grid.
+          The GridBackground (z-0) will now show through against the white RootLayout background.
+        */}
         <motion.div 
           style={{ y, opacity }}
-          className="absolute inset-0 z-0"
+          className="absolute inset-0 z-0 pointer-events-none"
         >
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-neutral-100 via-white to-white" />
+          {/* <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-neutral-100 via-white to-white" /> */}
         </motion.div>
 
         <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
