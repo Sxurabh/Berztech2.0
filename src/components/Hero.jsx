@@ -245,8 +245,8 @@ function MobileServiceGrid() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 + (i * 0.1) }}
         >
-          <div className={`p-4 rounded-lg border ${card.bg} h-full flex flex-col justify-between min-h-[100px]`}>
-            <div className="flex justify-between items-start mb-2">
+          <div className={`p-4 ${card.bg} h-full flex flex-col justify-between min-h-[100px]`}>
+            <div className="flex grow justify-between items-start mb-2">
               <span className="text-xl">{card.icon}</span>
               <div className={`w-1.5 h-1.5 rounded-full ${card.text.replace('text', 'bg')}`} />
             </div>
