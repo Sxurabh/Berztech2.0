@@ -1,5 +1,4 @@
 "use client";
-import ContactDetails from "@/components/ContactDetails";
 import ContactForm from "@/components/ContactForm";
 import Container from "@/components/Container";
 import { motion } from "framer-motion";
@@ -42,7 +41,7 @@ const ContactPage = () => {
 
       <Container className="mt-16 sm:mt-20 lg:mt-24 pb-20 sm:pb-32 z-10 relative">
         <div className="grid grid-cols-1 gap-x-8 gap-y-16 lg:grid-cols-2">
-          <ContactDetails />
+          
           <ContactForm />
         </div>
       </Container>
