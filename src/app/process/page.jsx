@@ -391,7 +391,7 @@ export default function ProcessPage() {
       </section>
 
       {/* Process Overview - Now 6 items in horizontal bar */}
-      <section className="relative py-12 sm:py-16 border-y border-neutral-100 bg-neutral-50/30 z-10">
+      <section className="relative py-12 sm:py-16  z-10">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-4">
             {phases.map((phase, index) => (
