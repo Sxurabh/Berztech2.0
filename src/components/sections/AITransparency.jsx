@@ -72,16 +72,22 @@ function TerminalLine({ text, delay = 0 }) {
   const [displayText, setDisplayText] = useState("");
   
   useEffect(() => {
-    const timeout = setTimeout(() => {
+    let timeoutId;
+    let intervalId;
+    timeoutId = setTimeout(() => {
       let i = 0;
-      const interval = setInterval(() => {
+      intervalId = setInterval(() => {
         setDisplayText(text.slice(0, i + 1));
         i++;
-        if (i >= text.length) clearInterval(interval);
+        if (i >= text.length) {
+          clearInterval(intervalId);
+        }
       }, 25);
-      return () => clearInterval(interval);
     }, delay);
-    return () => clearTimeout(timeout);
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      if (intervalId) clearInterval(intervalId);
+    };
   }, [text, delay]);
 
   return (
