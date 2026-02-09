@@ -81,11 +81,5 @@ export const projects = [
   }
 ];
 
-export const colorSchemes = {
-  blue: { bg: "bg-blue-500", text: "text-blue-600", bgLight: "bg-blue-50", border: "border-blue-200" },
-  purple: { bg: "bg-purple-500", text: "text-purple-600", bgLight: "bg-purple-50", border: "border-purple-200" },
-  emerald: { bg: "bg-emerald-500", text: "text-emerald-600", bgLight: "bg-emerald-50", border: "border-emerald-200" },
-  amber: { bg: "bg-amber-500", text: "text-amber-600", bgLight: "bg-amber-50", border: "border-amber-200" },
-  rose: { bg: "bg-rose-500", text: "text-rose-600", bgLight: "bg-rose-50", border: "border-rose-200" },
-  cyan: { bg: "bg-cyan-500", text: "text-cyan-600", bgLight: "bg-cyan-50", border: "border-cyan-200" }
-};
+// Re-export colorSchemes from centralized config for backwards compatibility
+export { colorSchemes } from "@/config/colors";

@@ -62,7 +62,8 @@ const colorSchemes = {
     bgLight: "bg-blue-50",
     border: "border-blue-200",
     glow: "shadow-blue-500/20",
-    number: "text-blue-600"
+    number: "text-blue-600",
+    bracket: "!border-blue-400"
   },
   indigo: {
     bg: "bg-indigo-500",
@@ -70,7 +71,8 @@ const colorSchemes = {
     bgLight: "bg-indigo-50",
     border: "border-indigo-200",
     glow: "shadow-indigo-500/20",
-    number: "text-indigo-600"
+    number: "text-indigo-600",
+    bracket: "!border-indigo-400"
   },
   purple: {
     bg: "bg-purple-500",
@@ -78,7 +80,8 @@ const colorSchemes = {
     bgLight: "bg-purple-50",
     border: "border-purple-200",
     glow: "shadow-purple-500/20",
-    number: "text-purple-600"
+    number: "text-purple-600",
+    bracket: "!border-purple-400"
   },
   emerald: {
     bg: "bg-emerald-500",
@@ -86,7 +89,8 @@ const colorSchemes = {
     bgLight: "bg-emerald-50",
     border: "border-emerald-200",
     glow: "shadow-emerald-500/20",
-    number: "text-emerald-600"
+    number: "text-emerald-600",
+    bracket: "!border-emerald-400"
   },
   amber: {
     bg: "bg-amber-500",
@@ -94,7 +98,8 @@ const colorSchemes = {
     bgLight: "bg-amber-50",
     border: "border-amber-200",
     glow: "shadow-amber-500/20",
-    number: "text-amber-600"
+    number: "text-amber-600",
+    bracket: "!border-amber-400"
   },
   rose: {
     bg: "bg-rose-500",
@@ -102,7 +107,8 @@ const colorSchemes = {
     bgLight: "bg-rose-50",
     border: "border-rose-200",
     glow: "shadow-rose-500/20",
-    number: "text-rose-600"
+    number: "text-rose-600",
+    bracket: "!border-rose-400"
   }
 };
 
@@ -115,7 +121,7 @@ export default function ProcessStrip() {
   return (
     <section className="relative py-12 sm:py-16 lg:py-20  overflow-hidden">
       {/* Grid Background - Consistent with site */}
-            
+
 
 
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
@@ -132,7 +138,7 @@ export default function ProcessStrip() {
               How We Work
             </span>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <h2 className="font-space-grotesk text-2xl sm:text-3xl lg:text-4xl font-medium text-neutral-900 tracking-tight leading-tight">
               Process-driven
@@ -167,8 +173,8 @@ export default function ProcessStrip() {
                   }}
                   className={`
                     relative px-3 py-3 sm:px-4 sm:py-4 border text-left transition-all duration-300
-                    ${activeTab === index 
-                      ? 'bg-neutral-900 text-white border-neutral-900 shadow-lg' 
+                    ${activeTab === index
+                      ? 'bg-neutral-900 text-white border-neutral-900 shadow-lg'
                       : 'bg-white text-neutral-600 border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50'
                     }
                   `}
@@ -180,7 +186,7 @@ export default function ProcessStrip() {
                     `}>
                       {process.number}
                     </span>
-                    
+
                     <div className="flex-1 min-w-0">
                       <span className={`
                         block text-[9px] sm:text-[10px] font-jetbrains-mono uppercase tracking-wider
@@ -199,8 +205,8 @@ export default function ProcessStrip() {
 
                   <div className={`
                     mt-2 inline-block px-2 py-0.5 text-[9px] font-jetbrains-mono uppercase tracking-wider
-                    ${activeTab === index 
-                      ? 'bg-neutral-800 text-neutral-300' 
+                    ${activeTab === index
+                      ? 'bg-neutral-800 text-neutral-300'
                       : 'bg-neutral-200 text-neutral-700'
                     }
                   `}>
@@ -235,12 +241,12 @@ export default function ProcessStrip() {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
             >
-              <CornerFrame 
+              <CornerFrame
                 className={`
                   bg-white border-neutral-200 p-4 sm:p-5 lg:p-6
                   ${colors.glow}
                 `}
-                bracketClassName="w-4 h-4 sm:w-5 sm:h-5 border-neutral-300 group-hover:border-neutral-400 transition-colors"
+                bracketClassName={`w-4 h-4 sm:w-5 sm:h-5 transition-colors duration-300 ${colors.bracket || `!border-${activeProcess.color}-400`}`}
               >
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
                   <div className="lg:col-span-7">
@@ -253,11 +259,11 @@ export default function ProcessStrip() {
                       </span>
                       <div className="h-px flex-1 bg-neutral-100" />
                     </div>
-                    
+
                     <h3 className="font-space-grotesk text-xl sm:text-2xl font-medium text-neutral-900 tracking-tight mb-3">
                       {activeProcess.title} Phase
                     </h3>
-                    
+
                     <p className="text-sm sm:text-base text-neutral-600 leading-relaxed">
                       {activeProcess.description}
                     </p>
@@ -315,8 +321,8 @@ export default function ProcessStrip() {
             <div className="flex items-center gap-3 sm:gap-4">
               <div className="flex -space-x-2">
                 {[1, 2, 3].map((i) => (
-                  <motion.div 
-                    key={i} 
+                  <motion.div
+                    key={i}
                     initial={{ opacity: 0, x: -10 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}

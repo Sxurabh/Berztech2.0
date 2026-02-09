@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 import { layoutConfig } from "@/config/layout";
+import { colorSchemes } from "@/config/colors";
 
 const phases = [
   {
@@ -111,57 +112,7 @@ const phases = [
   }
 ];
 
-// FIXED: Added specific 'bracket' property with !important and 400 shade to match AITransparency fix
-const colorSchemes = {
-  blue: { 
-    bg: "bg-blue-500", 
-    text: "text-blue-600", 
-    bgLight: "bg-blue-50", 
-    border: "border-blue-200", 
-    bracket: "!border-blue-400",
-    gradient: "from-blue-500/20" 
-  },
-  purple: { 
-    bg: "bg-purple-500", 
-    text: "text-purple-600", 
-    bgLight: "bg-purple-50", 
-    border: "border-purple-200", 
-    bracket: "!border-purple-400",
-    gradient: "from-purple-500/20" 
-  },
-  emerald: { 
-    bg: "bg-emerald-500", 
-    text: "text-emerald-600", 
-    bgLight: "bg-emerald-50", 
-    border: "border-emerald-200", 
-    bracket: "!border-emerald-400",
-    gradient: "from-emerald-500/20" 
-  },
-  amber: { 
-    bg: "bg-amber-500", 
-    text: "text-amber-600", 
-    bgLight: "bg-amber-50", 
-    border: "border-amber-200", 
-    bracket: "!border-amber-400",
-    gradient: "from-amber-500/20" 
-  },
-  rose: { 
-    bg: "bg-rose-500", 
-    text: "text-rose-600", 
-    bgLight: "bg-rose-50", 
-    border: "border-rose-200", 
-    bracket: "!border-rose-400",
-    gradient: "from-rose-500/20" 
-  },
-  cyan: { 
-    bg: "bg-cyan-500", 
-    text: "text-cyan-600", 
-    bgLight: "bg-cyan-50", 
-    border: "border-cyan-200", 
-    bracket: "!border-cyan-400",
-    gradient: "from-cyan-500/20" 
-  }
-};
+
 
 function PhaseCard({ phase, index, isActive, onClick }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -217,7 +168,7 @@ function PhaseCard({ phase, index, isActive, onClick }) {
               )}
             </div>
             <p className="text-sm text-neutral-500 mb-2">{phase.subtitle}</p>
-            
+
             <span className={`
               inline-block px-2 py-0.5 text-[9px] font-jetbrains-mono uppercase tracking-wider
               ${isActive ? `bg-white ${colors.text} border ${colors.border}` : 'bg-neutral-100 text-neutral-500'}
@@ -325,7 +276,7 @@ function PhaseDetail({ phase }) {
               ))}
             </ul>
           </div>
-          
+
           <div>
             <h4 className="text-[11px] font-jetbrains-mono uppercase tracking-wider text-neutral-600 mb-3">
               Tools We Use
@@ -390,7 +341,7 @@ export default function ProcessPage() {
             </h1>
 
             <p className="text-base sm:text-lg lg:text-xl text-neutral-600 max-w-2xl leading-relaxed">
-              We don't believe in black boxes. Our process is transparent, collaborative, 
+              We don't believe in black boxes. Our process is transparent, collaborative,
               and designed to mitigate risk while maximizing velocity.
             </p>
           </motion.div>
@@ -472,7 +423,7 @@ export default function ProcessPage() {
                 Collaboration by <span className="text-neutral-400">design</span>
               </h2>
               <p className="text-neutral-600 leading-relaxed mb-8">
-                We believe the best work happens when teams align. Our process is designed 
+                We believe the best work happens when teams align. Our process is designed
                 to keep you informed, involved, and in control at every stage.
               </p>
               <Link

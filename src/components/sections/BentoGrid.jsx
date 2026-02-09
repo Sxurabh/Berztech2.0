@@ -12,7 +12,7 @@ function PlatformIcons({ isHovered }) {
       name: "iOS",
       icon: (
         <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 sm:w-5 sm:h-5">
-          <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+          <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
         </svg>
       ),
       delay: 0
@@ -21,7 +21,7 @@ function PlatformIcons({ isHovered }) {
       name: "Android",
       icon: (
         <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 sm:w-5 sm:h-5">
-          <path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v7c0 .83.67 1.5 1.5 1.5S5 17.33 5 16.5v-7C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v7c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-7c0-.83-.67-1.5-1.5-1.5zm-4.97-5.84l1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48C13.85 1.23 12.95 1 12 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C6.97 3.26 6 5.01 6 7h12c0-1.99-.97-3.75-2.47-4.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z"/>
+          <path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v7c0 .83.67 1.5 1.5 1.5S5 17.33 5 16.5v-7C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v7c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-7c0-.83-.67-1.5-1.5-1.5zm-4.97-5.84l1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48C13.85 1.23 12.95 1 12 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C6.97 3.26 6 5.01 6 7h12c0-1.99-.97-3.75-2.47-4.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z" />
         </svg>
       ),
       delay: 0.1
@@ -30,8 +30,8 @@ function PlatformIcons({ isHovered }) {
       name: "Web",
       icon: (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 sm:w-5 sm:h-5">
-          <circle cx="12" cy="12" r="10"/>
-          <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
+          <circle cx="12" cy="12" r="10" />
+          <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
         </svg>
       ),
       delay: 0.2
@@ -40,8 +40,8 @@ function PlatformIcons({ isHovered }) {
       name: "Desktop",
       icon: (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 sm:w-5 sm:h-5">
-          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-          <path d="M8 21h8M12 17v4"/>
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+          <path d="M8 21h8M12 17v4" />
         </svg>
       ),
       delay: 0.3
@@ -54,14 +54,14 @@ function PlatformIcons({ isHovered }) {
         <motion.div
           key={platform.name}
           initial={{ opacity: 0, y: 10, scale: 0.8 }}
-          animate={{ 
-            opacity: 1, 
-            y: 0, 
+          animate={{
+            opacity: 1,
+            y: 0,
             scale: 1,
             transition: { delay: platform.delay, duration: 0.4 }
           }}
-          whileHover={{ 
-            scale: 1.2, 
+          whileHover={{
+            scale: 1.2,
             y: -2,
             transition: { duration: 0.2 }
           }}
@@ -121,8 +121,8 @@ function CodePreview({ isHovered }) {
           <motion.div
             key={i}
             initial={{ opacity: 0, x: -10 }}
-            animate={{ 
-              opacity: isHovered ? 1 : 0.6, 
+            animate={{
+              opacity: isHovered ? 1 : 0.6,
               x: 0,
               transition: { delay: i * 0.05 }
             }}
@@ -216,58 +216,64 @@ const features = [
     accent: "rose",
     size: "medium"
   },
-  
+
 ];
 
 const accentColors = {
   blue: {
-    bg: "group-hover:bg-blue-50",           // ← FIXED: Solid color, no opacity
+    bg: "group-hover:bg-blue-50",
     border: "group-hover:border-blue-200",
     text: "text-blue-500",
     glow: "group-hover:shadow-blue-500/10",
-    line: "bg-blue-500"
+    line: "bg-blue-500",
+    bracket: "!border-blue-400"
   },
   amber: {
-    bg: "group-hover:bg-amber-50",          // ← FIXED: Solid color, no opacity
+    bg: "group-hover:bg-amber-50",
     border: "group-hover:border-amber-200",
     text: "text-amber-500",
     glow: "group-hover:shadow-amber-500/10",
-    line: "bg-amber-500"
+    line: "bg-amber-500",
+    bracket: "!border-amber-400"
   },
   emerald: {
-    bg: "group-hover:bg-emerald-50",        // ← FIXED: Solid color, no opacity
+    bg: "group-hover:bg-emerald-50",
     border: "group-hover:border-emerald-200",
     text: "text-emerald-500",
     glow: "group-hover:shadow-emerald-500/10",
-    line: "bg-emerald-500"
+    line: "bg-emerald-500",
+    bracket: "!border-emerald-400"
   },
   purple: {
-    bg: "group-hover:bg-purple-50",         // ← FIXED: Solid color, no opacity
+    bg: "group-hover:bg-purple-50",
     border: "group-hover:border-purple-200",
     text: "text-purple-500",
     glow: "group-hover:shadow-purple-500/10",
-    line: "bg-purple-500"
+    line: "bg-purple-500",
+    bracket: "!border-purple-400"
   },
   rose: {
-    bg: "group-hover:bg-rose-50",           // ← FIXED: Solid color, no opacity
+    bg: "group-hover:bg-rose-50",
     border: "group-hover:border-rose-200",
     text: "text-rose-500",
     glow: "group-hover:shadow-rose-500/10",
-    line: "bg-rose-500"
+    line: "bg-rose-500",
+    bracket: "!border-rose-400"
   },
   cyan: {
-    bg: "group-hover:bg-cyan-50",           // ← FIXED: Solid color, no opacity
+    bg: "group-hover:bg-cyan-50",
     border: "group-hover:border-cyan-200",
     text: "text-cyan-500",
     glow: "group-hover:shadow-cyan-500/10",
-    line: "bg-cyan-500"
+    line: "bg-cyan-500",
+    bracket: "!border-cyan-400"
   }
 };
 
 function BentoCard({ feature, index }) {
   const [isHovered, setIsHovered] = useState(false);
   const colors = accentColors[feature.accent];
-  
+
   const isLarge = feature.size === "large";
   const isMedium = feature.size === "medium";
 
@@ -276,8 +282,8 @@ function BentoCard({ feature, index }) {
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
-      transition={{ 
-        duration: 0.5, 
+      transition={{
+        duration: 0.5,
         delay: index * 0.08,
         ease: [0.23, 1, 0.32, 1]
       }}
@@ -298,7 +304,7 @@ function BentoCard({ feature, index }) {
           ${colors.bg} ${colors.border} ${colors.glow}
           ${isHovered ? "shadow-xl" : "shadow-sm"}
         `}
-        bracketClassName="w-3 h-3 sm:w-4 sm:h-4 border-neutral-300 group-hover:border-neutral-400 transition-colors duration-300"
+        bracketClassName={`w-3 h-3 sm:w-4 sm:h-4 transition-all duration-300 ${isHovered ? colors.bracket : 'border-neutral-300'}`}
       >
         <div className={`
           relative h-full flex flex-col
@@ -310,7 +316,7 @@ function BentoCard({ feature, index }) {
             ${isLarge ? "lg:mb-4" : ""}
           `}>
             <motion.div
-              animate={{ 
+              animate={{
                 scale: isHovered ? 1.1 : 1,
                 rotate: isHovered ? 5 : 0
               }}
@@ -325,7 +331,7 @@ function BentoCard({ feature, index }) {
             >
               {feature.icon}
             </motion.div>
-            
+
             {/* Metric Badge */}
             <div className="text-right">
               <motion.div
@@ -386,7 +392,7 @@ function BentoCard({ feature, index }) {
             className={`absolute bottom-0 left-0 right-0 h-0.5 origin-left ${colors.line}`}
           />
 
-         
+
         </div>
       </CornerFrame>
     </motion.div>
@@ -398,11 +404,11 @@ function BentoCard({ feature, index }) {
 export default function BentoGrid() {
   return (
     <section className="relative py-12 sm:py-16 lg:py-20  overflow-hidden">
-      
+
 
       {/* UPDATED: Changed from max-w-6xl to max-w-5xl to match other components */}
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-        
+
         {/* Section Header - Spacing aligned */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -416,13 +422,13 @@ export default function BentoGrid() {
               Why Choose Us
             </span>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             {/* UPDATED: Text sizes aligned with ProcessStrip/Services */}
             <h2 className="font-space-grotesk text-2xl sm:text-3xl lg:text-4xl font-medium text-neutral-900 tracking-tight max-w-md">
               Built for <span className="text-neutral-400">scale</span> and <span className="text-neutral-400">speed</span>
             </h2>
-            <Link 
+            <Link
               href="/process"
               className="group inline-flex items-center gap-2 text-xs font-jetbrains-mono uppercase tracking-widest text-neutral-500 hover:text-neutral-900 transition-colors shrink-0"
             >
@@ -449,8 +455,8 @@ export default function BentoGrid() {
         </div>
 
         {/* Bottom Stats - UPDATED: Aligned border and padding */}
-       
-        
+
+
       </div>
     </section>
   );

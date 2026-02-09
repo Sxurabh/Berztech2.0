@@ -2,21 +2,21 @@
 export const layoutConfig = {
   // Main container max width - consistent across all components
   maxWidth: "max-w-5xl",
-  
+
   // Standard padding
   padding: {
     mobile: "px-4",
     tablet: "sm:px-6",
     desktop: "lg:px-8",
   },
-  
+
   // Section spacing
   spacing: {
     section: "py-12 sm:py-16 lg:py-20",
     tight: "py-8 sm:py-10",
     hero: "min-h-screen pt-20 pb-16 sm:pt-24 sm:pb-20 lg:pt-0 lg:pb-0",
   },
-  
+
   // Grid system - 12 columns like ProcessStrip
   grid: {
     container: "grid grid-cols-12 gap-4 sm:gap-6 lg:gap-8",
@@ -33,22 +33,30 @@ export const layoutConfig = {
     mainWide: "col-span-12 lg:col-span-7",
     sideNarrow: "col-span-12 lg:col-span-5",
   },
-  
+
   // Typography scale
   typography: {
     eyebrow: "text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400",
+    eyebrowDark: "text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-600",
+    h1: "font-space-grotesk text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-neutral-900 tracking-tight leading-[0.95]",
     h2: "font-space-grotesk text-2xl sm:text-3xl lg:text-4xl font-medium text-neutral-900 tracking-tight leading-tight",
+    h3: "font-space-grotesk text-lg sm:text-xl font-medium text-neutral-900 tracking-tight",
     body: "text-sm sm:text-base text-neutral-600 leading-relaxed",
+    bodyLarge: "text-base sm:text-lg lg:text-xl text-neutral-600 leading-relaxed",
     small: "text-xs text-neutral-500",
+    cardTitle: "font-space-grotesk text-lg font-medium text-neutral-900",
+    cardSubtitle: "text-[11px] font-jetbrains-mono uppercase tracking-wider text-neutral-500",
+    ctaButton: "font-jetbrains-mono text-xs uppercase tracking-widest font-semibold",
+    tag: "px-2 py-1 text-[10px] font-jetbrains-mono uppercase tracking-wider",
   },
-  
+
   // Component-specific
   card: {
     base: "bg-white border-neutral-200",
     hover: "hover:border-neutral-300 transition-colors",
     padding: "p-4 sm:p-5 lg:p-6",
   },
-  
+
   // Frame brackets
   bracket: {
     sm: "w-3 h-3 border-neutral-300",

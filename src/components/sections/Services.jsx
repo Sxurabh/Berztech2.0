@@ -74,28 +74,32 @@ const accentColors = {
     border: "group-hover:border-blue-500/20",
     text: "text-blue-600",
     line: "bg-blue-500",
-    bgLight: "bg-blue-50"
+    bgLight: "bg-blue-50",
+    bracket: "!border-blue-400"
   },
   purple: {
     bg: "group-hover:bg-purple-50",
     border: "group-hover:border-purple-500/20",
     text: "text-purple-600",
     line: "bg-purple-500",
-    bgLight: "bg-purple-50"
+    bgLight: "bg-purple-50",
+    bracket: "!border-purple-400"
   },
   emerald: {
     bg: "group-hover:bg-emerald-50",
     border: "group-hover:border-emerald-500/20",
     text: "text-emerald-600",
     line: "bg-emerald-500",
-    bgLight: "bg-emerald-50"
+    bgLight: "bg-emerald-50",
+    bracket: "!border-emerald-400"
   },
   amber: {
     bg: "group-hover:bg-amber-50",
     border: "group-hover:border-amber-500/20",
     text: "text-amber-600",
     line: "bg-amber-500",
-    bgLight: "bg-amber-50"
+    bgLight: "bg-amber-50",
+    bracket: "!border-amber-400"
   }
 };
 
@@ -121,7 +125,7 @@ function ServiceCard({ service, index, isExpanded, onToggle }) {
           ${colors.bg} ${colors.border}
           ${isExpanded ? 'shadow-lg' : 'shadow-sm hover:shadow-md'}
         `}
-        bracketClassName="w-3 h-3 sm:w-4 sm:h-4 border-neutral-300 group-hover:border-neutral-400 transition-colors"
+        bracketClassName={`w-3 h-3 sm:w-4 sm:h-4 transition-all duration-300 ${isHovered || isExpanded ? colors.bracket : 'border-neutral-300'}`}
         onClick={() => onToggle(index)}
       >
         <div className="relative h-full p-4 sm:p-5 flex flex-col">
@@ -139,7 +143,7 @@ function ServiceCard({ service, index, isExpanded, onToggle }) {
               >
                 {service.icon}
               </motion.div>
-              
+
               <span className="font-jetbrains-mono text-lg font-medium text-neutral-200 group-hover:text-neutral-300 transition-colors">
                 {service.id}
               </span>
@@ -203,7 +207,7 @@ function ServiceCard({ service, index, isExpanded, onToggle }) {
                       <span className="text-[9px] font-jetbrains-mono text-neutral-400 uppercase tracking-wider block">Starting at</span>
                       <span className="font-space-grotesk text-lg font-medium text-neutral-900">{service.price}</span>
                     </div>
-                    
+
                     <Link href="/contact" onClick={(e) => e.stopPropagation()}>
                       <motion.span
                         whileHover={{ scale: 1.02 }}
@@ -214,8 +218,8 @@ function ServiceCard({ service, index, isExpanded, onToggle }) {
                           transition-colors
                           ${service.color === 'blue' ? 'bg-blue-600 hover:bg-blue-700' :
                             service.color === 'purple' ? 'bg-purple-600 hover:bg-purple-700' :
-                            service.color === 'emerald' ? 'bg-emerald-600 hover:bg-emerald-700' :
-                            'bg-amber-600 hover:bg-amber-700'}
+                              service.color === 'emerald' ? 'bg-emerald-600 hover:bg-emerald-700' :
+                                'bg-amber-600 hover:bg-amber-700'}
                         `}
                       >
                         Get Quote
@@ -266,7 +270,7 @@ export default function Services() {
               What We Do
             </span>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <h2 className="font-space-grotesk text-2xl sm:text-3xl lg:text-4xl font-medium text-neutral-900 tracking-tight leading-tight">
               Services built for<br />

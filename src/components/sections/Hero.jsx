@@ -6,12 +6,13 @@ import Link from "next/link";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 import clsx from "clsx";
 import TrustBar from "./TrustBar";
+import AnimatedCounter from "@/components/ui/AnimatedCounter";
 
 // --- DESKTOP: Expanded Ecosystem Visual ---
 function EcosystemVisual() {
   return (
     <div className="relative w-full max-w-[650px] aspect-square flex items-center justify-center">
-      
+
       {/* Background Ambience */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-blue-500/10 blur-[80px] rounded-full -z-10" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[250px] h-[250px] bg-purple-500/10 blur-[60px] rounded-full -z-10" />
@@ -27,7 +28,7 @@ function EcosystemVisual() {
           animate={{ y: [0, -8, 0] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
         >
-          <CornerFrame 
+          <CornerFrame
             className="bg-white/90 backdrop-blur-md border-neutral-200 shadow-xl p-3 min-w-[150px]"
             bracketClassName="w-2 h-2 border-blue-500"
           >
@@ -46,11 +47,11 @@ function EcosystemVisual() {
               <div className="h-6 flex items-end gap-0.5">
                 {[40, 60, 45, 70, 50, 80, 100].map((h, i) => (
                   <div key={i} className="w-1.5 bg-blue-100 rounded-sm overflow-hidden h-full flex items-end">
-                    <motion.div 
-                       className="w-full bg-blue-500 rounded-sm"
-                       initial={{ height: 0 }}
-                       animate={{ height: `${h}%` }}
-                       transition={{ duration: 1, delay: 1.2 + (i * 0.1) }}
+                    <motion.div
+                      className="w-full bg-blue-500 rounded-sm"
+                      initial={{ height: 0 }}
+                      animate={{ height: `${h}%` }}
+                      transition={{ duration: 1, delay: 1.2 + (i * 0.1) }}
                     />
                   </div>
                 ))}
@@ -71,7 +72,7 @@ function EcosystemVisual() {
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
         >
-          <CornerFrame 
+          <CornerFrame
             className="bg-neutral-900 text-white shadow-2xl p-4 w-[170px]"
             bracketClassName="w-2 h-2 border-neutral-600"
           >
@@ -80,24 +81,24 @@ function EcosystemVisual() {
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
             </div>
             <div className="flex items-center gap-3 mb-3">
-               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shrink-0">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
-                     <path d="M5 2h14a2 2 0 012 2v16a2 2 0 01-2 2H5a2 2 0 01-2-2V4a2 2 0 012-2zm0 2v16h14V4H5z" />
-                  </svg>
-               </div>
-               <div>
-                  <div className="text-xs font-medium">Berztech</div>
-                  <div className="text-[8px] text-neutral-400">Deployed</div>
-               </div>
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shrink-0">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
+                  <path d="M5 2h14a2 2 0 012 2v16a2 2 0 01-2 2H5a2 2 0 01-2-2V4a2 2 0 012-2zm0 2v16h14V4H5z" />
+                </svg>
+              </div>
+              <div>
+                <div className="text-xs font-medium">Berztech</div>
+                <div className="text-[8px] text-neutral-400">Deployed</div>
+              </div>
             </div>
             <div className="space-y-1">
-               <div className="flex justify-between text-[8px] text-neutral-300">
-                  <span>Rating</span>
-                  <span>5.0 ★</span>
-               </div>
-               <div className="h-0.5 w-full bg-neutral-800 rounded-full overflow-hidden">
-                  <div className="h-full w-full bg-indigo-500" />
-               </div>
+              <div className="flex justify-between text-[8px] text-neutral-300">
+                <span>Rating</span>
+                <span>5.0 ★</span>
+              </div>
+              <div className="h-0.5 w-full bg-neutral-800 rounded-full overflow-hidden">
+                <div className="h-full w-full bg-indigo-500" />
+              </div>
             </div>
           </CornerFrame>
         </motion.div>
@@ -114,24 +115,24 @@ function EcosystemVisual() {
           animate={{ y: [0, -6, 0] }}
           transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
         >
-          <CornerFrame 
+          <CornerFrame
             className="bg-white/95 backdrop-blur-md border-neutral-200 shadow-xl p-3 min-w-[140px]"
             bracketClassName="w-2 h-2 border-purple-500"
           >
             <div className="text-[9px] font-jetbrains-mono text-neutral-600 uppercase tracking-wider mb-2">Identity</div>
             <div className="flex gap-2 justify-between">
-               {[
-                 { bg: 'bg-neutral-900', label: 'Aa' },
-                 { bg: 'bg-emerald-500', label: '#' },
-                 { bg: 'bg-blue-500', label: '#' },
-                 { bg: 'bg-purple-500', label: '#' }
-               ].map((item, i) => (
-                 <div key={i} className="flex flex-col items-center gap-1">
-                    <div className={`w-6 h-6 rounded-md shadow-sm ${item.bg} flex items-center justify-center text-[8px] text-white`}>
-                       {item.label}
-                    </div>
-                 </div>
-               ))}
+              {[
+                { bg: 'bg-neutral-900', label: 'Aa' },
+                { bg: 'bg-emerald-500', label: '#' },
+                { bg: 'bg-blue-500', label: '#' },
+                { bg: 'bg-purple-500', label: '#' }
+              ].map((item, i) => (
+                <div key={i} className="flex flex-col items-center gap-1">
+                  <div className={`w-6 h-6 rounded-md shadow-sm ${item.bg} flex items-center justify-center text-[8px] text-white`}>
+                    {item.label}
+                  </div>
+                </div>
+              ))}
             </div>
           </CornerFrame>
         </motion.div>
@@ -144,58 +145,58 @@ function EcosystemVisual() {
         transition={{ delay: 0.5, duration: 0.6 }}
         className="relative z-10 w-[340px]"
       >
-        <CornerFrame 
+        <CornerFrame
           className="bg-white/80 backdrop-blur-xl border-neutral-200 shadow-2xl p-0 overflow-hidden"
           bracketClassName="w-3 h-3 border-neutral-900"
         >
           {/* Browser Header */}
           <div className="flex items-center gap-3 px-4 py-3 border-b border-neutral-100 bg-white/50">
-             <div className="flex gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-red-400/20 border border-red-400/30" />
-                <div className="w-2.5 h-2.5 rounded-full bg-amber-400/20 border border-amber-400/30" />
-                <div className="w-2.5 h-2.5 rounded-full bg-emerald-400/20 border border-emerald-400/30" />
-             </div>
-             <div className="flex-1 bg-neutral-100/50 rounded-md text-[9px] text-neutral-600 py-1.5 px-3 text-center font-jetbrains-mono">
-                berztech.com/build
-             </div>
+            <div className="flex gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-full bg-red-400/20 border border-red-400/30" />
+              <div className="w-2.5 h-2.5 rounded-full bg-amber-400/20 border border-amber-400/30" />
+              <div className="w-2.5 h-2.5 rounded-full bg-emerald-400/20 border border-emerald-400/30" />
+            </div>
+            <div className="flex-1 bg-neutral-100/50 rounded-md text-[9px] text-neutral-600 py-1.5 px-3 text-center font-jetbrains-mono">
+              berztech.com/build
+            </div>
           </div>
 
           {/* Web Content Area */}
           <div className="p-5 space-y-4">
-             {/* Mock Hero */}
-             <div className="flex gap-4">
-                <div className="w-20 h-20 bg-neutral-100 rounded-lg shrink-0 overflow-hidden relative group">
-                   <div className="absolute inset-0 bg-gradient-to-tr from-neutral-200 to-white" />
-                   <motion.div 
-                      className="absolute inset-0 bg-neutral-900/5"
-                      animate={{ opacity: [0, 0.5, 0] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                   />
+            {/* Mock Hero */}
+            <div className="flex gap-4">
+              <div className="w-20 h-20 bg-neutral-100 rounded-lg shrink-0 overflow-hidden relative group">
+                <div className="absolute inset-0 bg-gradient-to-tr from-neutral-200 to-white" />
+                <motion.div
+                  className="absolute inset-0 bg-neutral-900/5"
+                  animate={{ opacity: [0, 0.5, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+              </div>
+              <div className="space-y-2 flex-1 pt-1">
+                <div className="h-2.5 w-3/4 bg-neutral-200 rounded-full" />
+                <div className="h-2 w-full bg-neutral-100 rounded-full" />
+                <div className="h-2 w-5/6 bg-neutral-100 rounded-full" />
+
+                <div className="flex gap-2 mt-3">
+                  <span className="px-2 py-1 bg-blue-50 text-blue-600 text-[9px] font-medium rounded">React</span>
+                  <span className="px-2 py-1 bg-purple-50 text-purple-600 text-[9px] font-medium rounded">Next.js</span>
                 </div>
-                <div className="space-y-2 flex-1 pt-1">
-                   <div className="h-2.5 w-3/4 bg-neutral-200 rounded-full" />
-                   <div className="h-2 w-full bg-neutral-100 rounded-full" />
-                   <div className="h-2 w-5/6 bg-neutral-100 rounded-full" />
-                   
-                   <div className="flex gap-2 mt-3">
-                      <span className="px-2 py-1 bg-blue-50 text-blue-600 text-[9px] font-medium rounded">React</span>
-                      <span className="px-2 py-1 bg-purple-50 text-purple-600 text-[9px] font-medium rounded">Next.js</span>
-                   </div>
-                </div>
-             </div>
-             
-             {/* Code Block */}
-             <div className="bg-neutral-950 rounded-lg p-3 font-jetbrains-mono text-[9px] leading-relaxed text-neutral-400 relative group">
-                <div className="absolute top-3 right-3 flex gap-1">
-                   <div className="w-1.5 h-1.5 rounded-full bg-neutral-700" />
-                   <div className="w-1.5 h-1.5 rounded-full bg-neutral-700" />
-                </div>
-                <div><span className="text-purple-400">export default</span> <span className="text-blue-400">function</span> <span className="text-yellow-400">App</span>() {'{'}</div>
-                <div className="pl-3"><span className="text-purple-400">return</span> (</div>
-                <div className="pl-6 text-emerald-300">{'<Performance mode="fast" />'}</div>
-                <div className="pl-3">);</div>
-                <div>{'}'}</div>
-             </div>
+              </div>
+            </div>
+
+            {/* Code Block */}
+            <div className="bg-neutral-950 rounded-lg p-3 font-jetbrains-mono text-[9px] leading-relaxed text-neutral-400 relative group">
+              <div className="absolute top-3 right-3 flex gap-1">
+                <div className="w-1.5 h-1.5 rounded-full bg-neutral-700" />
+                <div className="w-1.5 h-1.5 rounded-full bg-neutral-700" />
+              </div>
+              <div><span className="text-purple-400">export default</span> <span className="text-blue-400">function</span> <span className="text-yellow-400">App</span>() {'{'}</div>
+              <div className="pl-3"><span className="text-purple-400">return</span> (</div>
+              <div className="pl-6 text-emerald-300">{'<Performance mode="fast" />'}</div>
+              <div className="pl-3">);</div>
+              <div>{'}'}</div>
+            </div>
           </div>
         </CornerFrame>
       </motion.div>
@@ -261,32 +262,7 @@ function MobileServiceGrid() {
   );
 }
 
-// --- Simplified animated counter for mobile ---
-function AnimatedCounter({ value, suffix = "", prefix = "" }) {
-  const [count, setCount] = useState(0);
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-10px" });
 
-  useEffect(() => {
-    if (!inView) return;
-    let start = 0;
-    const duration = 1500;
-    const step = (timestamp) => {
-      if (!start) start = timestamp;
-      const progress = Math.min((timestamp - start) / duration, 1);
-      const easeOut = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.floor(easeOut * value));
-      if (progress < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  }, [inView, value]);
-
-  return (
-    <span ref={ref} className="tabular-nums">
-      {prefix}{count}{suffix}
-    </span>
-  );
-}
 
 // --- Magnetic button ---
 function MagneticButton({ children, href, variant = "primary", className, coarse }) {
@@ -299,8 +275,8 @@ function MagneticButton({ children, href, variant = "primary", className, coarse
   };
 
   return (
-    <Link 
-      href={href} 
+    <Link
+      href={href}
       className={className}
       onMouseMove={(e) => {
         if (coarse) return;
@@ -320,7 +296,7 @@ function MagneticButton({ children, href, variant = "primary", className, coarse
         whileTap={{ scale: 0.98 }}
         transition={{ type: "spring", stiffness: 400, damping: 17 }}
       >
-        <CornerFrame 
+        <CornerFrame
           className={clsx("inline-block transition-all duration-300", variants[variant])}
           bracketClassName="w-2.5 h-2.5 sm:w-3 sm:h-3 border-current opacity-30 group-hover:opacity-100 transition-opacity"
         >
@@ -353,7 +329,7 @@ function OptimizedBackground({ enableInteraction }) {
   return (
     <div className="absolute inset-0 z-0 overflow-hidden">
       {enableInteraction && (
-        <motion.div 
+        <motion.div
           className="pointer-events-none absolute inset-0"
           style={{ background }}
         />
@@ -379,7 +355,7 @@ function TextReveal({ children, delay = 0, className }) {
 
 function StatusBadge() {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.1 }}
@@ -406,7 +382,7 @@ export default function Hero() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isCoarsePointer, setIsCoarsePointer] = useState(false);
   const inView = useInView(containerRef, { margin: "-20%" });
-  
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"]
@@ -414,7 +390,7 @@ export default function Hero() {
 
   const y = useTransform(scrollYProgress, [0, 1], [0, 100]);
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  
+
   const springY = useSpring(y, { stiffness: 100, damping: 30 });
   const springOpacity = useSpring(opacity, { stiffness: 100, damping: 30 });
 
@@ -431,14 +407,14 @@ export default function Hero() {
   }, []);
 
   return (
-    <section 
+    <section
       ref={containerRef}
-      className="relative w-full overflow-hidden" 
+      className="relative w-full overflow-hidden"
       style={{ minHeight: "auto" }}
     >
       <OptimizedBackground enableInteraction={!isCoarsePointer && inView} />
 
-      <motion.div 
+      <motion.div
         style={{ y: springY, opacity: springOpacity }}
         className="relative z-10 w-full flex flex-col"
       >
@@ -450,7 +426,7 @@ export default function Hero() {
           "px-4 sm:px-6 lg:px-8"
         )}>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
-            
+
             {/* Left Content */}
             <div className="lg:col-span-7 xl:col-span-6 order-2 lg:order-1">
               <StatusBadge />
@@ -469,7 +445,7 @@ export default function Hero() {
                 <TextReveal delay={0.3}>
                   <h1 className="font-space-grotesk text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-medium tracking-tight text-neutral-950 leading-[0.95] relative inline-block">
                     Excellence
-                    <motion.span 
+                    <motion.span
                       initial={{ scaleX: 0 }}
                       animate={{ scaleX: 1 }}
                       transition={{ duration: 0.8, delay: 0.8, ease: [0.23, 1, 0.32, 1] }}
@@ -485,8 +461,8 @@ export default function Hero() {
                 transition={{ duration: 0.6, delay: 0.4 }}
                 className="text-sm sm:text-base lg:text-lg text-neutral-600 leading-relaxed max-w-lg mb-6 sm:mb-8"
               >
-                We are a boutique engineering studio architecting high-performance 
-                web applications for the next generation of digital leaders. 
+                We are a boutique engineering studio architecting high-performance
+                web applications for the next generation of digital leaders.
                 No templates, just pure code.
               </motion.p>
 
@@ -505,7 +481,7 @@ export default function Hero() {
                     →
                   </motion.span>
                 </MagneticButton>
-                
+
                 <MagneticButton href="/process" variant="secondary" className="group w-full sm:w-auto justify-center" coarse={isCoarsePointer}>
                   Explore our process
                 </MagneticButton>

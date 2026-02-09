@@ -7,29 +7,42 @@ import Link from "next/link";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 import { layoutConfig } from "@/config/layout";
 import { aboutStats as stats } from "@/config/stats";
+import AnimatedCounter from "@/components/ui/AnimatedCounter";
 
 const values = [
   {
     title: "Precision",
     description: "Every line of code is intentional. We measure twice, cut once, and never ship debt.",
-    icon: "◆"
+    icon: "⎔",
+    color: "blue"
   },
   {
     title: "Transparency",
     description: "No black boxes. Our process is open, our communication clear, our intentions honest.",
-    icon: "◉"
+    icon: "◎",
+    color: "purple"
   },
   {
     title: "Partnership",
     description: "We don't have clients, we have collaborators. Your success is our success.",
-    icon: "❖"
+    icon: "⬡",
+    color: "emerald"
   },
   {
     title: "Innovation",
     description: "We stay ahead of the curve so you can lead the market. Continuous learning is our baseline.",
-    icon: "⚡"
+    icon: "✦",
+    color: "amber"
   }
 ];
+
+// Color schemes for value cards
+const valueColorSchemes = {
+  blue: { text: "text-blue-500", bracket: "!border-blue-400", bg: "bg-blue-500" },
+  purple: { text: "text-purple-500", bracket: "!border-purple-400", bg: "bg-purple-500" },
+  emerald: { text: "text-emerald-500", bracket: "!border-emerald-400", bg: "bg-emerald-500" },
+  amber: { text: "text-amber-500", bracket: "!border-amber-400", bg: "bg-amber-500" }
+};
 
 const team = [
   {
@@ -58,44 +71,11 @@ const team = [
   }
 ];
 
-function AnimatedCounter({ value, suffix }) {
-  const [count, setCount] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
-  
-  React.useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting && !isVisible) {
-        setIsVisible(true);
-        let start = 0;
-        const duration = 2000;
-        const step = (timestamp) => {
-          if (!start) start = timestamp;
-          const progress = Math.min((timestamp - start) / duration, 1);
-          const easeOut = 1 - Math.pow(1 - progress, 3);
-          setCount(Math.floor(easeOut * value));
-          if (progress < 1) requestAnimationFrame(step);
-        };
-        requestAnimationFrame(step);
-      }
-    }, { threshold: 0.5 });
-    
-    const element = document.getElementById(`counter-${value}`);
-    if (element) observer.observe(element);
-    return () => observer.disconnect();
-  }, [value, isVisible]);
 
-  return (
-    <span className="tabular-nums">
-      <span className="sr-only">{value}{suffix}</span>
-      <span aria-hidden="true" id={`counter-${value}`}>
-        {count}{suffix}
-      </span>
-    </span>
-  );
-}
 
 function ValueCard({ value, index }) {
   const [isHovered, setIsHovered] = useState(false);
+  const colors = valueColorSchemes[value.color];
 
   return (
     <motion.div
@@ -112,20 +92,20 @@ function ValueCard({ value, index }) {
           h-full p-5 sm:p-6 bg-neutral-50 border-neutral-200 transition-all duration-500
           ${isHovered ? 'border-neutral-400 shadow-lg' : ''}
         `}
-        bracketClassName="w-3 h-3 border-neutral-300 group-hover:border-neutral-500 transition-colors"
+        bracketClassName={`w-3 h-3 transition-all duration-300 ${isHovered ? colors.bracket : 'border-neutral-300'}`}
       >
         <motion.div
-          animate={{ rotate: isHovered ? 180 : 0, scale: isHovered ? 1.1 : 1 }}
+          animate={{ rotate: isHovered ? 180 : 0, scale: isHovered ? 1.2 : 1 }}
           transition={{ duration: 0.5 }}
-          className="text-3xl mb-4 text-neutral-300 group-hover:text-neutral-900 transition-colors"
+          className={`text-3xl mb-4 transition-colors duration-300 ${isHovered ? colors.text : 'text-neutral-300'}`}
         >
           {value.icon}
         </motion.div>
-        
+
         <h3 className="font-space-grotesk text-lg font-medium text-neutral-900 mb-2">
           {value.title}
         </h3>
-        
+
         <p className="text-sm text-neutral-600 leading-relaxed">
           {value.description}
         </p>
@@ -134,7 +114,7 @@ function ValueCard({ value, index }) {
           initial={{ scaleX: 0 }}
           animate={{ scaleX: isHovered ? 1 : 0 }}
           transition={{ duration: 0.3 }}
-          className="absolute bottom-0 left-0 right-0 h-0.5 bg-neutral-900 origin-left"
+          className={`absolute bottom-0 left-0 right-0 h-0.5 origin-left ${colors.bg}`}
         />
       </CornerFrame>
     </motion.div>
@@ -175,7 +155,7 @@ function TeamCard({ member, index }) {
                 className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
               />
             ) : (
-              <div 
+              <div
                 className="w-full h-full flex items-center justify-center bg-neutral-200"
                 role="img"
                 aria-label={`Portrait of ${member.name}`}
@@ -186,14 +166,14 @@ function TeamCard({ member, index }) {
               </div>
             )}
           </motion.div>
-          
+
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: isHovered ? 1 : 0 }}
             transition={{ duration: 0.3 }}
             className="absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-neutral-950/20 to-transparent"
           />
-          
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 20 }}
@@ -225,7 +205,7 @@ export default function AboutPage() {
     target: containerRef,
     offset: ["start start", "end start"]
   });
-  
+
   const y = useTransform(scrollYProgress, [0, 1], [0, 100]);
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
@@ -236,7 +216,7 @@ export default function AboutPage() {
         {/* FIXED: Removed the opaque radial gradient background that was hiding the grid.
           The GridBackground (z-0) will now show through against the white RootLayout background.
         */}
-        <motion.div 
+        <motion.div
           style={{ y, opacity }}
           className="absolute inset-0 z-0 pointer-events-none"
         >
@@ -263,7 +243,7 @@ export default function AboutPage() {
             </h1>
 
             <p className="text-base sm:text-lg lg:text-xl text-neutral-600 max-w-2xl leading-relaxed">
-              We are a boutique digital agency crafting high-performance web applications 
+              We are a boutique digital agency crafting high-performance web applications
               for ambitious companies. No templates. No shortcuts. Just pure code.
             </p>
           </motion.div>
@@ -312,7 +292,7 @@ export default function AboutPage() {
                   Our Story
                 </span>
               </div>
-              
+
               <h2 className="font-space-grotesk text-3xl sm:text-4xl font-medium text-neutral-900 tracking-tight mb-6 leading-tight">
                 Built by engineers,
                 <br />
@@ -321,17 +301,17 @@ export default function AboutPage() {
 
               <div className="space-y-4 text-neutral-600 leading-relaxed">
                 <p>
-                  Founded in 2017, Berztech began with a simple belief: that software should be 
-                  built with the same care and precision as architecture. We rejected the 
+                  Founded in 2017, Berztech began with a simple belief: that software should be
+                  built with the same care and precision as architecture. We rejected the
                   template culture and quick-fix mentality pervasive in our industry.
                 </p>
                 <p>
-                  Today, we're a tight-knit team of engineers and designers who treat every 
-                  project as a craft. We've helped startups scale from zero to millions of users, 
+                  Today, we're a tight-knit team of engineers and designers who treat every
+                  project as a craft. We've helped startups scale from zero to millions of users,
                   and transformed legacy systems into modern, maintainable platforms.
                 </p>
                 <p>
-                  Our approach is collaborative, transparent, and relentlessly focused on 
+                  Our approach is collaborative, transparent, and relentlessly focused on
                   delivering measurable business value through technical excellence.
                 </p>
               </div>
@@ -372,7 +352,7 @@ export default function AboutPage() {
                   <div className="absolute bottom-4 left-4 w-32 h-32 border border-neutral-300/50" />
                 </div>
               </CornerFrame>
-              
+
               <motion.div
                 animate={{ y: [0, -10, 0] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
@@ -395,7 +375,7 @@ export default function AboutPage() {
               Our Values
             </span>
           </div>
-          
+
           <h2 className="font-space-grotesk text-2xl sm:text-3xl lg:text-4xl font-medium text-neutral-900 tracking-tight mb-12">
             Principles that guide <span className="text-neutral-500">our work</span>
           </h2>
@@ -452,23 +432,23 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* CTA Section - Dark, no grid needed */}
-      <section className="py-16 sm:py-24 bg-neutral-950 text-white z-10 relative">
+      {/* CTA Section - Light background */}
+      <section className="py-16 sm:py-24  z-10 relative">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="font-space-grotesk text-3xl sm:text-4xl lg:text-5xl font-medium tracking-tight mb-6">
-              Ready to build <span className="text-neutral-500">together?</span>
+            <h2 className="font-space-grotesk text-3xl sm:text-4xl lg:text-5xl font-medium tracking-tight mb-6 text-neutral-900">
+              Ready to build <span className="text-neutral-400">together?</span>
             </h2>
-            <p className="text-neutral-400 max-w-xl mx-auto mb-8">
+            <p className="text-neutral-600 max-w-xl mx-auto mb-8">
               Let's discuss how we can help transform your digital presence with precision engineering.
             </p>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white text-neutral-950 font-jetbrains-mono text-xs uppercase tracking-widest font-semibold hover:bg-neutral-100 transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-neutral-900 text-white font-jetbrains-mono text-xs uppercase tracking-widest font-semibold hover:bg-neutral-800 transition-colors"
             >
               Start a Project
               <span>→</span>
