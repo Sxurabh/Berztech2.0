@@ -1,7 +1,7 @@
 // src/components/Hero.jsx
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { motion, useScroll, useTransform, useSpring, useMotionValue, useMotionTemplate } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring, useMotionValue, useMotionTemplate, useInView } from "framer-motion";
 import Link from "next/link";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 import clsx from "clsx";
@@ -264,22 +264,11 @@ function MobileServiceGrid() {
 // --- Simplified animated counter for mobile ---
 function AnimatedCounter({ value, suffix = "", prefix = "" }) {
   const [count, setCount] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
   const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-10px" });
 
   useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting && !isVisible) {
-        setIsVisible(true);
-      }
-    }, { threshold: 0.5, rootMargin: "0px" });
-
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [isVisible]);
-
-  useEffect(() => {
-    if (!isVisible) return;
+    if (!inView) return;
     let start = 0;
     const duration = 1500;
     const step = (timestamp) => {
@@ -290,7 +279,7 @@ function AnimatedCounter({ value, suffix = "", prefix = "" }) {
       if (progress < 1) requestAnimationFrame(step);
     };
     requestAnimationFrame(step);
-  }, [isVisible, value]);
+  }, [inView, value]);
 
   return (
     <span ref={ref} className="tabular-nums">
@@ -300,29 +289,9 @@ function AnimatedCounter({ value, suffix = "", prefix = "" }) {
 }
 
 // --- Magnetic button ---
-function MagneticButton({ children, href, variant = "primary", className }) {
-  const ref = useRef(null);
-  const [isMobile, setIsMobile] = useState(false);
-  
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.matchMedia("(pointer: coarse)").matches);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
-  const handleMouseMove = (e) => {
-    if (isMobile || !ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left - rect.width / 2) * 0.1;
-    const y = (e.clientY - rect.top - rect.height / 2) * 0.1;
-    ref.current.style.transform = `translate(${x}px, ${y}px)`;
-  };
-
-  const handleMouseLeave = () => {
-    if (!ref.current) return;
-    ref.current.style.transform = "translate(0, 0)";
-  };
+function MagneticButton({ children, href, variant = "primary", className, coarse }) {
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
 
   const variants = {
     primary: "bg-neutral-900 text-white border-neutral-900 hover:bg-neutral-800",
@@ -333,11 +302,21 @@ function MagneticButton({ children, href, variant = "primary", className }) {
     <Link 
       href={href} 
       className={className}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      onMouseMove={(e) => {
+        if (coarse) return;
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = (e.clientX - rect.left - rect.width / 2) * 0.1;
+        const y = (e.clientY - rect.top - rect.height / 2) * 0.1;
+        mx.set(x);
+        my.set(y);
+      }}
+      onMouseLeave={() => {
+        mx.set(0);
+        my.set(0);
+      }}
     >
       <motion.div
-        ref={ref}
+        style={{ x: mx, y: my }}
         whileTap={{ scale: 0.98 }}
         transition={{ type: "spring", stiffness: 400, damping: 17 }}
       >
@@ -355,33 +334,25 @@ function MagneticButton({ children, href, variant = "primary", className }) {
 }
 
 // --- Optimized background ---
-function OptimizedBackground() {
+function OptimizedBackground({ enableInteraction }) {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  const [isMobile, setIsMobile] = useState(true);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.matchMedia("(pointer: coarse)").matches);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
-  useEffect(() => {
-    if (isMobile) return;
+    if (!enableInteraction) return;
     const handleMouseMove = (e) => {
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
     };
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [isMobile, mouseX, mouseY]);
+  }, [enableInteraction, mouseX, mouseY]);
 
   const background = useMotionTemplate`radial-gradient(600px circle at ${mouseX}px ${mouseY}px, rgba(0,0,0,0.05), transparent 40%)`;
 
   return (
     <div className="absolute inset-0 z-0 overflow-hidden">
-      {!isMobile && (
+      {enableInteraction && (
         <motion.div 
           className="pointer-events-none absolute inset-0"
           style={{ background }}
@@ -433,6 +404,8 @@ function StatusBadge() {
 export default function Hero() {
   const containerRef = useRef(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isCoarsePointer, setIsCoarsePointer] = useState(false);
+  const inView = useInView(containerRef, { margin: "-20%" });
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -449,13 +422,21 @@ export default function Hero() {
     setIsLoaded(true);
   }, []);
 
+  useEffect(() => {
+    const mq = window.matchMedia("(pointer: coarse)");
+    const update = () => setIsCoarsePointer(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
   return (
     <section 
       ref={containerRef}
       className="relative w-full overflow-hidden" 
       style={{ minHeight: "auto" }}
     >
-      <OptimizedBackground />
+      <OptimizedBackground enableInteraction={!isCoarsePointer && inView} />
 
       <motion.div 
         style={{ y: springY, opacity: springOpacity }}
@@ -481,7 +462,7 @@ export default function Hero() {
                   </h1>
                 </TextReveal>
                 <TextReveal delay={0.2}>
-                  <h1 className="font-space-grotesk text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-medium tracking-tight leading-[0.95] text-neutral-400">
+                  <h1 className="font-space-grotesk text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-medium tracking-tight leading-[0.95] text-neutral-500">
                     Digital
                   </h1>
                 </TextReveal>
@@ -515,7 +496,7 @@ export default function Hero() {
                 transition={{ duration: 0.6, delay: 0.5 }}
                 className="flex flex-col sm:flex-row gap-3 sm:gap-4"
               >
-                <MagneticButton href="/contact" variant="primary" className="group w-full sm:w-auto justify-center">
+                <MagneticButton href="/contact" variant="primary" className="group w-full sm:w-auto justify-center" coarse={isCoarsePointer}>
                   <span>Start your project</span>
                   <motion.span
                     animate={{ x: [0, 4, 0] }}
@@ -525,7 +506,7 @@ export default function Hero() {
                   </motion.span>
                 </MagneticButton>
                 
-                <MagneticButton href="/process" variant="secondary" className="group w-full sm:w-auto justify-center">
+                <MagneticButton href="/process" variant="secondary" className="group w-full sm:w-auto justify-center" coarse={isCoarsePointer}>
                   Explore our process
                 </MagneticButton>
               </motion.div>

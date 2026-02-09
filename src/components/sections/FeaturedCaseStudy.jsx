@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { CornerFrame } from "@/components/ui/CornerFrame";
-import GridBackground from "@/components/ui/GridBackground"; // 1. Import this
 
 
 const caseStudy = {
@@ -38,7 +37,7 @@ export default function FeaturedCaseStudy() {
         >
           <div className="flex items-center gap-2 mb-3">
             <div className="h-px w-4 bg-neutral-300" />
-            <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400">
+            <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-600">
               Featured Work
             </span>
           </div>
@@ -46,11 +45,11 @@ export default function FeaturedCaseStudy() {
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <h2 className="font-space-grotesk text-2xl sm:text-3xl lg:text-4xl font-medium text-neutral-900 tracking-tight leading-tight">
               Proven solutions for<br />
-              <span className="text-neutral-400">real-world problems</span>
+              <span className="text-neutral-500">real-world problems</span>
             </h2>
             <Link 
               href="/work"
-              className="group inline-flex items-center gap-2 text-xs font-jetbrains-mono uppercase tracking-widest text-neutral-500 hover:text-neutral-900 transition-colors shrink-0"
+              className="group inline-flex items-center gap-2 text-xs font-jetbrains-mono uppercase tracking-widest text-neutral-600 hover:text-neutral-900 transition-colors shrink-0"
             >
               View all projects
               <span className="w-4 h-px bg-neutral-300 group-hover:w-5 group-hover:bg-neutral-900 transition-all" />
@@ -107,7 +106,7 @@ export default function FeaturedCaseStudy() {
                         {caseStudy.client.charAt(0)}
                       </span>
                     </div>
-                    <span className="text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-400">
+                    <span className="text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-600">
                       {caseStudy.client}
                     </span>
                   </div>
@@ -153,7 +152,7 @@ export default function FeaturedCaseStudy() {
                         <div className="font-space-grotesk text-lg sm:text-xl font-medium text-neutral-900">
                           {stat.value}
                         </div>
-                        <div className="text-[9px] font-jetbrains-mono uppercase tracking-wider text-neutral-400">
+                        <div className="text-[9px] font-jetbrains-mono uppercase tracking-wider text-neutral-600">
                           {stat.label}
                         </div>
                       </motion.div>
@@ -197,7 +196,7 @@ export default function FeaturedCaseStudy() {
               <div className="font-space-grotesk text-xl sm:text-2xl font-medium text-neutral-900">
                 {item.value}
               </div>
-              <div className="text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-400 mt-0.5">
+              <div className="text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-600 mt-0.5">
                 {item.label}
               </div>
             </div>

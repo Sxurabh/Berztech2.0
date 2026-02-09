@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { CornerFrame } from "@/components/ui/CornerFrame";
-import GridBackground from "@/components/ui/GridBackground";
 
 const processes = [
   {
@@ -63,7 +62,7 @@ const colorSchemes = {
     bgLight: "bg-blue-50",
     border: "border-blue-200",
     glow: "shadow-blue-500/20",
-    number: "text-blue-100"
+    number: "text-blue-600"
   },
   indigo: {
     bg: "bg-indigo-500",
@@ -71,7 +70,7 @@ const colorSchemes = {
     bgLight: "bg-indigo-50",
     border: "border-indigo-200",
     glow: "shadow-indigo-500/20",
-    number: "text-indigo-100"
+    number: "text-indigo-600"
   },
   purple: {
     bg: "bg-purple-500",
@@ -79,7 +78,7 @@ const colorSchemes = {
     bgLight: "bg-purple-50",
     border: "border-purple-200",
     glow: "shadow-purple-500/20",
-    number: "text-purple-100"
+    number: "text-purple-600"
   },
   emerald: {
     bg: "bg-emerald-500",
@@ -87,7 +86,7 @@ const colorSchemes = {
     bgLight: "bg-emerald-50",
     border: "border-emerald-200",
     glow: "shadow-emerald-500/20",
-    number: "text-emerald-100"
+    number: "text-emerald-600"
   },
   amber: {
     bg: "bg-amber-500",
@@ -95,7 +94,7 @@ const colorSchemes = {
     bgLight: "bg-amber-50",
     border: "border-amber-200",
     glow: "shadow-amber-500/20",
-    number: "text-amber-100"
+    number: "text-amber-600"
   },
   rose: {
     bg: "bg-rose-500",
@@ -103,12 +102,13 @@ const colorSchemes = {
     bgLight: "bg-rose-50",
     border: "border-rose-200",
     glow: "shadow-rose-500/20",
-    number: "text-rose-100"
+    number: "text-rose-600"
   }
 };
 
 export default function ProcessStrip() {
   const [activeTab, setActiveTab] = useState(0);
+  const [isSwitching, setIsSwitching] = useState(false);
   const activeProcess = processes[activeTab];
   const colors = colorSchemes[activeProcess.color];
 
@@ -128,7 +128,7 @@ export default function ProcessStrip() {
         >
           <div className="flex items-center gap-2 mb-3">
             <div className="h-px w-4 bg-neutral-300" />
-            <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400">
+            <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-600">
               How We Work
             </span>
           </div>
@@ -137,7 +137,7 @@ export default function ProcessStrip() {
             <h2 className="font-space-grotesk text-2xl sm:text-3xl lg:text-4xl font-medium text-neutral-900 tracking-tight leading-tight">
               Process-driven
               <br />
-              <span className="text-neutral-400">results guaranteed</span>
+              <span className="text-neutral-500">results guaranteed</span>
             </h2>
             <p className="text-sm sm:text-base text-neutral-600 leading-relaxed max-w-sm sm:text-right">
               No black boxes. No surprises. Our transparent methodology keeps you in control.
@@ -160,7 +160,11 @@ export default function ProcessStrip() {
               return (
                 <button
                   key={process.number}
-                  onClick={() => setActiveTab(index)}
+                  onClick={() => {
+                    if (isSwitching || activeTab === index) return;
+                    setIsSwitching(true);
+                    setActiveTab(index);
+                  }}
                   className={`
                     relative px-3 py-3 sm:px-4 sm:py-4 border text-left transition-all duration-300
                     ${activeTab === index 
@@ -180,7 +184,7 @@ export default function ProcessStrip() {
                     <div className="flex-1 min-w-0">
                       <span className={`
                         block text-[9px] sm:text-[10px] font-jetbrains-mono uppercase tracking-wider
-                        ${activeTab === index ? 'text-neutral-400' : 'text-neutral-400'}
+                        ${activeTab === index ? 'text-neutral-400' : 'text-neutral-600'}
                       `}>
                         Phase
                       </span>
@@ -197,7 +201,7 @@ export default function ProcessStrip() {
                     mt-2 inline-block px-2 py-0.5 text-[9px] font-jetbrains-mono uppercase tracking-wider
                     ${activeTab === index 
                       ? 'bg-neutral-800 text-neutral-300' 
-                      : 'bg-neutral-100 text-neutral-500'
+                      : 'bg-neutral-200 text-neutral-700'
                     }
                   `}>
                     {process.duration}
@@ -223,7 +227,7 @@ export default function ProcessStrip() {
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="wait" onExitComplete={() => setIsSwitching(false)}>
             <motion.div
               key={activeTab}
               initial={{ opacity: 0, y: 10 }}
@@ -264,7 +268,7 @@ export default function ProcessStrip() {
                       p-3 sm:p-4 border h-full
                       ${colors.bgLight} ${colors.border}
                     `}>
-                      <span className="text-[10px] sm:text-xs font-jetbrains-mono uppercase tracking-wider text-neutral-500 block mb-3">
+                      <span className="text-[10px] sm:text-xs font-jetbrains-mono uppercase tracking-wider text-neutral-600 block mb-3">
                         Key Deliverables
                       </span>
                       <ul className="space-y-2">

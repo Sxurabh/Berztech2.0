@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { CornerFrame } from "@/components/ui/CornerFrame";
-import GridBackground from "@/components/ui/GridBackground";
 
 // Assets
 import blackLogo from "../../../assets/Logo/blacklogo.png";
@@ -73,9 +72,65 @@ const footerLinks = {
   }
 };
 
-// REPLACE the NewsletterForm component in your Footer.jsx with this:
+function NewsletterForm() {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState("idle"); // idle, loading, success, error
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!email) return;
+    setStatus("loading");
+    // Simulate API call
+    setTimeout(() => {
+      setStatus("success");
+      setEmail("");
+      setTimeout(() => setStatus("idle"), 3000);
+    }, 1500);
+  };
 
+  return (
+    <form onSubmit={handleSubmit} className="relative mt-2">
+      <div className="flex gap-2">
+        <label htmlFor="newsletter-email" className="sr-only">
+          Email address
+        </label>
+        <input
+          id="newsletter-email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Enter your email"
+          required
+          aria-describedby="newsletter-description"
+          className="flex-1 bg-neutral-50 border border-neutral-200 rounded px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-400 focus:ring-2 focus:ring-neutral-900 focus:border-transparent focus:outline-none transition-all"
+          disabled={status === "loading" || status === "success"}
+        />
+        <button
+          type="submit"
+          disabled={status === "loading" || status === "success"}
+          className="bg-neutral-900 text-white px-4 py-2 rounded text-xs font-jetbrains-mono uppercase tracking-wider font-medium hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed transition-colors"
+        >
+          {status === "loading" ? (
+            <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+          ) : status === "success" ? (
+            "Joined"
+          ) : (
+            "Join"
+          )}
+        </button>
+      </div>
+      {status === "success" && (
+        <motion.p
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="absolute top-full left-0 mt-1 text-xs text-emerald-600 font-medium"
+        >
+          Thanks for subscribing!
+        </motion.p>
+      )}
+    </form>
+  );
+}
 
 function LinkSection({ title, links }) {
   return (
@@ -88,7 +143,7 @@ function LinkSection({ title, links }) {
           <li key={link.href}>
             <Link
               href={link.href}
-              className="group inline-flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-900 transition-colors duration-200"
+              className="group inline-flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-900 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2 rounded-sm"
             >
               <span className="w-0 group-hover:w-2 h-px bg-neutral-900 transition-all duration-200" />
               {link.label}
@@ -109,19 +164,19 @@ function MobileAccordion({ sections }) {
         <div key={key} className="border-b border-neutral-200">
           <button
             onClick={() => setOpenSection(openSection === key ? null : key)}
-            className="w-full flex items-center justify-between py-4 text-left"
+            className="w-full flex items-center justify-between py-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-inset"
             aria-expanded={openSection === key}
           >
             <span className="font-space-grotesk text-sm font-medium text-neutral-900">
               {section.title}
             </span>
             <motion.span
-              animate={{ rotate: openSection === key ? 45 : 0 }}
-              transition={{ duration: 0.2 }}
-              className="text-neutral-400 text-lg font-light"
-            >
-              +
-            </motion.span>
+                animate={{ rotate: openSection === key ? 45 : 0 }}
+                transition={{ duration: 0.2 }}
+                className="text-neutral-600 text-lg font-light"
+              >
+                +
+              </motion.span>
           </button>
           
           <AnimatePresence initial={false}>
@@ -159,11 +214,6 @@ export default function Footer() {
 
   return (
     <footer className="relative  overflow-hidden">
-      {/* Subtle Grid Background */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.02]">
-        <GridBackground size={32} />
-      </div>
-
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         
         {/* Main Footer Content */}
@@ -200,7 +250,7 @@ export default function Footer() {
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
-                    className="w-10 h-10 flex items-center justify-center text-neutral-400 hover:text-neutral-900 hover:bg-neutral-50 rounded transition-colors duration-200"
+                    className="w-10 h-10 flex items-center justify-center text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
                     aria-label={social.name}
                   >
                     <social.icon />
@@ -233,12 +283,12 @@ export default function Footer() {
                 <h3 className="font-space-grotesk text-sm font-medium text-neutral-900 mb-1">
                   Stay updated
                 </h3>
-                <p className="text-xs text-neutral-500 leading-relaxed">
+                <p id="newsletter-description" className="text-xs text-neutral-500 leading-relaxed">
                   Get insights on engineering, design, and digital strategy.
                 </p>
               </div>
               
-              
+              <NewsletterForm />
               
               <div className="pt-4 space-y-2">
                 <div className="flex items-center gap-2 text-xs text-neutral-500">
@@ -272,7 +322,7 @@ export default function Footer() {
                 <span className="text-xs text-neutral-500">Pune, India</span>
               </div>
               
-              <div className="flex items-center gap-4 text-xs font-jetbrains-mono text-neutral-400">
+              <div className="flex items-center gap-4 text-xs font-jetbrains-mono text-neutral-500">
                 <span className="uppercase tracking-wider">Response time: ~4hrs</span>
               </div>
             </div>
@@ -282,7 +332,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="py-3">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <p className="text-xs font-jetbrains-mono text-neutral-400">
+            <p className="text-xs font-jetbrains-mono text-neutral-500">
               © {currentYear} Berzcode technologies pvt. ltd.
             </p>
             
@@ -301,7 +351,8 @@ export default function Footer() {
               </Link>
               <button
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="group flex items-center gap-1 text-xs font-jetbrains-mono text-neutral-500 hover:text-neutral-900 transition-colors uppercase tracking-wider"
+                className="group flex items-center gap-1 text-xs font-jetbrains-mono text-neutral-500 hover:text-neutral-900 transition-colors uppercase tracking-wider focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2 rounded-sm"
+                aria-label="Scroll to top"
               >
                 Top
                 <motion.span

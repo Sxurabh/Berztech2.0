@@ -23,8 +23,10 @@ function MenuButton({ isOpen, onClick }) {
   return (
     <button
       onClick={onClick}
-      className="relative z-50 group"
+      className="relative z-50 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2 rounded-sm min-w-[44px] min-h-[44px] flex items-center justify-center"
       aria-label={isOpen ? "Close menu" : "Open menu"}
+      aria-expanded={isOpen}
+      aria-controls="mobile-menu"
     >
       <div className={clsx(
         "relative px-4 py-2 transition-all duration-300",
@@ -65,7 +67,11 @@ function MenuButton({ isOpen, onClick }) {
 // Redesigned Hire Button with corner brackets
 function HireButton() {
   return (
-    <Link href="/contact" className="group relative hidden lg:block">
+    <Link 
+      href="/contact" 
+      className="group relative hidden lg:block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
+      aria-label="Contact Us"
+    >
       <div className="relative px-5 py-2.5 bg-neutral-900 text-white transition-all duration-300 hover:bg-neutral-800">
         {/* Corner Brackets - White on dark */}
         <span className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/30 group-hover:border-white/60 transition-colors duration-300" />
@@ -95,7 +101,8 @@ function DesktopNav({ pathname }) {
         <React.Fragment key={item.href}>
           <Link 
             href={item.href} 
-            className="group relative px-4 py-2"
+            className="group relative px-4 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2 rounded-sm"
+            aria-label={item.title}
           >
             
             <span className={clsx(
@@ -141,6 +148,12 @@ export default function Header() {
 
   return (
     <>
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 z-[100] px-6 py-3 bg-neutral-900 text-white font-jetbrains-mono text-xs uppercase tracking-widest font-bold rounded-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 transition-transform"
+      >
+        Skip to main content
+      </a>
       <motion.header
         initial={{ y: -100 }}
         animate={{ y: 0 }}
@@ -155,7 +168,11 @@ export default function Header() {
         <div className={clsx("mx-auto", layoutConfig.maxWidth, layoutConfig.padding.mobile, layoutConfig.padding.tablet, layoutConfig.padding.desktop)}>
           <div className="flex items-center justify-between h-16 sm:h-20">
             {/* Logo */}
-            <Link href="/" className="relative z-50">
+            <Link 
+              href="/" 
+              className="relative z-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2 rounded-sm"
+              aria-label="Berztech Home"
+            >
               <Image 
                 src={blackLogo} 
                 alt="Berztech" 
@@ -195,6 +212,7 @@ export default function Header() {
               onClick={() => setMobileMenuOpen(false)}
             />
             <motion.div
+              id="mobile-menu"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -214,9 +232,10 @@ export default function Header() {
                         href={item.href}
                         onClick={() => setMobileMenuOpen(false)}
                         className={clsx(
-                          "group flex items-center justify-between py-3 border-b border-neutral-100 last:border-b-0",
+                          "group flex items-center justify-between py-3 border-b border-neutral-100 last:border-b-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-inset",
                           pathname === item.href ? "text-neutral-900" : "text-neutral-500"
                         )}
+                        aria-label={item.title}
                       >
                         <span className="font-space-grotesk text-lg font-medium">
                           {item.title}
@@ -241,7 +260,8 @@ export default function Header() {
                   <Link
                     href="/contact"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-center gap-2 w-full py-3 bg-neutral-900 text-white font-jetbrains-mono text-xs uppercase tracking-widest font-semibold"
+                    className="flex items-center justify-center gap-2 w-full py-3 bg-neutral-900 text-white font-jetbrains-mono text-xs uppercase tracking-widest font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
+                    aria-label="Start Your Project"
                   >
                     Start Your Project
                     <span>→</span>

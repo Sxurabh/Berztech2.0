@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { CornerFrame } from "@/components/ui/CornerFrame";
+import { homeStats as stats } from "@/config/stats";
 
 function AnimatedNumber({ value, suffix = "", prefix = "" }) {
   const ref = useRef(null);
@@ -42,13 +43,6 @@ function AnimatedNumber({ value, suffix = "", prefix = "" }) {
     </span>
   );
 }
-
-const stats = [
-  { value: 50, suffix: "+", label: "Projects", description: "Delivered" },
-  { value: 98, suffix: "%", label: "Client", description: "Retention" },
-  { value: 12, suffix: "ms", label: "Avg", description: "Response" },
-  { value: 5, suffix: "", label: "Years", description: "Experience" }
-];
 
 export default function StatsBar() {
   return (

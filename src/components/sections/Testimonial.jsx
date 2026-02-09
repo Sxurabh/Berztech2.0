@@ -1,10 +1,9 @@
 // src/components/Testimonial.jsx
 "use client";
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useTransform, useInView } from "framer-motion";
 import Image from "next/image";
 import { CornerFrame } from "@/components/ui/CornerFrame";
-import GridBackground from "@/components/ui/GridBackground"; // 1. Import this
 
 
 const testimonials = [
@@ -122,10 +121,13 @@ export default function Testimonial() {
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [direction, setDirection] = useState(0);
   const containerRef = useRef(null);
+  const isInView = useInView(containerRef, { amount: 0.5, margin: "0px" });
+  const [isPageVisible, setIsPageVisible] = useState(true);
   
   const AUTO_PLAY_DURATION = 6000;
   const activeTestimonial = testimonials[activeIndex];
   const colors = colorSchemes[activeTestimonial.color];
+  const shouldPlay = isAutoPlaying && isInView && isPageVisible;
 
   // Navigation handlers
   const goToNext = useCallback(() => {
@@ -149,24 +151,28 @@ export default function Testimonial() {
 
   // Auto-play logic
   useEffect(() => {
-    if (!isAutoPlaying) return;
-    
+    if (!shouldPlay) return;
     const timer = setInterval(goToNext, AUTO_PLAY_DURATION);
     return () => clearInterval(timer);
-  }, [isAutoPlaying, goToNext]);
+  }, [shouldPlay, goToNext]);
 
   // Pause on visibility change (accessibility)
   useEffect(() => {
+    if (!shouldPlay) return;
     const handleVisibilityChange = () => {
-      setIsAutoPlaying(!document.hidden);
+      setIsPageVisible(!document.hidden);
     };
-    
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, [shouldPlay]);
+
+  useEffect(() => {
+    setIsPageVisible(typeof document !== "undefined" ? !document.hidden : true);
   }, []);
 
   // Keyboard navigation
   useEffect(() => {
+    if (!shouldPlay) return;
     const handleKeyDown = (e) => {
       if (e.key === "ArrowLeft") {
         goToPrev();
@@ -176,10 +182,9 @@ export default function Testimonial() {
         setIsAutoPlaying(false);
       }
     };
-
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [goToNext, goToPrev]);
+  }, [shouldPlay, goToNext, goToPrev]);
 
   // Animation variants
   const slideVariants = {
@@ -223,13 +228,13 @@ export default function Testimonial() {
         >
           <div className="flex items-center gap-2">
             <div className="h-px w-4 bg-neutral-300" />
-            <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400">
+            <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-600">
               Client Stories
             </span>
           </div>
           
           {/* Auto-play indicator - Desktop only */}
-          <div className="hidden sm:flex items-center gap-2 text-[10px] font-jetbrains-mono text-neutral-400">
+          <div className="hidden sm:flex items-center gap-2 text-[10px] font-jetbrains-mono text-neutral-600">
             <motion.span
               animate={{ opacity: isAutoPlaying ? [1, 0.5, 1] : 1 }}
               transition={{ duration: 2, repeat: Infinity }}
@@ -254,7 +259,7 @@ export default function Testimonial() {
             {/* Progress Bar - Top */}
             <div className="absolute top-0 left-0 right-0 z-20">
               <ProgressBar 
-                isActive={isAutoPlaying} 
+                isActive={shouldPlay} 
                 duration={AUTO_PLAY_DURATION}
                 onComplete={goToNext}
               />
@@ -345,7 +350,7 @@ export default function Testimonial() {
                       </blockquote>
 
                       {/* Mobile-only: Swipe hint */}
-                      <div className="mt-6 flex items-center gap-2 text-neutral-400 sm:hidden">
+                      <div className="mt-6 flex items-center gap-2 text-neutral-600 sm:hidden">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
                         </svg>
@@ -414,7 +419,7 @@ export default function Testimonial() {
                           : 'w-2 sm:w-2.5 bg-neutral-300 hover:bg-neutral-400'
                         }
                       `} />
-                      {index === activeIndex && isAutoPlaying && (
+                      {index === activeIndex && shouldPlay && (
                         <motion.div
                           layoutId="activeIndicator"
                           className="absolute inset-0 border-2 border-neutral-900 rounded-full"
