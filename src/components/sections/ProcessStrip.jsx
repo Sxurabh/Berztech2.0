@@ -108,6 +108,7 @@ const colorSchemes = {
 
 export default function ProcessStrip() {
   const [activeTab, setActiveTab] = useState(0);
+  const [isSwitching, setIsSwitching] = useState(false);
   const activeProcess = processes[activeTab];
   const colors = colorSchemes[activeProcess.color];
 
@@ -159,7 +160,11 @@ export default function ProcessStrip() {
               return (
                 <button
                   key={process.number}
-                  onClick={() => setActiveTab(index)}
+                  onClick={() => {
+                    if (isSwitching || activeTab === index) return;
+                    setIsSwitching(true);
+                    setActiveTab(index);
+                  }}
                   className={`
                     relative px-3 py-3 sm:px-4 sm:py-4 border text-left transition-all duration-300
                     ${activeTab === index 
@@ -222,7 +227,7 @@ export default function ProcessStrip() {
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="wait" onExitComplete={() => setIsSwitching(false)}>
             <motion.div
               key={activeTab}
               initial={{ opacity: 0, y: 10 }}
