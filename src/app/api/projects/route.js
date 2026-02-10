@@ -4,7 +4,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 // GET /api/projects — List all projects (public)
 export async function GET() {
     try {
-        const supabase = createServerSupabaseClient();
+        const supabase = await createServerSupabaseClient();
         const { data, error } = await supabase
             .from("projects")
             .select("*")
@@ -24,7 +24,7 @@ export async function GET() {
 // POST /api/projects — Create a new project (authenticated)
 export async function POST(request) {
     try {
-        const supabase = createServerSupabaseClient();
+        const supabase = await createServerSupabaseClient();
 
         // Verify authentication
         const { data: { user }, error: authError } = await supabase.auth.getUser();

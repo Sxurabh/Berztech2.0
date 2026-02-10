@@ -4,7 +4,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 // POST /api/upload — Upload an image to Supabase Storage
 export async function POST(request) {
     try {
-        const supabase = createServerSupabaseClient();
+        const supabase = await createServerSupabaseClient();
 
         // Verify authentication
         const { data: { user }, error: authError } = await supabase.auth.getUser();

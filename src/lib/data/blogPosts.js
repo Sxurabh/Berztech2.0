@@ -6,7 +6,7 @@ import { posts as staticPosts, categories as staticCategories } from "@/data/blo
  */
 export async function getPosts({ published = true } = {}) {
     try {
-        const supabase = createServerSupabaseClient();
+        const supabase = await createServerSupabaseClient();
         if (!supabase) throw new Error("Supabase not configured");
         let query = supabase
             .from("blog_posts")
@@ -31,7 +31,7 @@ export async function getPosts({ published = true } = {}) {
  */
 export async function getPostById(identifier) {
     try {
-        const supabase = createServerSupabaseClient();
+        const supabase = await createServerSupabaseClient();
         if (!supabase) throw new Error("Supabase not configured");
         const isNumeric = !isNaN(identifier);
 
@@ -56,7 +56,7 @@ export async function getPostById(identifier) {
  */
 export async function getBlogCategories() {
     try {
-        const supabase = createServerSupabaseClient();
+        const supabase = await createServerSupabaseClient();
         if (!supabase) throw new Error("Supabase not configured");
         const { data, error } = await supabase
             .from("blog_posts")
@@ -78,7 +78,7 @@ export async function getBlogCategories() {
  * Create a new blog post.
  */
 export async function createPost(postData) {
-    const supabase = createServerSupabaseClient();
+    const supabase = await createServerSupabaseClient();
     if (!supabase) throw new Error("Supabase not configured");
 
     // Auto-generate slug from title if not provided
@@ -103,7 +103,7 @@ export async function createPost(postData) {
  * Update an existing blog post.
  */
 export async function updatePost(id, postData) {
-    const supabase = createServerSupabaseClient();
+    const supabase = await createServerSupabaseClient();
     if (!supabase) throw new Error("Supabase not configured");
     const { data, error } = await supabase
         .from("blog_posts")
@@ -120,7 +120,7 @@ export async function updatePost(id, postData) {
  * Delete a blog post.
  */
 export async function deletePost(id) {
-    const supabase = createServerSupabaseClient();
+    const supabase = await createServerSupabaseClient();
     if (!supabase) throw new Error("Supabase not configured");
     const { error } = await supabase
         .from("blog_posts")

@@ -4,7 +4,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 // GET /api/blog/[id] — Get a single blog post
 export async function GET(request, { params }) {
     try {
-        const supabase = createServerSupabaseClient();
+        const supabase = await createServerSupabaseClient();
         const isNumeric = !isNaN(params.id);
 
         let query = supabase.from("blog_posts").select("*");
@@ -31,7 +31,7 @@ export async function GET(request, { params }) {
 // PUT /api/blog/[id] — Update a blog post (authenticated)
 export async function PUT(request, { params }) {
     try {
-        const supabase = createServerSupabaseClient();
+        const supabase = await createServerSupabaseClient();
 
         const { data: { user }, error: authError } = await supabase.auth.getUser();
         if (authError || !user) {
@@ -59,7 +59,7 @@ export async function PUT(request, { params }) {
 // DELETE /api/blog/[id] — Delete a blog post (authenticated)
 export async function DELETE(request, { params }) {
     try {
-        const supabase = createServerSupabaseClient();
+        const supabase = await createServerSupabaseClient();
 
         const { data: { user }, error: authError } = await supabase.auth.getUser();
         if (authError || !user) {

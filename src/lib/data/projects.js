@@ -6,7 +6,7 @@ import { projects as staticProjects, filters as staticFilters } from "@/data/pro
  */
 export async function getProjects() {
     try {
-        const supabase = createServerSupabaseClient();
+        const supabase = await createServerSupabaseClient();
         if (!supabase) throw new Error("Supabase not configured");
         const { data, error } = await supabase
             .from("projects")
@@ -27,7 +27,7 @@ export async function getProjects() {
  */
 export async function getProjectById(id) {
     try {
-        const supabase = createServerSupabaseClient();
+        const supabase = await createServerSupabaseClient();
         if (!supabase) throw new Error("Supabase not configured");
         const { data, error } = await supabase
             .from("projects")
@@ -48,7 +48,7 @@ export async function getProjectById(id) {
  */
 export async function getProjectFilters() {
     try {
-        const supabase = createServerSupabaseClient();
+        const supabase = await createServerSupabaseClient();
         if (!supabase) throw new Error("Supabase not configured");
         const { data, error } = await supabase
             .from("projects")
@@ -69,7 +69,7 @@ export async function getProjectFilters() {
  * Create a new project (used by API route).
  */
 export async function createProject(projectData) {
-    const supabase = createServerSupabaseClient();
+    const supabase = await createServerSupabaseClient();
     if (!supabase) throw new Error("Supabase not configured");
 
     // Auto-generate slug from client name if not provided
@@ -94,7 +94,7 @@ export async function createProject(projectData) {
  * Update an existing project.
  */
 export async function updateProject(id, projectData) {
-    const supabase = createServerSupabaseClient();
+    const supabase = await createServerSupabaseClient();
     if (!supabase) throw new Error("Supabase not configured");
     const { data, error } = await supabase
         .from("projects")
@@ -111,7 +111,7 @@ export async function updateProject(id, projectData) {
  * Delete a project.
  */
 export async function deleteProject(id) {
-    const supabase = createServerSupabaseClient();
+    const supabase = await createServerSupabaseClient();
     if (!supabase) throw new Error("Supabase not configured");
     const { error } = await supabase.from("projects").delete().eq("id", id);
 

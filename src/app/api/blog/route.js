@@ -5,7 +5,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 // Public: returns published only. Authenticated: returns all.
 export async function GET(request) {
     try {
-        const supabase = createServerSupabaseClient();
+        const supabase = await createServerSupabaseClient();
         const { data: { user } } = await supabase.auth.getUser();
 
         let query = supabase
@@ -32,7 +32,7 @@ export async function GET(request) {
 // POST /api/blog — Create a new blog post (authenticated)
 export async function POST(request) {
     try {
-        const supabase = createServerSupabaseClient();
+        const supabase = await createServerSupabaseClient();
 
         const { data: { user }, error: authError } = await supabase.auth.getUser();
         if (authError || !user) {
