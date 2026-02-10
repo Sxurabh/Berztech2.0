@@ -5,29 +5,40 @@ import AdminSidebar from "@/components/admin/AdminSidebar";
 
 export default function AdminLayout({ children }) {
     return (
-        <div className="min-h-screen bg-neutral-950">
+        <div className="min-h-screen">
             <Toaster
                 position="top-right"
                 toastOptions={{
                     style: {
-                        background: "#1a1a1a",
-                        color: "#e5e5e5",
-                        border: "1px solid #333",
+                        background: "#ffffff",
+                        color: "#171717",
+                        border: "1px solid #e5e5e5",
                         fontFamily: "var(--font-mono)",
                         fontSize: "13px",
+                        boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
                     },
                     success: {
-                        iconTheme: { primary: "#10b981", secondary: "#1a1a1a" },
+                        iconTheme: { primary: "#10b981", secondary: "#ffffff" },
                     },
                     error: {
-                        iconTheme: { primary: "#ef4444", secondary: "#1a1a1a" },
+                        iconTheme: { primary: "#ef4444", secondary: "#ffffff" },
                     },
                 }}
             />
+
+            {/* Sidebar - Fixed position */}
             <AdminSidebar />
-            <main className="lg:pl-60 min-h-screen">
-                <div className="p-4 sm:p-6 lg:p-8 pt-16 lg:pt-8">
-                    {children}
+
+            {/* Main Content - Aligned with max-w-5xl container system */}
+            <main className="
+
+             min-h-screen">
+                {/* Mobile: Add top padding for header, Desktop: Normal padding */}
+                <div className="pt-16 lg:pt-8 pb-8 px-4 sm:px-6 lg:px-8">
+                    {/* Compact container matching other components */}
+                    <div className="max-w-5xl mx-auto">
+                        {children}
+                    </div>
                 </div>
             </main>
         </div>

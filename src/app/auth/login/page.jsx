@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { FaGoogle, FaGithub } from "react-icons/fa";
 import { CornerFrame } from "@/components/ui/CornerFrame";
+import Link from "next/link";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
@@ -42,40 +43,51 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-neutral-950 flex items-center justify-center px-4 sm:px-6">
+        <div className="min-h-screen bg-white flex items-center justify-center px-4 sm:px-6 py-12">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
                 className="w-full max-w-md"
             >
+                {/* Back to site link */}
+                <div className="mb-6">
+                    <Link
+                        href="/"
+                        className="inline-flex items-center gap-2 text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 hover:text-neutral-900 transition-colors"
+                    >
+                        <span>←</span>
+                        Back to site
+                    </Link>
+                </div>
+
                 {/* Header */}
                 <div className="text-center mb-8">
                     <div className="flex items-center justify-center gap-2 mb-4">
-                        <div className="h-px w-8 bg-neutral-700" />
+                        <div className="h-px w-8 bg-neutral-300" />
                         <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500">
                             Admin Access
                         </span>
-                        <div className="h-px w-8 bg-neutral-700" />
+                        <div className="h-px w-8 bg-neutral-300" />
                     </div>
-                    <h1 className="font-space-grotesk text-3xl sm:text-4xl font-medium text-white tracking-tight">
+                    <h1 className="font-space-grotesk text-3xl sm:text-4xl font-medium text-neutral-900 tracking-tight">
                         Sign In
                     </h1>
-                    <p className="mt-2 text-sm text-neutral-400">
+                    <p className="mt-2 text-sm text-neutral-600">
                         Access the Berztech admin dashboard
                     </p>
                 </div>
 
                 <CornerFrame
-                    className="bg-neutral-900/50 border-neutral-800 backdrop-blur-sm p-6 sm:p-8"
-                    bracketClassName="w-5 h-5 border-neutral-700"
+                    className="bg-white border-neutral-200 p-6 sm:p-8"
+                    bracketClassName="w-3 h-3 border-neutral-300"
                 >
                     {/* Error Message */}
                     {error && (
                         <motion.div
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: "auto" }}
-                            className="mb-6 p-3 border border-red-800/50 bg-red-950/30 text-red-400 text-sm font-jetbrains-mono"
+                            className="mb-6 p-3 border border-red-200 bg-red-50 text-red-600 text-sm font-jetbrains-mono rounded-sm"
                         >
                             {error}
                         </motion.div>
@@ -85,14 +97,14 @@ export default function LoginPage() {
                     <div className="space-y-3 mb-6">
                         <button
                             onClick={() => handleOAuthLogin("google")}
-                            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-neutral-800/50 border border-neutral-700 text-neutral-300 hover:bg-neutral-800 hover:border-neutral-600 hover:text-white transition-all duration-300 font-jetbrains-mono text-sm"
+                            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border border-neutral-200 text-neutral-700 hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-300 font-jetbrains-mono text-sm rounded-sm"
                         >
                             <FaGoogle className="w-4 h-4" />
                             Continue with Google
                         </button>
                         <button
                             onClick={() => handleOAuthLogin("github")}
-                            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-neutral-800/50 border border-neutral-700 text-neutral-300 hover:bg-neutral-800 hover:border-neutral-600 hover:text-white transition-all duration-300 font-jetbrains-mono text-sm"
+                            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border border-neutral-200 text-neutral-700 hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-300 font-jetbrains-mono text-sm rounded-sm"
                         >
                             <FaGithub className="w-4 h-4" />
                             Continue with GitHub
@@ -102,10 +114,10 @@ export default function LoginPage() {
                     {/* Divider */}
                     <div className="relative mb-6">
                         <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-neutral-800" />
+                            <div className="w-full border-t border-neutral-200" />
                         </div>
                         <div className="relative flex justify-center">
-                            <span className="bg-neutral-900/50 px-3 text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-600">
+                            <span className="bg-white px-3 text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500">
                                 Or sign in with email
                             </span>
                         </div>
@@ -122,7 +134,7 @@ export default function LoginPage() {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
-                                className="w-full px-4 py-3 bg-neutral-800/30 border border-neutral-700 text-white placeholder-neutral-600 focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500 transition-colors font-jetbrains-mono text-sm"
+                                className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-neutral-900 focus:outline-none transition-colors font-jetbrains-mono text-sm rounded-sm"
                                 placeholder="admin@berztech.com"
                             />
                         </div>
@@ -135,7 +147,7 @@ export default function LoginPage() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
-                                className="w-full px-4 py-3 bg-neutral-800/30 border border-neutral-700 text-white placeholder-neutral-600 focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500 transition-colors font-jetbrains-mono text-sm"
+                                className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-neutral-900 focus:outline-none transition-colors font-jetbrains-mono text-sm rounded-sm"
                                 placeholder="••••••••"
                             />
                         </div>
@@ -144,7 +156,7 @@ export default function LoginPage() {
                             disabled={loading}
                             whileHover={{ scale: 1.01 }}
                             whileTap={{ scale: 0.99 }}
-                            className="w-full px-4 py-3 bg-white text-neutral-900 font-jetbrains-mono text-xs uppercase tracking-widest font-semibold hover:bg-neutral-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full px-4 py-3 bg-neutral-900 text-white font-jetbrains-mono text-xs uppercase tracking-widest font-semibold hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed rounded-sm"
                         >
                             {loading ? (
                                 <span className="flex items-center justify-center gap-2">
@@ -162,7 +174,7 @@ export default function LoginPage() {
                 </CornerFrame>
 
                 {/* Footer */}
-                <p className="mt-6 text-center text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-600">
+                <p className="mt-6 text-center text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500">
                     Protected Area • Berztech Inc.
                 </p>
             </motion.div>
