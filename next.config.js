@@ -12,6 +12,8 @@ const nextConfig = {
             },
         ],
     },
+    // Next.js 16 uses Turbopack by default (much faster than webpack)
+    turbopack: {},
 }
 
 module.exports = nextConfig
