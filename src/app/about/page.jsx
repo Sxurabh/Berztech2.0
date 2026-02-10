@@ -366,8 +366,8 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Values Section with Grid */}
-      <section className="relative py-16 sm:py-24 bg-neutral-50/30 z-10">
+      {/* Values Section with Grid yes*/}
+      <section className="relative py-16 sm:py-24 z-10">
         <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2 mb-4">
             <div className="h-px w-4 bg-neutral-300" />

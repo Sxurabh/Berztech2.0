@@ -1,12 +1,14 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { layoutConfig } from "@/config/layout";
+import { useAuth } from "@/lib/auth/AuthProvider";
+import { FiUser, FiLogOut, FiGrid } from "react-icons/fi";
 
 import blackLogo from "../../../assets/Logo/blacklogo.png";
 import whiteLogo from "../../../assets/Logo/WhiteLogo.png";
@@ -67,8 +69,8 @@ function MenuButton({ isOpen, onClick }) {
 // Redesigned Hire Button with corner brackets
 function HireButton() {
   return (
-    <Link 
-      href="/contact" 
+    <Link
+      href="/contact"
       className="group relative hidden lg:block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
       aria-label="Contact Us"
     >
@@ -93,18 +95,132 @@ function HireButton() {
   );
 }
 
+// Auth Button — Sign In or Admin dropdown
+function AuthButton({ mobile = false }) {
+  const { user, loading, signOut } = useAuth();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  if (loading) return null;
+
+  if (!user) {
+    if (mobile) {
+      return (
+        <Link
+          href="/auth/login"
+          className="flex items-center gap-2 py-3 text-neutral-500 hover:text-neutral-900 transition-colors"
+        >
+          <FiUser className="w-4 h-4" />
+          <span className="font-space-grotesk text-lg font-medium">Sign In</span>
+        </Link>
+      );
+    }
+    return (
+      <Link
+        href="/auth/login"
+        className="group relative hidden lg:flex items-center gap-2 px-4 py-2 transition-colors"
+      >
+        <FiUser className="w-3.5 h-3.5 text-neutral-500 group-hover:text-neutral-900 transition-colors" />
+        <span className="font-jetbrains-mono text-xs uppercase tracking-widest text-neutral-500 group-hover:text-neutral-900 transition-colors">
+          Sign In
+        </span>
+      </Link>
+    );
+  }
+
+  if (mobile) {
+    return (
+      <div className="space-y-1 border-t border-neutral-100 pt-3 mt-3">
+        <Link
+          href="/admin"
+          className="flex items-center gap-2 py-2 text-neutral-500 hover:text-neutral-900 transition-colors"
+        >
+          <FiGrid className="w-4 h-4" />
+          <span className="font-space-grotesk text-base font-medium">Admin Dashboard</span>
+        </Link>
+        <button
+          onClick={signOut}
+          className="flex items-center gap-2 py-2 text-neutral-500 hover:text-red-600 transition-colors w-full"
+        >
+          <FiLogOut className="w-4 h-4" />
+          <span className="font-space-grotesk text-base font-medium">Sign Out</span>
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative hidden lg:block" ref={dropdownRef}>
+      <button
+        onClick={() => setDropdownOpen(!dropdownOpen)}
+        className="flex items-center gap-2 px-3 py-2 hover:bg-neutral-50 transition-colors"
+      >
+        <div className="w-7 h-7 bg-neutral-900 flex items-center justify-center">
+          <span className="font-jetbrains-mono text-[10px] font-bold text-white">
+            {user.email?.[0]?.toUpperCase() || "A"}
+          </span>
+        </div>
+        <svg className={clsx("w-3 h-3 text-neutral-400 transition-transform", dropdownOpen && "rotate-180")} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      <AnimatePresence>
+        {dropdownOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -5 }}
+            className="absolute right-0 top-full mt-1 w-48 bg-white border border-neutral-200 shadow-lg z-50"
+          >
+            <div className="p-2 border-b border-neutral-100">
+              <p className="text-[10px] font-jetbrains-mono text-neutral-500 uppercase tracking-widest truncate">
+                {user.email}
+              </p>
+            </div>
+            <Link
+              href="/admin"
+              onClick={() => setDropdownOpen(false)}
+              className="flex items-center gap-2 px-3 py-2 text-sm font-jetbrains-mono text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 transition-colors"
+            >
+              <FiGrid className="w-3.5 h-3.5" />
+              Dashboard
+            </Link>
+            <button
+              onClick={() => { signOut(); setDropdownOpen(false); }}
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm font-jetbrains-mono text-neutral-600 hover:bg-red-50 hover:text-red-600 transition-colors"
+            >
+              <FiLogOut className="w-3.5 h-3.5" />
+              Sign Out
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 // Desktop Navigation with underline animation
 function DesktopNav({ pathname }) {
   return (
     <nav className="hidden lg:flex items-center gap-1">
       {navItems.map((item, index) => (
         <React.Fragment key={item.href}>
-          <Link 
-            href={item.href} 
+          <Link
+            href={item.href}
             className="group relative px-4 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2 rounded-sm"
             aria-label={item.title}
           >
-            
+
             <span className={clsx(
               "font-jetbrains-mono text-xs uppercase tracking-widest transition-colors duration-300",
               pathname === item.href ? "text-neutral-900 font-semibold" : "text-neutral-500 group-hover:text-neutral-900"
@@ -168,16 +284,16 @@ export default function Header() {
         <div className={clsx("mx-auto", layoutConfig.maxWidth, layoutConfig.padding.mobile, layoutConfig.padding.tablet, layoutConfig.padding.desktop)}>
           <div className="flex items-center justify-between h-16 sm:h-20">
             {/* Logo */}
-            <Link 
-              href="/" 
+            <Link
+              href="/"
               className="relative z-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2 rounded-sm"
               aria-label="Berztech Home"
             >
-              <Image 
-                src={blackLogo} 
-                alt="Berztech" 
-                className="h-6 sm:h-7 w-auto" 
-                priority 
+              <Image
+                src={blackLogo}
+                alt="Berztech"
+                className="h-6 sm:h-7 w-auto"
+                priority
               />
             </Link>
 
@@ -185,14 +301,16 @@ export default function Header() {
             <div className="hidden lg:flex items-center gap-6">
               <DesktopNav pathname={pathname} />
               <div className="w-px h-6 bg-neutral-200" />
+              <AuthButton />
+              <div className="w-px h-6 bg-neutral-200" />
               <HireButton />
             </div>
 
             {/* Mobile Menu Button */}
             <div className="lg:hidden">
-              <MenuButton 
-                isOpen={mobileMenuOpen} 
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
+              <MenuButton
+                isOpen={mobileMenuOpen}
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               />
             </div>
           </div>
@@ -203,9 +321,9 @@ export default function Header() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <>
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
               className="fixed inset-0 bg-neutral-950/20 backdrop-blur-sm z-40 lg:hidden"
@@ -250,7 +368,7 @@ export default function Header() {
                     </motion.div>
                   ))}
                 </nav>
-                
+
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -266,6 +384,15 @@ export default function Header() {
                     Start Your Project
                     <span>→</span>
                   </Link>
+                </motion.div>
+
+                {/* Auth section in mobile menu */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  <AuthButton mobile />
                 </motion.div>
               </div>
             </motion.div>
