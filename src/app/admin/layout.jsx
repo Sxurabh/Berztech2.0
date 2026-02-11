@@ -2,10 +2,11 @@
 
 import { Toaster } from "react-hot-toast";
 import AdminSidebar from "@/components/admin/AdminSidebar";
+import { layoutConfig } from "@/config/layout";
 
 export default function AdminLayout({ children }) {
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen bg-neutral-50/30">
             <Toaster
                 position="top-right"
                 toastOptions={{
@@ -26,15 +27,31 @@ export default function AdminLayout({ children }) {
                 }}
             />
 
-            {/* Sidebar - Fixed position */}
+            {/* Sidebar - Fixed position (handled internally by component) */}
+            <AdminSidebar />
 
+            {/* Main Content Wrapper 
+                lg:pl-64: Pushes content right to accommodate the 16rem (64) fixed sidebar on desktop
+            */}
+            <main className=" min-h-screen flex flex-col transition-all duration-300">
+                {/* Vertical Spacing
+                    pt-16: Clears the fixed mobile header (h-16) from AdminSidebar
+                    lg:pt-8: Standard top spacing for desktop
+                    pb-8: Standard bottom spacing
+                */}
+                <div className="flex-grow pt-16 lg:pt-8 pb-8">
 
-            {/* Main Content - Aligned with max-w-5xl container system */}
-            <main className=" min-h-screen">
-                {/* Mobile: Add top padding for header, Desktop: Normal padding */}
-                <div className="pt-16 lg:pt-8 pb-8 px-4 sm:px-6 lg:px-8">
-                    {/* Compact container matching other components */}
-                    <div className="max-w-5xl mx-auto">
+                    {/* Content Container - Matched to Public Site
+                        We apply max-width AND padding to the same element here, 
+                        replicating the behavior of src/components/ui/Container.jsx
+                    */}
+                    <div className={`
+                        mx-auto w-full
+                        ${layoutConfig.maxWidth}
+                        ${layoutConfig.padding.mobile}
+                        ${layoutConfig.padding.tablet}
+                        ${layoutConfig.padding.desktop}
+                    `}>
                         {children}
                     </div>
                 </div>
