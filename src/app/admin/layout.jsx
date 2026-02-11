@@ -27,12 +27,10 @@ export default function AdminLayout({ children }) {
             />
 
             {/* Sidebar - Fixed position */}
-            <AdminSidebar />
+
 
             {/* Main Content - Aligned with max-w-5xl container system */}
-            <main className="
-
-             min-h-screen">
+            <main className=" min-h-screen">
                 {/* Mobile: Add top padding for header, Desktop: Normal padding */}
                 <div className="pt-16 lg:pt-8 pb-8 px-4 sm:px-6 lg:px-8">
                     {/* Compact container matching other components */}
