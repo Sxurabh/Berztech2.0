@@ -10,9 +10,10 @@ import ImageUploader from "@/components/admin/ImageUploader";
 const colorOptions = ["blue", "purple", "emerald", "amber", "rose", "cyan"];
 const categoryOptions = ["Fintech", "Blockchain", "Mobile", "EdTech", "Sustainability", "Travel", "Healthcare", "SaaS", "AI/ML", "E-commerce"];
 
-export default function ProjectForm({ mode = "create" }) {
+export default function ProjectForm({ mode = "create", embedded, onClose, onSuccess, editId }) {
     const router = useRouter();
     const params = useParams();
+    const id = embedded ? editId : params?.id;
     const [saving, setSaving] = useState(false);
     const [loading, setLoading] = useState(mode === "edit");
     const [newService, setNewService] = useState("");
@@ -33,20 +34,21 @@ export default function ProjectForm({ mode = "create" }) {
     });
 
     useEffect(() => {
-        if (mode === "edit" && params?.id) {
+        if (mode === "edit" && id) {
             fetchProject();
         }
-    }, [mode, params?.id]);
+    }, [mode, id]);
 
     async function fetchProject() {
         try {
-            const res = await fetch(`/api/projects/${params.id}`);
+            const res = await fetch(`/api/projects/${id}`);
             if (!res.ok) throw new Error("Not found");
             const data = await res.json();
             setForm(data);
         } catch (err) {
             toast.error("Failed to load project");
-            router.push("/admin/projects");
+            if (embedded && onClose) onClose();
+            else router.push("/admin/projects");
         } finally {
             setLoading(false);
         }
@@ -88,7 +90,7 @@ export default function ProjectForm({ mode = "create" }) {
 
         setSaving(true);
         try {
-            const url = mode === "edit" ? `/api/projects/${params.id}` : "/api/projects";
+            const url = mode === "edit" ? `/api/projects/${id}` : "/api/projects";
             const method = mode === "edit" ? "PUT" : "POST";
             const res = await fetch(url, {
                 method,
@@ -102,7 +104,8 @@ export default function ProjectForm({ mode = "create" }) {
             }
 
             toast.success(mode === "edit" ? "Project updated!" : "Project created!");
-            router.push("/admin/projects");
+            if (embedded && onSuccess) onSuccess();
+            else router.push("/admin/projects");
         } catch (err) {
             toast.error(err.message);
         } finally {
@@ -123,7 +126,8 @@ export default function ProjectForm({ mode = "create" }) {
 
     return (
         <div>
-            {/* Header */}
+            {/* Header - hide in embedded modal */}
+            {!embedded && (
             <div className="flex items-center justify-between mb-8">
                 <div>
                     <button
@@ -138,6 +142,7 @@ export default function ProjectForm({ mode = "create" }) {
                     </h1>
                 </div>
             </div>
+            )}
 
             <form onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

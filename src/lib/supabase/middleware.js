@@ -1,5 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
+import { ADMIN_EMAIL } from "@/config/admin";
+
+const isAdmin = (email) => email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
 
 export async function updateSession(request) {
     let response = NextResponse.next({
@@ -47,19 +50,30 @@ export async function updateSession(request) {
     } = await supabase.auth.getUser();
 
     const pathname = request.nextUrl.pathname;
+    const userEmail = user?.email;
 
-    // Protect admin routes
-    if (pathname.startsWith("/admin") && !user) {
-        const loginUrl = new URL("/auth/login", request.url);
-        loginUrl.searchParams.set("redirect", request.nextUrl.pathname);
-        return NextResponse.redirect(loginUrl);
+    // Protect admin routes — only saurabhkirve@gmail.com
+    if (pathname.startsWith("/admin")) {
+        if (!user) {
+            const loginUrl = new URL("/auth/login", request.url);
+            loginUrl.searchParams.set("redirect", "/admin");
+            return NextResponse.redirect(loginUrl);
+        }
+        if (!isAdmin(userEmail)) {
+            return NextResponse.redirect(new URL("/dashboard", request.url));
+        }
     }
 
-    // Protect client dashboard
-    if (pathname.startsWith("/dashboard") && !user) {
-        const loginUrl = new URL("/auth/login", request.url);
-        loginUrl.searchParams.set("redirect", request.nextUrl.pathname);
-        return NextResponse.redirect(loginUrl);
+    // Protect client dashboard — redirect admin to /admin
+    if (pathname.startsWith("/dashboard")) {
+        if (!user) {
+            const loginUrl = new URL("/auth/login", request.url);
+            loginUrl.searchParams.set("redirect", "/dashboard");
+            return NextResponse.redirect(loginUrl);
+        }
+        if (isAdmin(userEmail)) {
+            return NextResponse.redirect(new URL("/admin", request.url));
+        }
     }
 
     return response;

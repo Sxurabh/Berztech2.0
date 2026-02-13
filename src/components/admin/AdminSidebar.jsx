@@ -144,8 +144,12 @@ export default function AdminSidebar() {
                                     Back to Site
                                 </Link>
                                 <button
-                                    onClick={() => { signOut(); setUserMenuOpen(false); }}
-                                    className="w-full flex items-center gap-2 px-3 py-2 text-sm font-jetbrains-mono text-red-600 hover:bg-red-50 transition-colors text-left"
+                                    onClick={async () => {
+                                        await signOut();
+                                        setUserMenuOpen(false);
+                                        window.location.href = "/";
+                                    }}
+                                    className="w-full flex items-center gap-2 px-3 py-2 text-sm font-jetbrains-mono text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 transition-colors text-left"
                                 >
                                     <FiLogOut className="w-3.5 h-3.5" />
                                     Sign Out

@@ -7,6 +7,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { layoutConfig } from "@/config/layout";
+import { isAdminEmail } from "@/config/admin";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { FiUser, FiLogOut, FiGrid } from "react-icons/fi";
 
@@ -95,9 +96,15 @@ function HireButton() {
   );
 }
 
-// Auth Button — Sign In or Admin dropdown
+// Auth Button — Sign In, Admin dropdown, or Client Dashboard
 function AuthButton({ mobile = false }) {
   const { user, loading, signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+    window.location.href = "/";
+  };
+  const isAdmin = isAdminEmail(user?.email);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -152,15 +159,15 @@ function AuthButton({ mobile = false }) {
     return (
       <div className="space-y-1 border-t border-neutral-100 pt-3 mt-3">
         <Link
-          href="/admin"
+          href={isAdmin ? "/admin" : "/dashboard"}
           className="flex items-center gap-2 py-2 text-neutral-500 hover:text-neutral-900 transition-colors"
         >
           <FiGrid className="w-4 h-4" />
-          <span className="font-space-grotesk text-base font-medium">Admin Dashboard</span>
+          <span className="font-space-grotesk text-base font-medium">{isAdmin ? "Admin Dashboard" : "My Requests"}</span>
         </Link>
         <button
-          onClick={signOut}
-          className="flex items-center gap-2 py-2 text-neutral-500 hover:text-red-600 transition-colors w-full"
+          onClick={handleSignOut}
+          className="flex items-center gap-2 py-2 text-neutral-500 hover:text-neutral-900 transition-colors w-full text-left"
         >
           <FiLogOut className="w-4 h-4" />
           <span className="font-space-grotesk text-base font-medium">Sign Out</span>
@@ -224,16 +231,16 @@ function AuthButton({ mobile = false }) {
               )}
             </div>
             <Link
-              href="/admin"
+              href={isAdmin ? "/admin" : "/dashboard"}
               onClick={() => setDropdownOpen(false)}
               className="flex items-center gap-2 px-4 py-2.5 text-sm font-jetbrains-mono text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 transition-colors"
             >
               <FiGrid className="w-3.5 h-3.5" />
-              Dashboard
+              {isAdmin ? "Admin Dashboard" : "My Requests"}
             </Link>
             <button
-              onClick={() => { signOut(); setDropdownOpen(false); }}
-              className="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-jetbrains-mono text-red-600 hover:bg-red-50 transition-colors"
+              onClick={() => { handleSignOut(); setDropdownOpen(false); }}
+              className="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-jetbrains-mono text-neutral-600 hover:bg-neutral-100 transition-colors text-left"
             >
               <FiLogOut className="w-3.5 h-3.5" />
               Sign Out
@@ -282,6 +289,8 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const { user } = useAuth();
+  const isAdmin = isAdminEmail(user?.email);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -338,8 +347,12 @@ export default function Header() {
               <DesktopNav pathname={pathname} />
               <div className="w-px h-6 bg-neutral-200" />
               <AuthButton />
-              <div className="w-px h-6 bg-neutral-200" />
-              <HireButton />
+              {(!user || !isAdmin) && (
+                <>
+                  <div className="w-px h-6 bg-neutral-200" />
+                  <HireButton />
+                </>
+              )}
             </div>
 
             {/* Mobile Menu Button */}
@@ -353,7 +366,7 @@ export default function Header() {
         </div>
       </motion.header>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Menu - Full screen overlay */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <>
@@ -361,75 +374,75 @@ export default function Header() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="fixed inset-0 bg-neutral-950/20 backdrop-blur-sm z-40 lg:hidden"
-              onClick={() => setMobileMenuOpen(false)}
-            />
-            <motion.div
-              id="mobile-menu"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
-              className="fixed top-16 left-0 right-0 bg-white border-b border-neutral-200 z-40 lg:hidden shadow-lg"
+              transition={{ duration: 0.25 }}
+              className="fixed inset-0 bg-white z-40 lg:hidden"
             >
-              <div className="mx-auto max-w-5xl px-4 sm:px-6 py-6">
-                <nav className="flex flex-col gap-1">
-                  {navItems.map((item, index) => (
-                    <motion.div
-                      key={item.href}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                    >
-                      <Link
-                        href={item.href}
-                        onClick={() => setMobileMenuOpen(false)}
-                        className={clsx(
-                          "group flex items-center justify-between py-3 border-b border-neutral-100 last:border-b-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-inset",
-                          pathname === item.href ? "text-neutral-900" : "text-neutral-500"
-                        )}
-                        aria-label={item.title}
+              <div className="flex flex-col min-h-screen">
+                <div className="flex items-center justify-between px-4 py-5 border-b border-neutral-100">
+                  <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500">Menu</span>
+                  <button
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="p-2 -m-2 text-neutral-500 hover:text-neutral-900 transition-colors"
+                    aria-label="Close menu"
+                  >
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+
+                <nav className="flex-1 px-4 py-8">
+                  <div className="space-y-1">
+                    {navItems.map((item, index) => (
+                      <motion.div
+                        key={item.href}
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.05 + index * 0.06 }}
                       >
-                        <span className="font-space-grotesk text-lg font-medium">
+                        <Link
+                          href={item.href}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={clsx(
+                            "block py-4 text-2xl font-space-grotesk font-medium tracking-tight border-b border-neutral-100 transition-colors",
+                            pathname === item.href ? "text-neutral-900" : "text-neutral-500 hover:text-neutral-700"
+                          )}
+                          aria-label={item.title}
+                        >
                           {item.title}
-                        </span>
-                        <span className={clsx(
-                          "font-jetbrains-mono text-xs transition-all duration-300",
-                          pathname === item.href ? "text-neutral-900" : "text-neutral-300 group-hover:text-neutral-500"
-                        )}>
-                          0{index + 1}
-                        </span>
-                      </Link>
-                    </motion.div>
-                  ))}
+                        </Link>
+                      </motion.div>
+                    ))}
+                  </div>
                 </nav>
 
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="mt-6 pt-6 border-t border-neutral-100"
-                >
-                  <Link
-                    href="/contact"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-center gap-2 w-full py-3 bg-neutral-900 text-white font-jetbrains-mono text-xs uppercase tracking-widest font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
-                    aria-label="Start Your Project"
-                  >
-                    Start Your Project
-                    <span>→</span>
-                  </Link>
-                </motion.div>
+                <div className="px-4 pb-8 pt-4 border-t border-neutral-100 space-y-3">
+                  {(!user || !isAdmin) && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.3 }}
+                    >
+                      <Link
+                        href="/contact"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center justify-between w-full py-4 px-4 bg-neutral-900 text-white font-space-grotesk text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
+                        aria-label="Start Your Project"
+                      >
+                        Start Your Project
+                        <span className="text-neutral-400">→</span>
+                      </Link>
+                    </motion.div>
+                  )}
 
-                {/* Auth section in mobile menu */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                >
-                  <AuthButton mobile />
-                </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.35 }}
+                  >
+                    <AuthButton mobile />
+                  </motion.div>
+                </div>
               </div>
             </motion.div>
           </>

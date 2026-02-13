@@ -48,7 +48,7 @@ export async function POST(request) {
             services: body.services || [],
             budget: body.budget || null,
             message: body.message || "",
-            status: "submitted",
+            status: "discover",
             user_id: user?.id || null,
         };
 

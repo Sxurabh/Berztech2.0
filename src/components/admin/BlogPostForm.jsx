@@ -10,9 +10,10 @@ import ImageUploader from "@/components/admin/ImageUploader";
 const colorOptions = ["blue", "purple", "emerald", "amber", "rose", "cyan"];
 const categoryOptions = ["Engineering", "Design", "Strategy", "Culture", "Product", "Tutorial"];
 
-export default function BlogPostForm({ mode = "create" }) {
+export default function BlogPostForm({ mode = "create", embedded, onClose, onSuccess, editId }) {
     const router = useRouter();
     const params = useParams();
+    const id = embedded ? editId : params?.id;
     const [saving, setSaving] = useState(false);
     const [loading, setLoading] = useState(mode === "edit");
 
@@ -30,20 +31,21 @@ export default function BlogPostForm({ mode = "create" }) {
     });
 
     useEffect(() => {
-        if (mode === "edit" && params?.id) {
+        if (mode === "edit" && id) {
             fetchPost();
         }
-    }, [mode, params?.id]);
+    }, [mode, id]);
 
     async function fetchPost() {
         try {
-            const res = await fetch(`/api/blog/${params.id}`);
+            const res = await fetch(`/api/blog/${id}`);
             if (!res.ok) throw new Error("Not found");
             const data = await res.json();
             setForm(data);
         } catch (err) {
             toast.error("Failed to load post");
-            router.push("/admin/blog");
+            if (embedded && onClose) onClose();
+            else router.push("/admin/blog");
         } finally {
             setLoading(false);
         }
@@ -73,7 +75,7 @@ export default function BlogPostForm({ mode = "create" }) {
 
         setSaving(true);
         try {
-            const url = mode === "edit" ? `/api/blog/${params.id}` : "/api/blog";
+            const url = mode === "edit" ? `/api/blog/${id}` : "/api/blog";
             const method = mode === "edit" ? "PUT" : "POST";
             const res = await fetch(url, {
                 method,
@@ -87,7 +89,8 @@ export default function BlogPostForm({ mode = "create" }) {
             }
 
             toast.success(mode === "edit" ? "Post updated!" : "Post created!");
-            router.push("/admin/blog");
+            if (embedded && onSuccess) onSuccess();
+            else router.push("/admin/blog");
         } catch (err) {
             toast.error(err.message);
         } finally {
@@ -108,7 +111,8 @@ export default function BlogPostForm({ mode = "create" }) {
 
     return (
         <div>
-            {/* Header */}
+            {/* Header - hide in embedded modal */}
+            {!embedded && (
             <div className="flex items-center justify-between mb-8">
                 <div>
                     <button
@@ -123,6 +127,7 @@ export default function BlogPostForm({ mode = "create" }) {
                     </h1>
                 </div>
             </div>
+            )}
 
             <form onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

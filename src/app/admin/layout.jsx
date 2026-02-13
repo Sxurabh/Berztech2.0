@@ -6,7 +6,7 @@ import { layoutConfig } from "@/config/layout";
 
 export default function AdminLayout({ children }) {
     return (
-        <div className="min-h-screen bg-neutral-50/30">
+        <div className="min-h-screen bg-neutral-100">
             <Toaster
                 position="top-right"
                 toastOptions={{
