@@ -92,6 +92,10 @@ function QuickActionCard({ href, icon: Icon, title, subtitle, color = "blue", in
 
 export default function AdminDashboard() {
     const { user } = useAuth();
+    const firstName =
+        user?.user_metadata?.full_name?.split(" ")?.[0] ||
+        user?.email?.split("@")[0] ||
+        null;
     const [stats, setStats] = useState({ projects: null, posts: null, published: null });
     const [recentProjects, setRecentProjects] = useState([]);
     const [recentPosts, setRecentPosts] = useState([]);
@@ -136,8 +140,8 @@ export default function AdminDashboard() {
                     </div>
                     <h1 className="font-space-grotesk text-2xl sm:text-3xl font-medium text-neutral-900 tracking-tight">
                         Welcome back
-                        {user?.email && (
-                            <span className="text-neutral-500">, {user.email.split("@")[0]}</span>
+                        {firstName && (
+                            <span className="text-neutral-500">, {firstName}</span>
                         )}
                     </h1>
                 </div>

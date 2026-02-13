@@ -31,6 +31,7 @@ export default function ContactForm() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState("");
 
   const handleServiceToggle = (service) => {
     setFormData(prev => ({
@@ -44,12 +45,27 @@ export default function ContactForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setIsSubmitting(false);
-    setIsSuccess(true);
+    setError("");
+
+    try {
+      const response = await fetch("/api/requests", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Something went wrong. Please try again.");
+      }
+
+      setIsSubmitting(false);
+      setIsSuccess(true);
+    } catch (err) {
+      setIsSubmitting(false);
+      setError(err.message || "Something went wrong. Please try again.");
+    }
   };
 
   if (isSuccess) {
@@ -89,6 +105,11 @@ export default function ContactForm() {
       bracketClassName="w-5 h-5 border-neutral-300"
     >
       <form onSubmit={handleSubmit} className="space-y-8">
+        {error && (
+          <div className="p-3 border border-red-200 bg-red-50 text-red-600 text-sm font-jetbrains-mono rounded-sm">
+            {error}
+          </div>
+        )}
         
         {/* Personal Details Group */}
         <div className="space-y-6">

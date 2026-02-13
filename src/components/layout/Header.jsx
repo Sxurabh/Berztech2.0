@@ -101,6 +101,16 @@ function AuthButton({ mobile = false }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
+  const displayName =
+    user?.user_metadata?.full_name?.split(" ")?.[0] ||
+    user?.email?.split("@")[0] ||
+    "Admin";
+
+  const avatarUrl =
+    user?.user_metadata?.avatar_url ||
+    user?.user_metadata?.picture ||
+    null;
+
   useEffect(() => {
     function handleClickOutside(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -163,14 +173,32 @@ function AuthButton({ mobile = false }) {
     <div className="relative hidden lg:block" ref={dropdownRef}>
       <button
         onClick={() => setDropdownOpen(!dropdownOpen)}
-        className="flex items-center gap-2 px-3 py-2 hover:bg-neutral-50 transition-colors"
+        className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-neutral-200 bg-white hover:border-neutral-400 hover:bg-neutral-50 shadow-sm transition-all"
       >
-        <div className="w-7 h-7 bg-neutral-900 flex items-center justify-center">
-          <span className="font-jetbrains-mono text-[10px] font-bold text-white">
-            {user.email?.[0]?.toUpperCase() || "A"}
-          </span>
+        <div className="w-8 h-8 rounded-full bg-neutral-900 flex items-center justify-center overflow-hidden">
+          {avatarUrl ? (
+            // Use native img so we don't need to whitelist external domains
+            <img
+              src={avatarUrl}
+              alt={displayName}
+              className="w-full h-full object-cover"
+              referrerPolicy="no-referrer"
+            />
+          ) : (
+            <span className="font-jetbrains-mono text-[11px] font-bold text-white">
+              {displayName?.[0]?.toUpperCase() || "A"}
+            </span>
+          )}
         </div>
-        <svg className={clsx("w-3 h-3 text-neutral-400 transition-transform", dropdownOpen && "rotate-180")} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg
+          className={clsx(
+            "w-3 h-3 text-neutral-400 transition-transform",
+            dropdownOpen && "rotate-180"
+          )}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
@@ -180,24 +208,32 @@ function AuthButton({ mobile = false }) {
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -5 }}
-            className="absolute right-0 top-full mt-1 w-48 bg-white border border-neutral-200 shadow-lg z-50"
+            className="absolute right-0 top-full mt-2 w-56 bg-white border border-neutral-200 rounded-md shadow-lg z-50 overflow-hidden"
           >
-            <div className="p-2 border-b border-neutral-100">
-              <p className="text-[10px] font-jetbrains-mono text-neutral-500 uppercase tracking-widest truncate">
-                {user.email}
+            <div className="px-4 py-3 border-b border-neutral-100">
+              <p className="text-[11px] font-jetbrains-mono text-neutral-500 uppercase tracking-widest">
+                Account
               </p>
+              <p className="mt-1 text-sm font-space-grotesk text-neutral-900">
+                {displayName}
+              </p>
+              {user.email && (
+                <p className="text-xs font-jetbrains-mono text-neutral-500 truncate">
+                  {user.email}
+                </p>
+              )}
             </div>
             <Link
               href="/admin"
               onClick={() => setDropdownOpen(false)}
-              className="flex items-center gap-2 px-3 py-2 text-sm font-jetbrains-mono text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 text-sm font-jetbrains-mono text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 transition-colors"
             >
               <FiGrid className="w-3.5 h-3.5" />
               Dashboard
             </Link>
             <button
               onClick={() => { signOut(); setDropdownOpen(false); }}
-              className="w-full flex items-center gap-2 px-3 py-2 text-sm font-jetbrains-mono text-neutral-600 hover:bg-red-50 hover:text-red-600 transition-colors"
+              className="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-jetbrains-mono text-red-600 hover:bg-red-50 transition-colors"
             >
               <FiLogOut className="w-3.5 h-3.5" />
               Sign Out

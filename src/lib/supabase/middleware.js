@@ -46,8 +46,17 @@ export async function updateSession(request) {
         data: { user },
     } = await supabase.auth.getUser();
 
+    const pathname = request.nextUrl.pathname;
+
     // Protect admin routes
-    if (request.nextUrl.pathname.startsWith("/admin") && !user) {
+    if (pathname.startsWith("/admin") && !user) {
+        const loginUrl = new URL("/auth/login", request.url);
+        loginUrl.searchParams.set("redirect", request.nextUrl.pathname);
+        return NextResponse.redirect(loginUrl);
+    }
+
+    // Protect client dashboard
+    if (pathname.startsWith("/dashboard") && !user) {
         const loginUrl = new URL("/auth/login", request.url);
         loginUrl.searchParams.set("redirect", request.nextUrl.pathname);
         return NextResponse.redirect(loginUrl);

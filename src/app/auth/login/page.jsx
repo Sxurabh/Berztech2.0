@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { useAuth } from "@/lib/auth/AuthProvider";
@@ -8,7 +8,9 @@ import { FaGoogle, FaGithub } from "react-icons/fa";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 import Link from "next/link";
 
-export default function LoginPage() {
+// 1. Rename the original component to 'LoginContent' (or similar)
+// This component contains the logic that relies on useSearchParams
+function LoginContent() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -179,5 +181,15 @@ export default function LoginPage() {
                 </p>
             </motion.div>
         </div>
+    );
+}
+
+// 2. Export a wrapper component that wraps the content in Suspense
+export default function LoginPage() {
+    return (
+        // You can customize the fallback UI to match your design
+        <Suspense fallback={<div className="min-h-screen bg-white flex items-center justify-center">Loading...</div>}>
+            <LoginContent />
+        </Suspense>
     );
 }

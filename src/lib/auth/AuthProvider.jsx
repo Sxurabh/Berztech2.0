@@ -50,12 +50,16 @@ export function AuthProvider({ children }) {
         return data;
     };
 
-    const signInWithOAuth = async (provider) => {
+    const signInWithOAuth = async (provider, { next } = {}) => {
         if (!supabase) throw new Error("Supabase is not configured");
+        const callbackUrl = new URL("/auth/callback", window.location.origin);
+        if (next) {
+            callbackUrl.searchParams.set("next", next);
+        }
         const { data, error } = await supabase.auth.signInWithOAuth({
             provider,
             options: {
-                redirectTo: `${window.location.origin}/auth/callback`,
+                redirectTo: callbackUrl.toString(),
             },
         });
         if (error) throw error;

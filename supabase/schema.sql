@@ -109,5 +109,39 @@ CREATE TRIGGER blog_posts_updated_at
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at();
 
+-- Client project requests table
+CREATE TABLE IF NOT EXISTS requests (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  user_id UUID REFERENCES auth.users(id),
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  company TEXT,
+  services TEXT[] DEFAULT '{}',
+  budget TEXT,
+  message TEXT,
+  status TEXT NOT NULL DEFAULT 'submitted',
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE requests ENABLE ROW LEVEL SECURITY;
+
+-- Anyone (even guests) can submit a request
+CREATE POLICY "Anyone can insert requests"
+  ON requests FOR INSERT
+  WITH CHECK (true);
+
+-- Authenticated users can see their own requests
+CREATE POLICY "Users can read their own requests"
+  ON requests FOR SELECT
+  TO authenticated
+  USING (auth.uid() = user_id);
+
+-- Auto-update updated_at on requests
+CREATE TRIGGER requests_updated_at
+  BEFORE UPDATE ON requests
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at();
+
 -- Create storage bucket for images (run separately in Supabase dashboard)
 -- INSERT INTO storage.buckets (id, name, public) VALUES ('images', 'images', true);
