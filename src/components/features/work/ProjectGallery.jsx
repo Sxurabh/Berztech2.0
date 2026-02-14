@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { CornerFrame } from "@/components/ui/CornerFrame";
+import { spacing } from "@/lib/design-tokens";
 
 export default function ProjectGallery({ images = [], title }) {
     const [activeImage, setActiveImage] = useState(0);
@@ -31,9 +32,8 @@ export default function ProjectGallery({ images = [], title }) {
                 </div>
             </CornerFrame>
 
-            {/* Thumbnail Navigation */}
             {images.length > 1 && (
-                <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
+                <div className={`flex ${spacing.gap.sm} mt-4 overflow-x-auto pb-2`}>
                     {images.map((img, i) => (
                         <button
                             key={i}

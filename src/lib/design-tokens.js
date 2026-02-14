@@ -109,3 +109,64 @@ export const serviceColors = {
         stroke: "stroke-cyan-500",
     }
 };
+
+export const typography = {
+    fontFamily: {
+        sans: "font-space-grotesk",
+        mono: "font-jetbrains-mono",
+    },
+    fontSize: {
+        tiny: "text-[9px]",
+        xs: "text-xs",
+        sm: "text-sm",
+        base: "text-base",
+        lg: "text-lg",
+        xl: "text-xl",
+        "2xl": "text-2xl",
+        "3xl": "text-3xl",
+        "4xl": "text-4xl",
+        "5xl": "text-5xl",
+        "6xl": "text-6xl",
+        "7xl": "text-7xl",
+    },
+    fontWeight: {
+        normal: "font-normal",
+        medium: "font-medium",
+        semibold: "font-semibold",
+        bold: "font-bold",
+    },
+    tracking: {
+        tight: "tracking-tight",
+        wide: "tracking-wide",
+        wider: "tracking-wider",
+        widest: "tracking-widest",
+    }
+};
+
+export const spacing = {
+    container: {
+        padding: "px-4 sm:px-6 lg:px-8",
+        maxWidth: "max-w-5xl mx-auto",
+        wrapper: "w-full mx-auto max-w-5xl px-4 sm:px-6 lg:px-8",
+    },
+    section: {
+        padding: "py-12 sm:py-16 lg:py-20",
+        paddingSm: "py-6 sm:py-8 lg:py-12",
+    },
+    gap: {
+        default: "gap-4 sm:gap-6 lg:gap-8",
+        sm: "gap-2 sm:gap-4",
+    }
+};
+
+export const animation = {
+    transition: {
+        default: "transition-all duration-300 ease-in-out",
+        fast: "transition-all duration-150 ease-in-out",
+        slow: "transition-all duration-500 ease-in-out",
+    },
+    hover: {
+        scale: "hover:scale-105",
+        lift: "hover:-translate-y-1",
+    }
+};

@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 import { colorSchemes } from "@/data/blogPosts";
+import { typography } from "@/lib/design-tokens";
 
 export default function PostCard({ post, index }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -19,7 +20,7 @@ export default function PostCard({ post, index }) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Link 
+      <Link
         href={`/blog/${post.id}`}
         className="block h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-4 rounded-sm"
       >
@@ -44,9 +45,9 @@ export default function PostCard({ post, index }) {
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
             </motion.div>
-            
+
             <div className="absolute top-3 left-3">
-              <span className={`px-2 py-1 text-[9px] font-jetbrains-mono uppercase tracking-wider bg-white/90 backdrop-blur-sm ${colors.text} border ${colors.border}`}>
+              <span className={`px-2 py-1 ${typography.fontSize.tiny} ${typography.fontFamily.mono} uppercase ${typography.tracking.wider} bg-white/90 backdrop-blur-sm ${colors.text} border ${colors.border}`}>
                 {post.category}
               </span>
             </div>
@@ -59,7 +60,7 @@ export default function PostCard({ post, index }) {
               <span>{post.readTime}</span>
             </div>
 
-            <h3 className="font-space-grotesk text-lg font-medium text-neutral-900 tracking-tight mb-2 line-clamp-2 group-hover:text-neutral-700 transition-colors">
+            <h3 className={`${typography.fontFamily.sans} ${typography.fontSize.lg} ${typography.fontWeight.medium} text-neutral-900 ${typography.tracking.tight} mb-2 line-clamp-2 group-hover:text-neutral-700 transition-colors`}>
               {post.title}
             </h3>
 

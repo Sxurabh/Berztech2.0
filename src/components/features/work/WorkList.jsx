@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 import { colorSchemes } from "@/data/projects";
+import { typography, spacing } from "@/lib/design-tokens";
 
 function ProjectCard({ project, index }) {
     const [isHovered, setIsHovered] = useState(false);
@@ -56,7 +57,7 @@ function ProjectCard({ project, index }) {
 
                         <div className="absolute top-3 left-3">
                             <span className={`
-                px-2 py-1 text-[10px] font-jetbrains-mono uppercase tracking-wider
+                px-2 py-1 ${typography.fontSize.tiny} ${typography.fontFamily.mono} uppercase ${typography.tracking.wider}
                 bg-white/90 backdrop-blur-sm border ${colors.border} ${colors.text}
               `}>
                                 {project.category}
@@ -98,7 +99,7 @@ function ProjectCard({ project, index }) {
                             <span className="text-[10px] font-jetbrains-mono text-neutral-600">{project.year}</span>
                         </div>
 
-                        <h3 className="font-space-grotesk text-lg sm:text-xl font-medium text-neutral-900 tracking-tight mb-2 group-hover:text-neutral-700 transition-colors line-clamp-2">
+                        <h3 className={`${typography.fontFamily.sans} ${typography.fontSize.lg} sm:${typography.fontSize.xl} ${typography.fontWeight.medium} text-neutral-900 ${typography.tracking.tight} mb-2 group-hover:text-neutral-700 transition-colors line-clamp-2`}>
                             {project.title}
                         </h3>
 
@@ -200,7 +201,7 @@ function FeaturedProject({ project }) {
                                 </span>
                             </div>
 
-                            <h2 className="font-space-grotesk text-2xl sm:text-3xl lg:text-4xl font-medium text-neutral-900 tracking-tight mb-4 leading-tight">
+                            <h2 className={`${typography.fontFamily.sans} ${typography.fontSize["2xl"]} sm:${typography.fontSize["3xl"]} lg:${typography.fontSize["4xl"]} ${typography.fontWeight.medium} text-neutral-900 ${typography.tracking.tight} mb-4 leading-tight`}>
                                 {project.title}
                             </h2>
 
@@ -275,8 +276,8 @@ export default function WorkList({ initialProjects = [], filters = [] }) {
                     { value: "5.0", label: "Avg. Rating" }
                 ].map((stat, i) => (
                     <div key={stat.label} className="text-center p-4 bg-neutral-50 border border-neutral-100">
-                        <div className="font-space-grotesk text-2xl sm:text-3xl font-medium text-neutral-900">{stat.value}</div>
-                        <div className="text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-500 mt-1">{stat.label}</div>
+                        <div className={`${typography.fontFamily.sans} ${typography.fontSize["2xl"]} sm:${typography.fontSize["3xl"]} ${typography.fontWeight.medium} text-neutral-900`}>{stat.value}</div>
+                        <div className={`${typography.fontSize.tiny} ${typography.fontFamily.mono} uppercase ${typography.tracking.wider} text-neutral-500 mt-1`}>{stat.label}</div>
                     </div>
                 ))}
             </motion.div>
@@ -306,7 +307,7 @@ export default function WorkList({ initialProjects = [], filters = [] }) {
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             className={`
-                px-4 py-2 text-[11px] font-jetbrains-mono uppercase tracking-wider transition-all duration-300 border
+                px-4 py-2 text-[11px] ${typography.fontFamily.mono} uppercase ${typography.tracking.wider} transition-all duration-300 border
                 ${activeFilter === filter
                                     ? 'bg-neutral-900 text-white border-neutral-900'
                                     : 'bg-white text-neutral-600 border-neutral-200 hover:border-neutral-400'
@@ -351,7 +352,7 @@ export default function WorkList({ initialProjects = [], filters = [] }) {
                 <p className="text-neutral-600 mb-4">Have a project in mind?</p>
                 <Link
                     href="/contact"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-neutral-900 text-white font-jetbrains-mono text-xs uppercase tracking-widest font-semibold hover:bg-neutral-800 transition-colors"
+                    className={`inline-flex items-center gap-2 px-6 py-3 bg-neutral-900 text-white ${typography.fontFamily.mono} ${typography.fontSize.xs} uppercase ${typography.tracking.widest} ${typography.fontWeight.semibold} hover:bg-neutral-800 transition-colors`}
                 >
                     Start a Conversation
                     <span>→</span>

@@ -11,8 +11,8 @@ import { isAdminEmail } from "@/config/admin";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { FiUser, FiLogOut, FiGrid } from "react-icons/fi";
 
-import blackLogo from "../../../assets/Logo/blacklogo.png";
-import whiteLogo from "../../../assets/Logo/WhiteLogo.png";
+import blackLogo from "@/assets/Logo/blacklogo.png";
+import whiteLogo from "@/assets/Logo/WhiteLogo.png";
 
 const navItems = [
   { title: "Work", href: "/work" },
