@@ -6,102 +6,11 @@ import Link from "next/link";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 
 
-const services = [
-  {
-    id: "01",
-    title: "Web Development",
-    description: "High-performance, SEO-optimized web applications built with Next.js and React.",
-    features: ["Next.js & React", "Headless CMS", "API Integration"],
-    price: "From $25k",
-    timeline: "8-12 weeks",
-    color: "blue",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
-        <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
-        <path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12" />
-      </svg>
-    )
-  },
-  {
-    id: "02",
-    title: "Mobile Apps",
-    description: "Cross-platform applications using React Native. One codebase, native performance.",
-    features: ["React Native", "iOS & Android", "Push Notifications"],
-    price: "From $35k",
-    timeline: "10-14 weeks",
-    color: "purple",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
-        <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
-        <path d="M12 18h.01" />
-      </svg>
-    )
-  },
-  {
-    id: "03",
-    title: "Brand Strategy",
-    description: "Comprehensive brand identity systems that communicate value and differentiate.",
-    features: ["Visual Identity", "Brand Guidelines", "Market Research"],
-    price: "From $15k",
-    timeline: "4-6 weeks",
-    color: "emerald",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
-        <circle cx="12" cy="12" r="10" />
-        <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
-      </svg>
-    )
-  },
-  {
-    id: "04",
-    title: "Digital Marketing",
-    description: "Data-driven growth strategies. SEO, content, and paid acquisition for ROI.",
-    features: ["SEO Optimization", "Content Strategy", "Paid Acquisition"],
-    price: "From $8k/mo",
-    timeline: "Ongoing",
-    color: "amber",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
-        <path d="M18 20V10M12 20V4M6 20v-6" />
-      </svg>
-    )
-  }
-];
+import { serviceCategories } from "@/data/marketing";
+import { serviceColors } from "@/lib/design-tokens";
 
-const accentColors = {
-  blue: {
-    bg: "group-hover:bg-blue-50",
-    border: "group-hover:border-blue-500/20",
-    text: "text-blue-600",
-    line: "bg-blue-500",
-    bgLight: "bg-blue-50",
-    bracket: "!border-blue-400"
-  },
-  purple: {
-    bg: "group-hover:bg-purple-50",
-    border: "group-hover:border-purple-500/20",
-    text: "text-purple-600",
-    line: "bg-purple-500",
-    bgLight: "bg-purple-50",
-    bracket: "!border-purple-400"
-  },
-  emerald: {
-    bg: "group-hover:bg-emerald-50",
-    border: "group-hover:border-emerald-500/20",
-    text: "text-emerald-600",
-    line: "bg-emerald-500",
-    bgLight: "bg-emerald-50",
-    bracket: "!border-emerald-400"
-  },
-  amber: {
-    bg: "group-hover:bg-amber-50",
-    border: "group-hover:border-amber-500/20",
-    text: "text-amber-600",
-    line: "bg-amber-500",
-    bgLight: "bg-amber-50",
-    bracket: "!border-amber-400"
-  }
-};
+const services = serviceCategories;
+const accentColors = serviceColors;
 
 function ServiceCard({ service, index, isExpanded, onToggle }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -122,7 +31,7 @@ function ServiceCard({ service, index, isExpanded, onToggle }) {
           relative h-full min-h-[120px] sm:min-h-[140px]
           bg-neutral-50 border-neutral-200 
           transition-all duration-500 ease-out cursor-pointer
-          ${colors.bg} ${colors.border}
+          ${colors.bgHover} ${colors.borderHover}
           ${isExpanded ? 'shadow-lg' : 'shadow-sm hover:shadow-md'}
         `}
         bracketClassName={`w-3 h-3 sm:w-4 sm:h-4 transition-all duration-300 ${isHovered || isExpanded ? colors.bracket : 'border-neutral-300'}`}
@@ -141,7 +50,10 @@ function ServiceCard({ service, index, isExpanded, onToggle }) {
                   transition-colors duration-300
                 `}
               >
-                {service.icon}
+                {(() => {
+                  const Icon = service.icon;
+                  return <Icon className="w-4 h-4" />;
+                })()}
               </motion.div>
 
               <span className="font-jetbrains-mono text-lg font-medium text-neutral-200 group-hover:text-neutral-300 transition-colors">
@@ -219,7 +131,8 @@ function ServiceCard({ service, index, isExpanded, onToggle }) {
                           ${service.color === 'blue' ? 'bg-blue-600 hover:bg-blue-700' :
                             service.color === 'purple' ? 'bg-purple-600 hover:bg-purple-700' :
                               service.color === 'emerald' ? 'bg-emerald-600 hover:bg-emerald-700' :
-                                'bg-amber-600 hover:bg-amber-700'}
+                                service.color === 'rose' ? 'bg-rose-600 hover:bg-rose-700' :
+                                  'bg-amber-600 hover:bg-amber-700'}
                         `}
                       >
                         Get Quote

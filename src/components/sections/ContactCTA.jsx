@@ -109,11 +109,14 @@ function QuickInfoCard({ item, index, isHovered, onHover }) {
         <div className="relative p-3 sm:p-4">
           {/* Top Row: Number + Label + Stat */}
           <div className="flex items-center justify-between mb-2 sm:mb-3">
-            <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="flex items-center gap-2 sm:gap-3">
               <span className={`
+                flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 rounded-full border
                 font-jetbrains-mono text-[9px] sm:text-[10px] font-bold tracking-wider
-                ${isHovered ? colors.text : 'text-neutral-600'}
-                transition-colors duration-300
+                transition-all duration-300
+                ${isHovered
+                  ? `${colors.bgLight} ${colors.border} ${colors.text}`
+                  : 'bg-neutral-50 border-neutral-200 text-neutral-400'}
               `}>
                 {item.icon}
               </span>
@@ -128,9 +131,9 @@ function QuickInfoCard({ item, index, isHovered, onHover }) {
 
             {/* Stat Badge */}
             <span className={`
-              font-jetbrains-mono text-[9px] sm:text-[10px] font-medium px-1.5 py-0.5
+              font-jetbrains-mono text-[9px] sm:text-[10px] font-medium px-2 py-1 rounded-sm
               transition-colors duration-300
-              ${isHovered ? `${colors.bgLight} ${colors.text}` : 'bg-neutral-200 text-neutral-700'}
+              ${isHovered ? `${colors.bgLight} ${colors.text}` : 'bg-neutral-100 text-neutral-500'}
             `}>
               {item.stat}
             </span>
@@ -191,7 +194,7 @@ export default function ContactCTA() {
         <div className="grid grid-cols-1 lg:grid-cols-2">
 
           {/* Left Side: Content */}
-          <div className="p-6 sm:p-8 lg:p-10 xl:p-12 flex flex-col justify-center">
+          <div className="p-6 sm:p-8 lg:p-10 xl:p-12 flex flex-col h-full">
             {/* Section Label */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
@@ -272,7 +275,7 @@ export default function ContactCTA() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="flex flex-wrap items-center gap-3 sm:gap-4 pt-4 sm:pt-6 border-t border-neutral-100"
+              className="flex flex-wrap items-center gap-3 sm:gap-4 pt-4 sm:pt-6 border-t border-neutral-100 mt-auto"
             >
               {[
                 { value: `${companyStats.projects.value}${companyStats.projects.suffix}`, label: companyStats.projects.label },
@@ -289,7 +292,7 @@ export default function ContactCTA() {
           </div>
 
           {/* Right Side: Quick Info */}
-          <div className="relative p-6 sm:p-8 lg:p-10 xl:p-12">
+          <div className="relative p-6 sm:p-8 lg:p-10 xl:p-12 flex flex-col h-full">
             {/* Decorative corner element */}
             <div className="absolute top-0 right-0 w-16 h-16 sm:w-20 sm:h-20" style={{ clipPath: 'polygon(100% 0, 0 0, 100% 100%)' }} />
 
@@ -335,7 +338,7 @@ export default function ContactCTA() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="relative pt-4 sm:pt-5 border-t border-neutral-200"
+              className="relative pt-4 sm:pt-5 border-t border-neutral-200 mt-auto"
               onMouseEnter={() => setEmailHovered(true)}
               onMouseLeave={() => setEmailHovered(false)}
             >

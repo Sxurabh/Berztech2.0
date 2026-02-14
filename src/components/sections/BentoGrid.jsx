@@ -219,56 +219,9 @@ const features = [
 
 ];
 
-const accentColors = {
-  blue: {
-    bg: "group-hover:bg-blue-50",
-    border: "group-hover:border-blue-200",
-    text: "text-blue-500",
-    glow: "group-hover:shadow-blue-500/10",
-    line: "bg-blue-500",
-    bracket: "!border-blue-400"
-  },
-  amber: {
-    bg: "group-hover:bg-amber-50",
-    border: "group-hover:border-amber-200",
-    text: "text-amber-500",
-    glow: "group-hover:shadow-amber-500/10",
-    line: "bg-amber-500",
-    bracket: "!border-amber-400"
-  },
-  emerald: {
-    bg: "group-hover:bg-emerald-50",
-    border: "group-hover:border-emerald-200",
-    text: "text-emerald-500",
-    glow: "group-hover:shadow-emerald-500/10",
-    line: "bg-emerald-500",
-    bracket: "!border-emerald-400"
-  },
-  purple: {
-    bg: "group-hover:bg-purple-50",
-    border: "group-hover:border-purple-200",
-    text: "text-purple-500",
-    glow: "group-hover:shadow-purple-500/10",
-    line: "bg-purple-500",
-    bracket: "!border-purple-400"
-  },
-  rose: {
-    bg: "group-hover:bg-rose-50",
-    border: "group-hover:border-rose-200",
-    text: "text-rose-500",
-    glow: "group-hover:shadow-rose-500/10",
-    line: "bg-rose-500",
-    bracket: "!border-rose-400"
-  },
-  cyan: {
-    bg: "group-hover:bg-cyan-50",
-    border: "group-hover:border-cyan-200",
-    text: "text-cyan-500",
-    glow: "group-hover:shadow-cyan-500/10",
-    line: "bg-cyan-500",
-    bracket: "!border-cyan-400"
-  }
-};
+import { serviceColors } from "@/lib/design-tokens";
+
+const accentColors = serviceColors;
 
 function BentoCard({ feature, index }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -301,7 +254,7 @@ function BentoCard({ feature, index }) {
           ${isLarge ? "lg:min-h-[340px]" : "lg:min-h-[160px]"}
           bg-neutral-50 border-neutral-200 
           transition-all duration-500 ease-out
-          ${colors.bg} ${colors.border} ${colors.glow}
+          ${colors.bgHover} ${colors.borderHover} ${colors.glowHover}
           ${isHovered ? "shadow-xl" : "shadow-sm"}
         `}
         bracketClassName={`w-3 h-3 sm:w-4 sm:h-4 transition-all duration-300 ${isHovered ? colors.bracket : 'border-neutral-300'}`}

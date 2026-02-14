@@ -3,6 +3,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, useSpring, useMotionValue, useMotionTemplate, useInView } from "framer-motion";
 import Link from "next/link";
+import { FiSmartphone } from "react-icons/fi";
+import { serviceCategories } from "@/data/marketing";
+import { serviceColors } from "@/lib/design-tokens";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 import clsx from "clsx";
 import TrustBar from "./TrustBar";
@@ -32,23 +35,23 @@ function EcosystemVisual({ shouldReduceMotion }) {
             className="bg-white/90 backdrop-blur-md border-neutral-200 shadow-xl p-3 min-w-[150px]"
             bracketClassName="w-2 h-2 border-neutral-400"
           >
-            <div className="flex items-center gap-2 mb-2 border-b border-neutral-100 pb-2">
+            <div className={`flex items-center gap-2 mb-2 border-b pb-2 ${serviceColors.emerald.border}`}>
               <span className="relative flex h-1.5 w-1.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-neutral-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-neutral-600"></span>
+                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${serviceColors.emerald.bg}`}></span>
+                <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${serviceColors.emerald.bg}`}></span>
               </span>
-              <span className="text-[9px] font-jetbrains-mono text-neutral-500 uppercase tracking-wider">Growth</span>
+              <span className={`text-[9px] font-jetbrains-mono uppercase tracking-wider ${serviceColors.emerald.text}`}>Growth</span>
             </div>
             <div className="flex items-end justify-between">
               <div>
-                <div className="text-xl font-space-grotesk font-bold text-neutral-900">+124%</div>
-                <div className="text-[9px] text-neutral-500">ROI</div>
+                <div className={`text-xl font-space-grotesk font-bold ${serviceColors.emerald.textDark}`}>+124%</div>
+                <div className={`text-[9px] ${serviceColors.emerald.text}`}>ROI</div>
               </div>
               <div className="h-6 flex items-end gap-0.5">
                 {[40, 60, 45, 70, 50, 80, 100].map((h, i) => (
-                  <div key={i} className="w-1.5 bg-neutral-200 rounded-sm overflow-hidden h-full flex items-end">
+                  <div key={i} className={`w-1.5 rounded-sm overflow-hidden h-full flex items-end ${serviceColors.emerald.bgLight}`}>
                     <motion.div
-                      className="w-full bg-neutral-600 rounded-sm"
+                      className={`w-full rounded-sm ${serviceColors.emerald.bg}`}
                       initial={{ height: 0 }}
                       animate={{ height: `${h}%` }}
                       transition={{ duration: 1, delay: 1.2 + (i * 0.1) }}
@@ -77,27 +80,25 @@ function EcosystemVisual({ shouldReduceMotion }) {
             bracketClassName="w-2 h-2 border-neutral-600"
           >
             <div className="flex justify-between items-center mb-3">
-              <span className="text-[9px] font-jetbrains-mono text-neutral-300 uppercase">iOS / Android</span>
-              <div className="w-1.5 h-1.5 rounded-full bg-neutral-500" />
+              <span className="text-[9px] font-jetbrains-mono text-white uppercase">iOS / Android</span>
+              <div className={`w-1.5 h-1.5 rounded-full ${serviceColors.purple.bg}`} />
             </div>
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-8 h-8 rounded-lg bg-neutral-700 flex items-center justify-center shrink-0">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
-                  <path d="M5 2h14a2 2 0 012 2v16a2 2 0 01-2 2H5a2 2 0 01-2-2V4a2 2 0 012-2zm0 2v16h14V4H5z" />
-                </svg>
+              <div className={`w-8 h-8 rounded-lg border flex items-center justify-center shrink-0 ${serviceColors.purple.bgLight} ${serviceColors.purple.border}`}>
+                <FiSmartphone className={`w-4 h-4 ${serviceColors.purple.text}`} />
               </div>
               <div>
-                <div className="text-xs font-medium">Berztech</div>
-                <div className="text-[8px] text-neutral-400">Deployed</div>
+                <div className="text-xs font-medium text-white">Berztech</div>
+                <div className="text-[8px] text-white">Deployed</div>
               </div>
             </div>
             <div className="space-y-1">
-              <div className="flex justify-between text-[8px] text-neutral-300">
+              <div className="flex justify-between text-[8px] text-purple-200/60">
                 <span>Rating</span>
                 <span>5.0 ★</span>
               </div>
               <div className="h-0.5 w-full bg-neutral-800 rounded-full overflow-hidden">
-                <div className="h-full w-full bg-neutral-600" />
+                <div className={`h-full w-full ${serviceColors.purple.bg}`} />
               </div>
             </div>
           </CornerFrame>
@@ -119,13 +120,13 @@ function EcosystemVisual({ shouldReduceMotion }) {
             className="bg-white/95 backdrop-blur-md border-neutral-200 shadow-xl p-3 min-w-[140px]"
             bracketClassName="w-2 h-2 border-purple-500"
           >
-            <div className="text-[9px] font-jetbrains-mono text-neutral-600 uppercase tracking-wider mb-2">Identity</div>
+            <div className="text-[9px] font-jetbrains-mono text-rose-500 uppercase tracking-wider mb-2">Identity</div>
             <div className="flex gap-2 justify-between">
               {[
                 { bg: 'bg-neutral-900', label: 'Aa' },
-                { bg: 'bg-neutral-500', label: '#' },
-                { bg: 'bg-neutral-600', label: '#' },
-                { bg: 'bg-neutral-700', label: '#' }
+                { bg: serviceColors.blue.bg, label: '#' },
+                { bg: serviceColors.purple.bg, label: '#' },
+                { bg: serviceColors.rose.bg, label: '#' }
               ].map((item, i) => (
                 <div key={i} className="flex flex-col items-center gap-1">
                   <div className={`w-6 h-6 rounded-md shadow-sm ${item.bg} flex items-center justify-center text-[8px] text-white`}>
@@ -190,12 +191,12 @@ function EcosystemVisual({ shouldReduceMotion }) {
             {/* Code Block */}
             <div className="bg-neutral-950 rounded-lg p-3 font-jetbrains-mono text-[9px] leading-relaxed text-neutral-400 relative group">
               <div className="absolute top-3 right-3 flex gap-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-neutral-700" />
-                <div className="w-1.5 h-1.5 rounded-full bg-neutral-700" />
+                <div className="w-1.5 h-1.5 rounded-full bg-neutral-800" />
+                <div className="w-1.5 h-1.5 rounded-full bg-neutral-800" />
               </div>
-              <div><span className="text-neutral-300">export default</span> <span className="text-neutral-300">function</span> <span className="text-neutral-200">App</span>() {'{'}</div>
-              <div className="pl-3"><span className="text-neutral-300">return</span> (</div>
-              <div className="pl-6 text-neutral-400">{'<Performance mode="fast" />'}</div>
+              <div><span className="text-purple-400">export default</span> <span className="text-purple-400">function</span> <span className="text-blue-400">App</span>() {'{'}</div>
+              <div className="pl-3"><span className="text-purple-400">return</span> (</div>
+              <div className="pl-6 text-neutral-400">{'<'}<span className="text-yellow-400">Performance</span> <span className="text-blue-300">mode</span>=<span className="text-emerald-400">"fast"</span> {'/>'}</div>
               <div className="pl-3">);</div>
               <div>{'}'}</div>
             </div>
@@ -325,37 +326,7 @@ function StatusBadge({ shouldReduceMotion }) {
 
 // --- TABLET: Full Ecosystem Preview (1 + 3 layout) ---
 function TabletEcosystemPreview({ shouldReduceMotion, isLoaded }) {
-  const services = [
-    {
-      title: "Web Development",
-      subtitle: "High-Performance Apps",
-      description: "React & Next.js",
-      icon: "◆",
-      featured: true,
-      items: ["Frontend", "Backend", "Database"]
-    },
-    {
-      title: "Growth & Marketing",
-      subtitle: "Business Growth",
-      description: "ROI & Metrics",
-      icon: "▲",
-      items: ["+124%", "ROI"]
-    },
-    {
-      title: "Mobile Apps",
-      subtitle: "iOS & Android",
-      description: "Native Performance",
-      icon: "●",
-      items: ["5.0★", "Rating"]
-    },
-    {
-      title: "Branding & Design",
-      subtitle: "Digital Identity",
-      description: "UI/UX Excellence",
-      icon: "■",
-      items: ["Colors", "Typography"]
-    }
-  ];
+  const services = serviceCategories;
 
   return (
     <motion.div
@@ -376,7 +347,12 @@ function TabletEcosystemPreview({ shouldReduceMotion, isLoaded }) {
             bracketClassName="w-2 h-2 border-neutral-400"
           >
             <div className="flex items-start gap-4">
-              <div className="text-3xl text-neutral-400 flex-shrink-0">{services[0].icon}</div>
+              <div className={`text-3xl flex-shrink-0 ${serviceColors[services[0].color].text}`}>
+                {(() => {
+                  const Icon = services[0].icon;
+                  return <Icon className="w-6 h-6" />;
+                })()}
+              </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-lg font-space-grotesk font-semibold text-neutral-900">
@@ -399,32 +375,37 @@ function TabletEcosystemPreview({ shouldReduceMotion, isLoaded }) {
 
         {/* Three Cards Below - Grid Layout */}
         <div className="grid grid-cols-3 gap-4">
-          {services.slice(1).map((service, idx) => (
-            <motion.div
-              key={service.title}
-              initial={{ y: 10, opacity: 0 }}
-              animate={isLoaded ? { y: 0, opacity: 1 } : { y: 10, opacity: 0 }}
-              transition={{ duration: 0.5, delay: shouldReduceMotion ? 0 : 0.6 + (idx * 0.1) }}
-            >
-              <CornerFrame
-                className="bg-white/50 backdrop-blur-sm border-neutral-200 shadow-lg p-4 h-full"
-                bracketClassName="w-2 h-2 border-neutral-400"
+          {services.slice(1).map((service, idx) => {
+            const Icon = service.icon;
+            return (
+              <motion.div
+                key={service.title}
+                initial={{ y: 10, opacity: 0 }}
+                animate={isLoaded ? { y: 0, opacity: 1 } : { y: 10, opacity: 0 }}
+                transition={{ duration: 0.5, delay: shouldReduceMotion ? 0 : 0.6 + (idx * 0.1) }}
               >
-                <div className="flex flex-col items-center text-center gap-2">
-                  <div className="text-2xl text-neutral-400">{service.icon}</div>
-                  <h4 className="text-xs font-space-grotesk font-semibold text-neutral-900">
-                    {service.title}
-                  </h4>
-                  <p className="text-[11px] text-neutral-600 leading-tight">
-                    {service.subtitle}
-                  </p>
-                  <div className="text-[10px] font-jetbrains-mono text-neutral-500 uppercase tracking-wider pt-1">
-                    {service.items.join(" • ")}
+                <CornerFrame
+                  className="bg-white/50 backdrop-blur-sm border-neutral-200 shadow-lg p-4 h-full"
+                  bracketClassName="w-2 h-2 border-neutral-400"
+                >
+                  <div className="flex flex-col items-center text-center gap-2">
+                    <div className={`text-2xl ${serviceColors[service.color].text}`}>
+                      <Icon className="w-6 h-6" />
+                    </div>
+                    <h4 className="text-xs font-space-grotesk font-semibold text-neutral-900">
+                      {service.title}
+                    </h4>
+                    <p className="text-[11px] text-neutral-600 leading-tight">
+                      {service.subtitle}
+                    </p>
+                    <div className="text-[10px] font-jetbrains-mono text-neutral-500 uppercase tracking-wider pt-1">
+                      {service.items.join(" • ")}
+                    </div>
                   </div>
-                </div>
-              </CornerFrame>
-            </motion.div>
-          ))}
+                </CornerFrame>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </motion.div>
@@ -433,65 +414,43 @@ function TabletEcosystemPreview({ shouldReduceMotion, isLoaded }) {
 
 // --- MOBILE: Service Cards (Full Width Stacked) ---
 function MobileServiceCards({ shouldReduceMotion, isLoaded }) {
-  const services = [
-    {
-      icon: "◆",
-      title: "Web Development",
-      description: "High-performance React & Next.js applications",
-      metric: "React + Next.js"
-    },
-    {
-      icon: "▲",
-      title: "Growth & Marketing",
-      description: "Data-driven growth strategies and ROI optimization",
-      metric: "+124% ROI"
-    },
-    {
-      icon: "●",
-      title: "Mobile Apps",
-      description: "Native iOS and Android app development",
-      metric: "5.0★ Rating"
-    },
-    {
-      icon: "■",
-      title: "Branding & Design",
-      description: "Premium UI/UX and digital identity creation",
-      metric: "Design Excellence"
-    }
-  ];
+  const services = serviceCategories;
 
   return (
     <div className="grid grid-cols-1 gap-3 md:hidden my-6 sm:my-8">
-      {services.map((service, idx) => (
-        <motion.div
-          key={service.title}
-          initial={{ opacity: 0, y: 10 }}
-          animate={isLoaded ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-          transition={{ duration: 0.5, delay: shouldReduceMotion ? 0 : 0.4 + (idx * 0.1) }}
-        >
-          <CornerFrame
-            className="bg-white/50 backdrop-blur-sm border-neutral-200 shadow-lg p-4 hover:shadow-xl transition-shadow duration-300"
-            bracketClassName="w-2 h-2 border-neutral-400"
+      {services.map((service, idx) => {
+        const Icon = service.icon;
+        return (
+          <motion.div
+            key={service.title}
+            initial={{ opacity: 0, y: 10 }}
+            animate={isLoaded ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+            transition={{ duration: 0.5, delay: shouldReduceMotion ? 0 : 0.4 + (idx * 0.1) }}
           >
-            <div className="flex items-start gap-3">
-              <div className="text-2xl text-neutral-400 flex-shrink-0 mt-0.5">
-                {service.icon}
+            <CornerFrame
+              className="bg-white/50 backdrop-blur-sm border-neutral-200 shadow-lg p-4 hover:shadow-xl transition-shadow duration-300"
+              bracketClassName="w-2 h-2 border-neutral-400"
+            >
+              <div className="flex items-start gap-3">
+                <div className={`text-2xl flex-shrink-0 mt-0.5 ${serviceColors[service.color].text}`}>
+                  <Icon className="w-5 h-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm font-space-grotesk font-semibold text-neutral-900 mb-1">
+                    {service.title}
+                  </h3>
+                  <p className="text-[12px] text-neutral-600 leading-tight mb-2">
+                    {service.description}
+                  </p>
+                  <p className="text-[11px] font-jetbrains-mono text-neutral-500 uppercase tracking-wider">
+                    {service.metric}
+                  </p>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-space-grotesk font-semibold text-neutral-900 mb-1">
-                  {service.title}
-                </h3>
-                <p className="text-[12px] text-neutral-600 leading-tight mb-2">
-                  {service.description}
-                </p>
-                <p className="text-[11px] font-jetbrains-mono text-neutral-500 uppercase tracking-wider">
-                  {service.metric}
-                </p>
-              </div>
-            </div>
-          </CornerFrame>
-        </motion.div>
-      ))}
+            </CornerFrame>
+          </motion.div>
+        );
+      })}
     </div>
   );
 }

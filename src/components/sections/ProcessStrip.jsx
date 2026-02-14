@@ -55,68 +55,16 @@ const processes = [
   }
 ];
 
-const colorSchemes = {
-  blue: {
-    bg: "bg-blue-500",
-    text: "text-blue-600",
-    bgLight: "bg-blue-50",
-    border: "border-blue-200",
-    glow: "shadow-blue-500/20",
-    number: "text-blue-600",
-    bracket: "!border-blue-400"
-  },
-  indigo: {
-    bg: "bg-indigo-500",
-    text: "text-indigo-600",
-    bgLight: "bg-indigo-50",
-    border: "border-indigo-200",
-    glow: "shadow-indigo-500/20",
-    number: "text-indigo-600",
-    bracket: "!border-indigo-400"
-  },
-  purple: {
-    bg: "bg-purple-500",
-    text: "text-purple-600",
-    bgLight: "bg-purple-50",
-    border: "border-purple-200",
-    glow: "shadow-purple-500/20",
-    number: "text-purple-600",
-    bracket: "!border-purple-400"
-  },
-  emerald: {
-    bg: "bg-emerald-500",
-    text: "text-emerald-600",
-    bgLight: "bg-emerald-50",
-    border: "border-emerald-200",
-    glow: "shadow-emerald-500/20",
-    number: "text-emerald-600",
-    bracket: "!border-emerald-400"
-  },
-  amber: {
-    bg: "bg-amber-500",
-    text: "text-amber-600",
-    bgLight: "bg-amber-50",
-    border: "border-amber-200",
-    glow: "shadow-amber-500/20",
-    number: "text-amber-600",
-    bracket: "!border-amber-400"
-  },
-  rose: {
-    bg: "bg-rose-500",
-    text: "text-rose-600",
-    bgLight: "bg-rose-50",
-    border: "border-rose-200",
-    glow: "shadow-rose-500/20",
-    number: "text-rose-600",
-    bracket: "!border-rose-400"
-  }
-};
+import { serviceColors } from "@/lib/design-tokens";
+
+const colorSchemes = serviceColors;
 
 export default function ProcessStrip() {
   const [activeTab, setActiveTab] = useState(0);
   const [isSwitching, setIsSwitching] = useState(false);
   const activeProcess = processes[activeTab];
-  const colors = colorSchemes[activeProcess.color];
+  // Map 'number' to 'text' color since they are the same in our new tokens
+  const colors = { ...colorSchemes[activeProcess.color], number: colorSchemes[activeProcess.color].text };
 
   return (
     <section className="relative py-12 sm:py-16 lg:py-20  overflow-hidden">
@@ -162,7 +110,7 @@ export default function ProcessStrip() {
           {/* Mobile: 2 columns, Tablet: 3 columns, Desktop: 6 columns */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
             {processes.map((process, index) => {
-              const processColors = colorSchemes[process.color];
+              const processColors = { ...colorSchemes[process.color], number: colorSchemes[process.color].text };
               return (
                 <button
                   key={process.number}

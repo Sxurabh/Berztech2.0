@@ -1,7 +1,7 @@
 // src/components/AITransparency.jsx
 "use client";
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion"; // Removed AnimatePresence
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 
@@ -70,7 +70,7 @@ const capabilities = [
 
 function TerminalLine({ text, delay = 0 }) {
   const [displayText, setDisplayText] = useState("");
-  
+
   useEffect(() => {
     let timeoutId;
     let intervalId;
@@ -144,6 +144,7 @@ function Terminal() {
 
 export default function AITransparency() {
   const [activeTab, setActiveTab] = useState(0);
+  const [isSwitching, setIsSwitching] = useState(false);
   const activeCapability = capabilities[activeTab];
 
   // FIXED: Added !important prefix (!) to bracket borders to ensure they override default styles
@@ -230,13 +231,13 @@ export default function AITransparency() {
                 Our Stack
               </span>
             </div>
-            
+
             <h2 className="font-space-grotesk text-2xl sm:text-3xl lg:text-4xl font-medium text-neutral-900 tracking-tight leading-tight mb-3">
               AI-accelerated.
               <br />
               <span className="text-neutral-400">Human-validated.</span>
             </h2>
-            
+
             <p className="text-sm sm:text-base text-neutral-600 leading-relaxed max-w-md">
               We leverage AI for velocity, never for substitution. Every line is reviewed, every decision architected.
             </p>
@@ -266,11 +267,15 @@ export default function AITransparency() {
             {capabilities.map((cap, index) => (
               <button
                 key={cap.id}
-                onClick={() => setActiveTab(index)}
+                onClick={() => {
+                  if (isSwitching || activeTab === index) return;
+                  setIsSwitching(true);
+                  setActiveTab(index);
+                }}
                 className={`
                   relative px-3 py-3 sm:py-3.5 border text-left transition-all duration-300 w-full
-                  ${activeTab === index 
-                    ? 'bg-neutral-900 text-white border-neutral-900 shadow-lg' 
+                  ${activeTab === index
+                    ? 'bg-neutral-900 text-white border-neutral-900 shadow-lg'
                     : 'bg-white text-neutral-600 border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50'
                   }
                 `}
@@ -293,12 +298,12 @@ export default function AITransparency() {
                     <span className="hidden sm:inline"> {cap.title.split(' ').slice(1).join(' ')}</span>
                   </span>
                 </div>
-                
+
                 {/* Active Indicator */}
                 {activeTab === index && (
                   <motion.div
                     layoutId="activeTab"
-                    className="absolute inset-0 rounded-lg bg-neutral-900 -z-10"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/30"
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                   />
                 )}
@@ -308,67 +313,69 @@ export default function AITransparency() {
         </motion.div>
 
         {/* Active Content - DYNAMIC CORNER FRAME COLOR */}
-        {/* FIXED: Removed AnimatePresence and motion wrapper to remove switch animation */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <div key={activeTab}>
-            {/* DYNAMIC CORNER FRAME - Changes color based on active tab */}
-            <CornerFrame 
-              className={`
-                ${colors.frameBg} ${colors.frameBorder} ${colors.glow}
-                p-4 sm:p-5 lg:p-6 transition-all duration-500
-              `}
-              bracketClassName={`w-4 h-4 sm:w-5 sm:h-5 ${colors.bracket} transition-all duration-500`}
+          <AnimatePresence mode="wait" onExitComplete={() => setIsSwitching(false)}>
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
             >
-              <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 sm:gap-6 items-center">
-                {/* Metric */}
-                <div className="sm:col-span-4 lg:col-span-3">
-                  <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.1, duration: 0.4 }}
-                    className="flex items-baseline gap-2 sm:block"
-                  >
-                    <span className={`
-                      font-space-grotesk text-3xl sm:text-4xl lg:text-5xl font-medium tracking-tighter
-                      ${colors.text} transition-colors duration-500
-                    `}>
-                      {activeCapability.metric}
-                    </span>
-                    <span className="text-[10px] sm:text-xs font-jetbrains-mono uppercase tracking-wider text-neutral-400 sm:block sm:mt-1">
-                      {activeCapability.metricLabel}
-                    </span>
-                  </motion.div>
-                </div>
-
-                {/* Description */}
-                <div className="sm:col-span-8 lg:col-span-9">
-                  <p className="text-sm sm:text-base text-neutral-600 leading-relaxed">
-                    {activeCapability.description}
-                  </p>
-                  
-                  {/* Honesty Badge - Dynamic color */}
-                  <div className="flex items-start gap-2 mt-4 pt-4 border-t border-neutral-200/50">
-                    <div className={`
-                      w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5
-                      ${colors.bgLight} ${colors.text} transition-colors duration-500
-                    `}>
-                      <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
+              {/* DYNAMIC CORNER FRAME - Changes color based on active tab */}
+              <CornerFrame
+                className={`
+                  ${colors.frameBg} ${colors.frameBorder} ${colors.glow}
+                  p-4 sm:p-5 lg:p-6 transition-all duration-500
+                `}
+                bracketClassName={`w-4 h-4 sm:w-5 sm:h-5 ${colors.bracket} transition-all duration-500`}
+              >
+                <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 sm:gap-6 items-center">
+                  {/* Metric */}
+                  <div className="sm:col-span-4 lg:col-span-3">
+                    <div className="flex items-baseline gap-2 sm:block">
+                      <span className={`
+                        font-space-grotesk text-3xl sm:text-4xl lg:text-5xl font-medium tracking-tighter
+                        ${colors.text} transition-colors duration-500
+                      `}>
+                        {activeCapability.metric}
+                      </span>
+                      <span className="text-[10px] sm:text-xs font-jetbrains-mono uppercase tracking-wider text-neutral-400 sm:block sm:mt-1">
+                        {activeCapability.metricLabel}
+                      </span>
                     </div>
-                    <p className="text-xs text-neutral-500 leading-relaxed">
-                      <span className="font-medium text-neutral-700">Honest note:</span> We never ship AI-generated code without senior engineer review. Architecture decisions remain human-owned.
+                  </div>
+
+                  {/* Description */}
+                  <div className="sm:col-span-8 lg:col-span-9">
+                    <p className="text-sm sm:text-base text-neutral-600 leading-relaxed">
+                      {activeCapability.description}
                     </p>
+
+                    {/* Honesty Badge - Dynamic color */}
+                    <div className="flex items-start gap-2 mt-4 pt-4 border-t border-neutral-200/50">
+                      <div className={`
+                        w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5
+                        ${colors.bgLight} ${colors.text} transition-colors duration-500
+                      `}>
+                        <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <p className="text-xs text-neutral-500 leading-relaxed">
+                        <span className="font-medium text-neutral-700">Honest note:</span> We never ship AI-generated code without senior engineer review. Architecture decisions remain human-owned.
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </CornerFrame>
-          </div>
+              </CornerFrame>
+            </motion.div>
+          </AnimatePresence>
         </motion.div>
 
         {/* Footer CTA */}
@@ -389,7 +396,7 @@ export default function AITransparency() {
             </span>
           </div>
 
-          <Link 
+          <Link
             href="/process"
             className="group inline-flex items-center gap-2 font-jetbrains-mono text-xs uppercase tracking-widest text-neutral-500 hover:text-neutral-900 transition-colors"
           >
