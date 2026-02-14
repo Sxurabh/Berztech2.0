@@ -3,6 +3,11 @@ import { layoutConfig } from "@/config/layout";
 import ContactForm from "@/components/features/contact/ContactForm";
 import ContactHeader from "@/components/features/contact/ContactHeader";
 
+export const metadata = {
+  title: "Contact Us | Berztech",
+  description: "Get in touch with our team to discuss your digital transformation needs.",
+};
+
 const ContactPage = () => {
   return (
     <div className="w-full bg-white relative">
