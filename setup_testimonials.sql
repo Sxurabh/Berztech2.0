@@ -16,19 +16,48 @@ create table if not exists public.testimonials (
 -- Enable Row Level Security
 alter table public.testimonials enable row level security;
 
--- Create policies
--- Allow everyone to read testimonials (Public API)
+-- Create policies (DROP first to avoid conflicts on re-run)
+drop policy if exists "Enable read access for all users" on public.testimonials;
 create policy "Enable read access for all users" on public.testimonials
   for select using (true);
 
--- Allow admins to insert/update/delete (Authenticated users only for now, refine if needed)
--- Assuming authenticated users are admins based on email check in API route, 
--- but consistent RLS is good too.
+drop policy if exists "Enable insert for authenticated users only" on public.testimonials;
 create policy "Enable insert for authenticated users only" on public.testimonials
   for insert with check (auth.role() = 'authenticated');
 
+drop policy if exists "Enable update for authenticated users only" on public.testimonials;
 create policy "Enable update for authenticated users only" on public.testimonials
   for update using (auth.role() = 'authenticated');
 
+drop policy if exists "Enable delete for authenticated users only" on public.testimonials;
 create policy "Enable delete for authenticated users only" on public.testimonials
   for delete using (auth.role() = 'authenticated');
+
+-- STORAGE POLICIES
+-- 1. Create the generic 'images' bucket if it doesn't exist
+insert into storage.buckets (id, name, public)
+values ('images', 'images', true)
+on conflict (id) do nothing;
+
+-- 2. Allow public access to view images
+drop policy if exists "Public Access" on storage.objects;
+create policy "Public Access"
+on storage.objects for select
+using ( bucket_id = 'images' );
+
+-- 3. Allow authenticated users to upload images
+drop policy if exists "Authenticated Upload" on storage.objects;
+create policy "Authenticated Upload"
+on storage.objects for insert
+with check ( bucket_id = 'images' and auth.role() = 'authenticated' );
+
+-- 4. Allow authenticated users to update/delete their images
+drop policy if exists "Authenticated Update" on storage.objects;
+create policy "Authenticated Update"
+on storage.objects for update
+using ( bucket_id = 'images' and auth.role() = 'authenticated' );
+
+drop policy if exists "Authenticated Delete" on storage.objects;
+create policy "Authenticated Delete"
+on storage.objects for delete
+using ( bucket_id = 'images' and auth.role() = 'authenticated' );

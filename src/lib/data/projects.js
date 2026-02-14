@@ -52,29 +52,33 @@ export async function getProjectById(idOrSlug) {
         const supabase = await createServerSupabaseClient();
         if (!supabase) throw new Error("Supabase not configured");
 
-        // Try by ID first if it looks like a valid ID (UUID or similar), otherwise strictly by slug?
-        // Actually, let's keep the sequential check pattern for robustness
-        let { data, error } = await supabase
-            .from("projects")
-            .select("*")
-            .eq("id", idOrSlug)
-            .maybeSingle();
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
 
-        if (!data && !error) {
-            ({ data, error } = await supabase
+        // If it looks like a UUID, try finding by ID first
+        if (isUUID) {
+            const { data, error } = await supabase
                 .from("projects")
                 .select("*")
-                .eq("slug", idOrSlug)
-                .maybeSingle());
+                .eq("id", idOrSlug)
+                .maybeSingle();
+
+            if (data) return data;
+            if (error && error.code !== '22P02') console.warn("Project fetch by ID error:", error.message);
         }
 
+        // Fallback: search by slug (or if it wasn't a UUID)
+        const { data, error } = await supabase
+            .from("projects")
+            .select("*")
+            .eq("slug", idOrSlug)
+            .maybeSingle();
+
         if (error) throw error;
-        if (data) return data;
+        return data; // Returns null if not found
     } catch (err) {
         console.warn(`Supabase fetch failed (getProjectById: ${idOrSlug}):`, err.message);
         return null;
     }
-    return null;
 }
 
 /**

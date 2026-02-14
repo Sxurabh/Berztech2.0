@@ -5,14 +5,15 @@ import { isAdminEmail } from "@/config/admin";
 // GET /api/blog/[id] — Get a single blog post
 export async function GET(request, { params }) {
     try {
+        const { id } = await params;
         const supabase = await createServerSupabaseClient();
-        const isNumeric = !isNaN(params.id);
+        const isNumeric = !isNaN(id);
 
         let query = supabase.from("blog_posts").select("*");
         if (isNumeric) {
-            query = query.eq("id", parseInt(params.id));
+            query = query.eq("id", parseInt(id));
         } else {
-            query = query.eq("slug", params.id);
+            query = query.eq("slug", id);
         }
 
         const { data, error } = await query.single();
@@ -33,6 +34,7 @@ export async function GET(request, { params }) {
 // PUT /api/blog/[id] — Update a blog post (admin only)
 export async function PUT(request, { params }) {
     try {
+        const { id } = await params;
         const supabase = await createServerSupabaseClient();
 
         const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -55,7 +57,7 @@ export async function PUT(request, { params }) {
         const { data, error } = await supabase
             .from("blog_posts")
             .update(payload)
-            .eq("id", parseInt(params.id))
+            .eq("id", parseInt(id))
             .select()
             .single();
 
@@ -73,6 +75,7 @@ export async function PUT(request, { params }) {
 // DELETE /api/blog/[id] — Delete a blog post (admin only)
 export async function DELETE(request, { params }) {
     try {
+        const { id } = await params;
         const supabase = await createServerSupabaseClient();
 
         const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -86,7 +89,7 @@ export async function DELETE(request, { params }) {
         const { error } = await supabase
             .from("blog_posts")
             .delete()
-            .eq("id", parseInt(params.id));
+            .eq("id", parseInt(id));
 
         if (error) throw error;
         return NextResponse.json({ success: true });

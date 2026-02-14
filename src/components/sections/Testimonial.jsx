@@ -154,18 +154,10 @@ export default function Testimonial() {
     setIsAutoPlaying(false);
   };
 
-  if (isLoading) {
-    return (
-      <div className="py-20 flex justify-center">
-        <div className="animate-pulse bg-neutral-100 h-96 w-full max-w-5xl rounded-lg" />
-      </div>
-    );
-  }
-
-  if (!hasData) return null;
-
   // Swipe handlers for mobile
   const swipeHandlers = useSwipe(goToNext, goToPrev, 50);
+
+
 
   // Auto-play logic
   useEffect(() => {
@@ -230,6 +222,16 @@ export default function Testimonial() {
       }
     })
   };
+
+  if (isLoading) {
+    return (
+      <div className="py-20 flex justify-center">
+        <div className="animate-pulse bg-neutral-100 h-96 w-full max-w-5xl rounded-lg" />
+      </div>
+    );
+  }
+
+  if (!hasData) return null;
 
   return (
     <section className="relative py-12 sm:py-16 lg:py-20 overflow-hidden">

@@ -41,7 +41,7 @@ export async function getTestimonialById(id) {
         if (error) throw error;
         return data;
     } catch (err) {
-        console.warn("Supabase fetch failed (getTestimonialById):", err.message);
+        console.error("Supabase fetch failed (getTestimonialById):", err);
         return null;
     }
 }

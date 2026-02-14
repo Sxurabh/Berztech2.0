@@ -6,7 +6,8 @@ import { getProjectById, updateProject, deleteProject } from "@/lib/data/project
 // GET /api/projects/[id] — Get a single project
 export async function GET(request, { params }) {
     try {
-        const project = await getProjectById(params.id);
+        const { id } = await params;
+        const project = await getProjectById(id);
         if (!project) {
             return NextResponse.json({ error: "Not found" }, { status: 404 });
         }
@@ -23,6 +24,7 @@ export async function GET(request, { params }) {
 // PUT /api/projects/[id] — Update a project (admin only)
 export async function PUT(request, { params }) {
     try {
+        const { id } = await params;
         const supabase = await createServerSupabaseClient();
 
         const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -43,7 +45,7 @@ export async function PUT(request, { params }) {
         }
 
         // Service layer handles the DB update
-        const updated = await updateProject(params.id, payload);
+        const updated = await updateProject(id, payload);
         return NextResponse.json(updated);
     } catch (error) {
         console.error("PUT /api/projects/[id] error:", error);
@@ -57,6 +59,7 @@ export async function PUT(request, { params }) {
 // DELETE /api/projects/[id] — Delete a project (admin only)
 export async function DELETE(request, { params }) {
     try {
+        const { id } = await params;
         const supabase = await createServerSupabaseClient();
 
         const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -67,7 +70,7 @@ export async function DELETE(request, { params }) {
             return NextResponse.json({ error: "Forbidden" }, { status: 403 });
         }
 
-        await deleteProject(params.id);
+        await deleteProject(id);
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error("DELETE /api/projects/[id] error:", error);

@@ -1,15 +1,18 @@
 "use client";
 
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import Link from "next/link";
 import { FiPlus, FiEdit2, FiTrash2, FiMessageSquare } from "react-icons/fi";
 import { toast } from "react-hot-toast";
 import { testimonialsApi } from "@/lib/api/client";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 import Image from "next/image";
+import Modal from "@/components/ui/Modal";
+import TestimonialForm from "@/components/admin/TestimonialForm";
 
 export default function AdminTestimonialsPage() {
     const queryClient = useQueryClient();
+    const [modal, setModal] = useState({ open: false, mode: "create", id: null });
 
     // Fetch Testimonials
     const { data: testimonials = [], isLoading } = useQuery({
@@ -35,6 +38,11 @@ export default function AdminTestimonialsPage() {
         }
     };
 
+    const handleSuccess = () => {
+        setModal({ open: false, mode: "create", id: null });
+        queryClient.invalidateQueries(["testimonials"]);
+    };
+
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
@@ -58,13 +66,13 @@ export default function AdminTestimonialsPage() {
                         Manage client reviews and success stories
                     </p>
                 </div>
-                <Link
-                    href="/admin/testimonials/new"
+                <button
+                    onClick={() => setModal({ open: true, mode: "create", id: null })}
                     className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-900 text-white font-jetbrains-mono text-xs uppercase tracking-wider hover:bg-neutral-800 transition-colors"
                 >
                     <FiPlus className="w-4 h-4" />
                     Add New
-                </Link>
+                </button>
             </div>
 
             {/* List */}
@@ -77,12 +85,12 @@ export default function AdminTestimonialsPage() {
                     <p className="text-neutral-500 text-sm mt-1 mb-4">
                         Start by adding your first client success story.
                     </p>
-                    <Link
-                        href="/admin/testimonials/new"
+                    <button
+                        onClick={() => setModal({ open: true, mode: "create", id: null })}
                         className="text-neutral-900 font-jetbrains-mono text-xs underline hover:text-neutral-700"
                     >
                         Add Testimonial
-                    </Link>
+                    </button>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -123,13 +131,13 @@ export default function AdminTestimonialsPage() {
 
                                     {/* Actions */}
                                     <div className="flex items-center gap-1">
-                                        <Link
-                                            href={`/admin/testimonials/edit/${testimonial.id}`}
+                                        <button
+                                            onClick={() => setModal({ open: true, mode: "edit", id: testimonial.id })}
                                             className="p-1.5 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 rounded transition-colors"
                                             title="Edit"
                                         >
                                             <FiEdit2 className="w-3.5 h-3.5" />
-                                        </Link>
+                                        </button>
                                         <button
                                             onClick={() => handleDelete(testimonial.id)}
                                             className="p-1.5 text-neutral-400 hover:text-red-600 hover:bg-neutral-100 rounded transition-colors"
@@ -170,6 +178,20 @@ export default function AdminTestimonialsPage() {
                     ))}
                 </div>
             )}
+
+            <Modal
+                isOpen={modal.open}
+                onClose={() => setModal((p) => ({ ...p, open: false }))}
+                title={modal.mode === "edit" ? "Edit Testimonial" : "New Testimonial"}
+            >
+                <TestimonialForm
+                    mode={modal.mode}
+                    embedded
+                    editId={modal.id}
+                    onClose={() => setModal((p) => ({ ...p, open: false }))}
+                    onSuccess={handleSuccess}
+                />
+            </Modal>
         </div>
     );
 }

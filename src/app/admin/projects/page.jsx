@@ -1,20 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { FiPlus, FiEdit2, FiTrash2, FiStar } from "react-icons/fi";
 import toast from "react-hot-toast";
 import { projectsApi } from "@/lib/api/client";
 import DataTable from "@/components/admin/DataTable";
 import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
+import Modal from "@/components/ui/Modal";
+import ProjectForm from "@/components/admin/ProjectForm";
 
 export default function AdminProjectsPage() {
     const queryClient = useQueryClient();
-    const router = useRouter();
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [bulkDelete, setBulkDelete] = useState(false);
+    const [modal, setModal] = useState({ open: false, mode: "create", id: null });
 
     // Fetch Projects using React Query
     const { data: projects = [], isLoading: loading, error } = useQuery({
@@ -46,7 +46,6 @@ export default function AdminProjectsPage() {
     // Handle bulk delete
     async function handleDeleteAll() {
         try {
-            // Ideally we'd have a bulk delete API endpoint, but loop works for now
             await Promise.all(projects.map((p) => projectsApi.delete(p.id)));
             queryClient.invalidateQueries({ queryKey: ["projects"] });
             toast.success(`Deleted ${projects.length} projects`);
@@ -55,6 +54,11 @@ export default function AdminProjectsPage() {
             toast.error("Failed to delete all projects");
         }
     }
+
+    const handleSuccess = () => {
+        setModal({ open: false, mode: "create", id: null });
+        queryClient.invalidateQueries({ queryKey: ["projects"] });
+    };
 
     if (error) {
         return (
@@ -118,13 +122,13 @@ export default function AdminProjectsPage() {
                     </h1>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Link
-                        href="/admin/projects/new"
+                    <button
+                        onClick={() => setModal({ open: true, mode: "create", id: null })}
                         className="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-neutral-900 font-jetbrains-mono text-xs uppercase tracking-widest font-semibold hover:bg-neutral-100 transition-colors"
                     >
                         <FiPlus className="w-4 h-4" />
                         New Project
-                    </Link>
+                    </button>
                     {projects.length > 0 && (
                         <button
                             onClick={() => setBulkDelete(true)}
@@ -152,13 +156,13 @@ export default function AdminProjectsPage() {
                     emptyMessage="No projects yet. Create your first project!"
                     actions={(item) => (
                         <>
-                            <Link
-                                href={`/admin/projects/${item.id}/edit`}
+                            <button
+                                onClick={() => setModal({ open: true, mode: "edit", id: item.id })}
                                 className="p-2 text-neutral-500 hover:text-white hover:bg-white/10 transition-colors"
                                 title="Edit"
                             >
                                 <FiEdit2 className="w-4 h-4" />
-                            </Link>
+                            </button>
                             <button
                                 onClick={() => setDeleteTarget(item)}
                                 className="p-2 text-neutral-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
@@ -178,6 +182,20 @@ export default function AdminProjectsPage() {
                 itemName={bulkDelete ? `All ${projects.length} Projects` : "Project"}
                 loading={deleting}
             />
+
+            <Modal
+                isOpen={modal.open}
+                onClose={() => setModal((p) => ({ ...p, open: false }))}
+                title={modal.mode === "edit" ? "Edit Project" : "New Project"}
+            >
+                <ProjectForm
+                    mode={modal.mode}
+                    embedded
+                    editId={modal.id}
+                    onClose={() => setModal((p) => ({ ...p, open: false }))}
+                    onSuccess={handleSuccess}
+                />
+            </Modal>
         </div>
     );
 }

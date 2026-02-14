@@ -33,18 +33,23 @@ export async function getPostById(identifier) {
     try {
         const supabase = await createServerSupabaseClient();
         if (!supabase) throw new Error("Supabase not configured");
-        const isNumeric = !isNaN(identifier);
+
+        const isNumeric = !isNaN(identifier) && !isNaN(parseInt(identifier));
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier);
 
         let query = supabase.from("blog_posts").select("*");
-        if (isNumeric) {
+
+        if (isUUID) {
+            query = query.eq("id", identifier);
+        } else if (isNumeric) {
             query = query.eq("id", parseInt(identifier));
         } else {
             query = query.eq("slug", identifier);
         }
 
-        const { data, error } = await query.single();
+        const { data, error } = await query.maybeSingle();
         if (error) throw error;
-        if (data) return data;
+        return data;
     } catch (err) {
         console.warn("Supabase fetch failed (getPostById):", err.message);
         return null;
