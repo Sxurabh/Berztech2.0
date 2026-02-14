@@ -22,11 +22,20 @@ export async function POST(req) {
         }
 
         const body = await req.json();
+
+        // Validate required fields
+        if (!body.client || typeof body.client !== 'string' || !body.client.trim()) {
+            return NextResponse.json({ error: "Client name is required" }, { status: 400 });
+        }
+        if (!body.content || typeof body.content !== 'string' || !body.content.trim()) {
+            return NextResponse.json({ error: "Content is required" }, { status: 400 });
+        }
+
         const payload = {
-            client: body.client,
+            client: body.client.trim(),
             role: body.role,
             company: body.company,
-            content: body.content,
+            content: body.content.trim(),
             image: body.image,
             metric: body.metric,
             metric_label: body.metric_label || body.metricLabel,

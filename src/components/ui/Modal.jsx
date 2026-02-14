@@ -6,13 +6,20 @@ import { FiX } from "react-icons/fi";
 
 export default function Modal({ isOpen, onClose, title, children }) {
     useEffect(() => {
+        const handleEscape = (e) => {
+            if (e.key === "Escape") onClose();
+        };
+
         if (isOpen) {
             document.body.style.overflow = "hidden";
+            document.addEventListener("keydown", handleEscape);
         }
+
         return () => {
             document.body.style.overflow = "unset";
+            document.removeEventListener("keydown", handleEscape);
         };
-    }, [isOpen]);
+    }, [isOpen, onClose]);
 
     if (!isOpen) return null;
 
@@ -23,13 +30,14 @@ export default function Modal({ isOpen, onClose, title, children }) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className="fixed inset-0 z-[100] flex items-start sm:items-center justify-center p-4 overflow-y-auto"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="modal-title"
             >
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
+                <div
                     className="fixed inset-0 bg-black/50 backdrop-blur-sm"
                     onClick={onClose}
+                    aria-hidden="true"
                 />
                 <motion.div
                     initial={{ opacity: 0, scale: 0.96, y: 20 }}
@@ -39,10 +47,10 @@ export default function Modal({ isOpen, onClose, title, children }) {
                     className="relative bg-white border border-neutral-200 shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col my-8 sm:my-0 rounded-sm"
                 >
                     <div className="flex items-center justify-between px-5 py-3.5 border-b border-neutral-200 shrink-0 bg-neutral-50/50">
-                        <h2 className="font-space-grotesk text-base font-medium text-neutral-900">{title}</h2>
+                        <h2 id="modal-title" className="font-space-grotesk text-base font-medium text-neutral-900">{title}</h2>
                         <button
                             onClick={onClose}
-                            className="p-1.5 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 transition-colors rounded-sm"
+                            className="p-1.5 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 transition-colors rounded-sm focus:outline-none focus:ring-2 focus:ring-neutral-900"
                             aria-label="Close"
                         >
                             <FiX className="w-4 h-4" />

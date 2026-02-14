@@ -97,29 +97,32 @@ const HeroContent = ({ isLoaded, shouldReduceMotion, isCoarsePointer }) => {
             <div className="space-y-1 sm:space-y-2 mb-4 sm:mb-6">
                 {isLoaded && (
                     <>
-                        <TextReveal delay={0.1}>
-                            <h1 className="font-space-grotesk text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-medium tracking-tight text-neutral-950 leading-[0.95]">
-                                Engineering
-                            </h1>
-                        </TextReveal>
-                        <TextReveal delay={0.2}>
-                            <h1 className="font-space-grotesk text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-medium tracking-tight leading-[0.95] text-neutral-500">
-                                Digital
-                            </h1>
-                        </TextReveal>
-                        <TextReveal delay={0.3}>
-                            <h1 className="font-space-grotesk text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-medium tracking-tight text-neutral-950 leading-[0.95] relative inline-block">
-                                Excellence
-                                {!shouldReduceMotion && (
-                                    <motion.span
-                                        initial={{ scaleX: 0 }}
-                                        animate={{ scaleX: 1 }}
-                                        transition={{ duration: 0.8, delay: 0.8, ease: [0.23, 1, 0.32, 1] }}
-                                        className="absolute -bottom-1 sm:-bottom-2 left-0 right-0 h-2 sm:h-3 bg-emerald-100 origin-left -z-10"
-                                    />
-                                )}
-                            </h1>
-                        </TextReveal>
+                        <h1 className="sr-only">Engineering Digital Excellence</h1>
+                        <div aria-hidden="true" className="flex flex-col space-y-1 sm:space-y-2">
+                            <TextReveal delay={0.1}>
+                                <span className="font-space-grotesk text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-medium tracking-tight text-neutral-950 leading-[0.95] block">
+                                    Engineering
+                                </span>
+                            </TextReveal>
+                            <TextReveal delay={0.2}>
+                                <span className="font-space-grotesk text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-medium tracking-tight leading-[0.95] text-neutral-500 block">
+                                    Digital
+                                </span>
+                            </TextReveal>
+                            <TextReveal delay={0.3}>
+                                <span className="font-space-grotesk text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-medium tracking-tight text-neutral-950 leading-[0.95] relative inline-block">
+                                    Excellence
+                                    {!shouldReduceMotion && (
+                                        <motion.span
+                                            initial={{ scaleX: 0 }}
+                                            animate={{ scaleX: 1 }}
+                                            transition={{ duration: 0.8, delay: 0.8, ease: [0.23, 1, 0.32, 1] }}
+                                            className="absolute -bottom-1 sm:-bottom-2 left-0 right-0 h-2 sm:h-3 bg-emerald-100 origin-left -z-10"
+                                        />
+                                    )}
+                                </span>
+                            </TextReveal>
+                        </div>
                     </>
                 )}
             </div>

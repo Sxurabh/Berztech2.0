@@ -41,6 +41,9 @@ export default function ImageUploader({ value, onChange, className = "" }) {
             setError(err.message);
         } finally {
             setUploading(false);
+            if (inputRef.current) {
+                inputRef.current.value = "";
+            }
         }
     };
 

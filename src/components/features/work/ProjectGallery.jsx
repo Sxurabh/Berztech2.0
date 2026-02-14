@@ -11,6 +11,9 @@ export default function ProjectGallery({ images = [], title }) {
 
     if (!images || images.length === 0) return null;
 
+    // derived safe index
+    const displayIndex = (images.length > 0 && activeImage < images.length) ? activeImage : 0;
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -23,7 +26,7 @@ export default function ProjectGallery({ images = [], title }) {
             >
                 <div className="relative aspect-[16/9]">
                     <Image
-                        src={images[activeImage]}
+                        src={images[displayIndex]}
                         alt={title}
                         fill
                         className="object-cover"
@@ -40,8 +43,10 @@ export default function ProjectGallery({ images = [], title }) {
                             onClick={() => setActiveImage(i)}
                             className={`
                 relative w-20 h-14 overflow-hidden border-2 transition-colors shrink-0
-                ${activeImage === i ? `border-neutral-900` : 'border-neutral-200 hover:border-neutral-400'}
+                ${displayIndex === i ? `border-neutral-900` : 'border-neutral-200 hover:border-neutral-400'}
               `}
+                            aria-label={`View image ${i + 1} of ${images.length}`}
+                            aria-current={displayIndex === i ? "true" : "false"}
                         >
                             <Image src={img} alt="" fill className="object-cover" />
                         </button>

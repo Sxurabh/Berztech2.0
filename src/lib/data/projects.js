@@ -96,7 +96,7 @@ export async function getProjectFilters() {
 
         if (error) throw error;
 
-        const unique = [...new Set((data || []).map((p) => p.category))];
+        const unique = [...new Set((data || []).map((p) => p.category).filter(Boolean))];
         return ["All", ...unique];
     } catch (err) {
         console.warn("Supabase fetch failed (getProjectFilters):", err.message);
@@ -113,10 +113,15 @@ export async function createProject(projectData) {
     const supabase = await createServerSupabaseClient();
     if (!supabase) throw new Error("Supabase not configured");
 
-    const slug = (projectData.slug || projectData.client || "")
+    let slug = (projectData.slug || projectData.client || "")
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/(^-|-$)/g, "");
+
+    // Fallback if slug is empty
+    if (!slug) {
+        slug = `project-${Date.now()}`;
+    }
 
     const payload = {
         ...projectData,

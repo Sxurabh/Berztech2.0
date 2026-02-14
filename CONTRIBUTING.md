@@ -10,9 +10,28 @@ Thank you for your interest in contributing! Here are some guidelines to help yo
 
 ## Git Workflow
 
-1.  Create a new branch for your feature or fix.
-2.  Commit your changes with clear, descriptive messages.
-3.  Ensure the project builds (`npm run build`) before pushing.
+### 1. Branch Naming
+- Use the format: `type/ticket-short-desc`
+- Examples: `feature/PROJ-123-add-login`, `fix/PROJ-124-header-alignment`
+
+### 2. Commit Messages
+- Use Conventional Commits: `type(scope): subject`
+- Example: `feat(auth): implement google oauth login`
+
+### 3. Submitting a Pull Request
+- Create a PR from your branch targeting `main`.
+- Link the related issue (e.g., "Closes #123").
+- Include a description of changes and attach screenshots for UI updates.
+
+### 4. Code Review Process
+- Request at least one reviewer.
+- Ensure all tests pass and CI is green.
+- Expected SLA: 24 hours for initial review.
+
+### 5. Addressing Feedback
+- Push updates to the same branch.
+- Reply to comments to confirm resolution.
+- Squash commits if requested before merging.
 
 ## Directory Structure
 

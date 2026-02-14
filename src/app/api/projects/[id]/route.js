@@ -35,7 +35,12 @@ export async function PUT(request, { params }) {
             return NextResponse.json({ error: "Forbidden" }, { status: 403 });
         }
 
-        const body = await request.json();
+        let body;
+        try {
+            body = await request.json();
+        } catch (e) {
+            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+        }
 
         // Whitelist allowed fields
         const payload = {};
@@ -44,8 +49,17 @@ export async function PUT(request, { params }) {
             if (body[key] !== undefined) payload[key] = body[key];
         }
 
+        if (Object.keys(payload).length === 0) {
+            return NextResponse.json({ error: "No valid fields to update" }, { status: 400 });
+        }
+
         // Service layer handles the DB update
         const updated = await updateProject(id, payload);
+
+        if (!updated) {
+            return NextResponse.json({ error: "Project not found" }, { status: 404 });
+        }
+
         return NextResponse.json(updated);
     } catch (error) {
         console.error("PUT /api/projects/[id] error:", error);

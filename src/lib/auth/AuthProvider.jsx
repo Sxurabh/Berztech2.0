@@ -3,13 +3,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
-const AuthContext = createContext({
-    user: null,
-    loading: true,
-    signInWithEmail: async () => { },
-    signInWithOAuth: async () => { },
-    signOut: async () => { },
-});
+const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
@@ -23,21 +17,42 @@ export function AuthProvider({ children }) {
             return;
         }
 
+        let mounted = true;
+
         // Get initial user (validated server-side)
-        supabase.auth.getUser().then(({ data: { user } }) => {
-            setUser(user ?? null);
-            setLoading(false);
-        });
+        supabase.auth.getUser()
+            .then(({ data: { user } }) => {
+                if (mounted) {
+                    setUser(user ?? null);
+                    // Only turn off loading if we aren't waiting for a subscription event immediately
+                    // But typically subscription fires fast. 
+                    // To be safe against race, we rely on subscription mostly, 
+                    // but getUser is authoritative for initial state.
+                    setLoading(false);
+                }
+            })
+            .catch((err) => {
+                console.error("Auth initialization error:", err);
+                if (mounted) {
+                    setUser(null);
+                    setLoading(false);
+                }
+            });
 
         // Listen for auth changes
         const {
             data: { subscription },
         } = supabase.auth.onAuthStateChange((_event, session) => {
-            setUser(session?.user ?? null);
-            setLoading(false);
+            if (mounted) {
+                setUser(session?.user ?? null);
+                setLoading(false);
+            }
         });
 
-        return () => subscription.unsubscribe();
+        return () => {
+            mounted = false;
+            subscription.unsubscribe();
+        };
     }, []);
 
     const signInWithEmail = async (email, password) => {
@@ -54,7 +69,12 @@ export function AuthProvider({ children }) {
         if (!supabase) throw new Error("Supabase is not configured");
         const callbackUrl = new URL("/auth/callback", window.location.origin);
         if (next) {
-            callbackUrl.searchParams.set("next", next);
+            // Validate 'next' param to prevent open redirects
+            if (next.startsWith("/") && !next.startsWith("//")) {
+                callbackUrl.searchParams.set("next", next);
+            } else {
+                console.warn("Invalid next redirect ignored:", next);
+            }
         }
         const { data, error } = await supabase.auth.signInWithOAuth({
             provider,

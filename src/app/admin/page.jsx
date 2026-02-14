@@ -99,23 +99,27 @@ export default function AdminDashboard() {
     const [blogModal, setBlogModal] = useState({ open: false, mode: "create", id: null });
     const [testimonialModal, setTestimonialModal] = useState({ open: false, mode: "create", id: null });
 
-    const refreshStats = () => {
+    const refreshStats = async () => {
         const supabase = createClient();
-        supabase.from("projects").select("id, client, title, created_at", { count: "exact" }).order("created_at", { ascending: false }).limit(5).then((projectsRes) => {
-            supabase.from("blog_posts").select("id, title, published, created_at", { count: "exact" }).order("created_at", { ascending: false }).limit(5).then((postsRes) => {
-                supabase.from("testimonials").select("id, client, company, content, created_at").order("created_at", { ascending: false }).limit(5).then((testiRes) => {
-                    setStats((s) => ({
-                        ...s,
-                        projects: projectsRes.count ?? 0,
-                        posts: postsRes.count ?? 0,
-                        testimonials: testiRes.count ?? 0,
-                    }));
-                    setRecentProjects(projectsRes.data || []);
-                    setRecentPosts(postsRes.data || []);
-                    setRecentTestimonials(testiRes.data || []);
-                });
-            });
-        });
+        try {
+            const [projectsRes, postsRes, testiRes] = await Promise.all([
+                supabase.from("projects").select("id, client, title, created_at", { count: "exact" }).order("created_at", { ascending: false }).limit(5),
+                supabase.from("blog_posts").select("id, title, published, created_at", { count: "exact" }).order("created_at", { ascending: false }).limit(5),
+                supabase.from("testimonials").select("id, client, company, content, created_at", { count: "exact" }).order("created_at", { ascending: false }).limit(5),
+            ]);
+
+            setStats((s) => ({
+                ...s,
+                projects: projectsRes.count ?? 0,
+                posts: postsRes.count ?? 0,
+                testimonials: testiRes.count ?? 0,
+            }));
+            setRecentProjects(projectsRes.data || []);
+            setRecentPosts(postsRes.data || []);
+            setRecentTestimonials(testiRes.data || []);
+        } catch (error) {
+            console.error("Failed to refresh stats:", error);
+        }
     };
 
     useEffect(() => {
@@ -123,9 +127,16 @@ export default function AdminDashboard() {
             try {
                 const res = await fetch("/api/admin/requests");
                 const json = await res.json();
-                if (res.ok) setRequests((json.data || []).filter(r => r.status !== 'archived'));
-            } catch (_) { }
-            finally { setRequestsLoading(false); }
+                if (res.ok) {
+                    setRequests((json.data || []).filter(r => r.status !== 'archived'));
+                } else {
+                    console.error("Failed to fetch requests:", json.error);
+                }
+            } catch (error) {
+                console.error("Error fetching requests:", error);
+            } finally {
+                setRequestsLoading(false);
+            }
         }
         fetchRequests();
     }, []);
@@ -144,8 +155,12 @@ export default function AdminDashboard() {
                 } else {
                     setRequests((prev) => prev.map((r) => (r.id === id ? { ...r, status: data.status } : r)));
                 }
+            } else {
+                console.error("Failed to update request status");
             }
-        } catch (_) { }
+        } catch (error) {
+            console.error("Error updating request status:", error);
+        }
     };
 
     useEffect(() => {

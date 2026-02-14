@@ -1,8 +1,7 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { posts as staticPosts, categories as staticCategories } from "@/data/blogPosts";
 
 /**
- * Get published blog posts from Supabase, with static data fallback.
+ * Get published blog posts from Supabase.
  */
 export async function getPosts({ published = true } = {}) {
     try {
@@ -70,7 +69,7 @@ export async function getBlogCategories() {
 
         if (error) throw error;
         if (data && data.length > 0) {
-            const unique = [...new Set(data.map((p) => p.category))];
+            const unique = [...new Set(data.map((p) => p.category).filter(Boolean))];
             return ["All", ...unique];
         }
     } catch (err) {
@@ -110,10 +109,13 @@ export async function createPost(postData) {
 export async function updatePost(id, postData) {
     const supabase = await createServerSupabaseClient();
     if (!supabase) throw new Error("Supabase not configured");
+
+    const idValue = /^\d+$/.test(id) ? Number(id) : id;
+
     const { data, error } = await supabase
         .from("blog_posts")
         .update(postData)
-        .eq("id", parseInt(id))
+        .eq("id", idValue)
         .select()
         .single();
 
@@ -127,10 +129,13 @@ export async function updatePost(id, postData) {
 export async function deletePost(id) {
     const supabase = await createServerSupabaseClient();
     if (!supabase) throw new Error("Supabase not configured");
+
+    const idValue = /^\d+$/.test(id) ? Number(id) : id;
+
     const { error } = await supabase
         .from("blog_posts")
         .delete()
-        .eq("id", parseInt(id));
+        .eq("id", idValue);
 
     if (error) throw error;
     return true;

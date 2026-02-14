@@ -15,7 +15,7 @@ export default function AdminTestimonialsPage() {
     const [modal, setModal] = useState({ open: false, mode: "create", id: null });
 
     // Fetch Testimonials
-    const { data: testimonials = [], isLoading } = useQuery({
+    const { data: testimonials = [], isLoading, error } = useQuery({
         queryKey: ["testimonials"],
         queryFn: testimonialsApi.list,
     });
@@ -50,6 +50,21 @@ export default function AdminTestimonialsPage() {
                     <div className="h-4 w-32 bg-neutral-200 rounded mb-4"></div>
                     <div className="h-64 w-full max-w-2xl bg-neutral-100 rounded"></div>
                 </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="p-8 text-center text-red-500 border border-red-200 bg-red-50 rounded-sm">
+                <h3 className="font-space-grotesk font-medium mb-1">Failed to load testimonials</h3>
+                <p className="text-sm font-jetbrains-mono">{error.message}</p>
+                <button
+                    onClick={() => queryClient.invalidateQueries(["testimonials"])}
+                    className="mt-4 text-xs font-jetbrains-mono uppercase tracking-wider underline hover:text-red-700"
+                >
+                    Try Again
+                </button>
             </div>
         );
     }

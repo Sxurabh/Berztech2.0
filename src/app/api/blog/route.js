@@ -44,7 +44,16 @@ export async function POST(request) {
             return NextResponse.json({ error: "Forbidden" }, { status: 403 });
         }
 
-        const body = await request.json();
+        let body;
+        try {
+            body = await request.json();
+        } catch (e) {
+            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+        }
+
+        if (!body.title || typeof body.title !== 'string' || !body.title.trim()) {
+            return NextResponse.json({ error: "Title is required" }, { status: 400 });
+        }
 
         // Whitelist allowed fields
         const slug = (body.slug || body.title || "")
@@ -52,9 +61,13 @@ export async function POST(request) {
             .replace(/[^a-z0-9]+/g, "-")
             .replace(/(^-|-$)/g, "");
 
+        if (!slug) {
+            return NextResponse.json({ error: "Invalid slug generation" }, { status: 400 });
+        }
+
         const payload = {
             slug,
-            title: body.title,
+            title: body.title.trim(),
             excerpt: body.excerpt || null,
             content: body.content || "",
             category: body.category || "General",

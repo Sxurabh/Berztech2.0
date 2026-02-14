@@ -3,7 +3,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { z } from "zod";
 
 const requestSchema = z.object({
-    name: z.string().min(2, "Name is required"),
+    name: z.string().min(2, "Name must be at least 2 characters"),
     email: z.string().email("Invalid email address"),
     company: z.string().optional(),
     services: z.array(z.string()).optional(),
@@ -46,7 +46,12 @@ export async function GET() {
 // POST /api/requests — create a new project request
 export async function POST(request) {
     try {
-        const body = await request.json();
+        let body;
+        try {
+            body = await request.json();
+        } catch (e) {
+            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+        }
 
         // Validate input
         const result = requestSchema.safeParse(body);
@@ -60,9 +65,18 @@ export async function POST(request) {
         const data = result.data;
         const supabase = await createServerSupabaseClient();
 
+        // Optional auth - check if user is logged in, but allow anonymous if specific env vars/rules allow
+        // Matching GET behavior for consistency implies we *check* auth, but for public requests we probably allow anonymous?
+        // The user instruction said: "Update POST route to mirror GET behavior: if authentication is required return 401... OR add clear comment"
+        // Since this is a "Contact Us" style request, it should likely remain public. I will add a comment and safe user extraction.
+
         const {
             data: { user },
+            error: authError
         } = await supabase.auth.getUser();
+
+        // If strict auth is required for requests, uncomment this:
+        // if (authError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
         const payload = {
             name: data.name,
@@ -72,7 +86,7 @@ export async function POST(request) {
             budget: data.budget || null,
             message: data.message || "",
             status: "discover",
-            user_id: user?.id || null,
+            user_id: user?.id || null, // Associate with user if logged in
         };
 
         const { data: insertedData, error } = await supabase
@@ -82,13 +96,14 @@ export async function POST(request) {
             .single();
 
         if (error) {
-            return NextResponse.json({ error: error.message }, { status: 500 });
+            console.error("Database insert error:", error);
+            return NextResponse.json({ error: "Failed to submit request" }, { status: 500 });
         }
 
         return NextResponse.json({ data: insertedData }, { status: 201 });
     } catch (error) {
         console.error("API POST error:", error);
-        return NextResponse.json({ error: "Invalid request body or server error" }, { status: 400 });
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }
 

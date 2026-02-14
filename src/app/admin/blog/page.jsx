@@ -52,14 +52,28 @@ export default function AdminBlogPage() {
     async function handleDeleteAll() {
         setDeleting(true);
         try {
-            for (const post of posts) {
-                await fetch(`/api/blog/${post.id}`, { method: "DELETE" });
+            const results = await Promise.allSettled(
+                posts.map((post) => fetch(`/api/blog/${post.id}`, { method: "DELETE" }).then(res => {
+                    if (!res.ok) throw new Error(`Failed to delete ${post.id}`);
+                    return res;
+                }))
+            );
+
+            const successes = results.filter(r => r.status === 'fulfilled');
+            const failures = results.filter(r => r.status === 'rejected');
+
+            if (failures.length > 0) {
+                console.error("Some posts failed to delete:", failures);
+                toast.error(`Deleted ${successes.length} posts. Failed to delete ${failures.length}.`);
+                fetchPosts(); // Refresh to show what remains
+            } else {
+                toast.success(`Deleted ${posts.length} posts`);
+                setPosts([]);
             }
-            toast.success(`Deleted ${posts.length} posts`);
-            setPosts([]);
             setBulkDelete(false);
         } catch (err) {
-            toast.error("Failed to delete all posts");
+            console.error(err);
+            toast.error("Critical error during bulk delete");
         } finally {
             setDeleting(false);
         }
@@ -106,7 +120,6 @@ export default function AdminBlogPage() {
         {
             key: "category",
             label: "Category",
-            sortable: true,
             sortable: true,
             className: "hidden sm:table-cell",
             render: (item) => (

@@ -141,6 +141,7 @@ export default async function BlogPostPage(props) {
                                     <input
                                         type="email"
                                         placeholder="Enter your email"
+                                        aria-label="Email address"
                                         className="bg-neutral-800 border-neutral-700 text-white px-4 py-3 text-sm focus:outline-none focus:border-neutral-500 w-full font-space-grotesk placeholder:text-neutral-600"
                                     />
                                     <button className="px-6 py-3 bg-white text-neutral-900 font-jetbrains-mono text-xs uppercase tracking-widest font-bold hover:bg-neutral-200 transition-colors whitespace-nowrap">

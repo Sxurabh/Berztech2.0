@@ -31,8 +31,17 @@ export default async function ProjectPage(props) {
     ? project.gallery
     : (project.image ? [project.image] : []);
 
-  // Parse stats
-  const stats = typeof project.stats === 'string' ? JSON.parse(project.stats) : (project.stats || {});
+  // Parse stats safely
+  let stats = {};
+  if (typeof project.stats === 'string') {
+    try {
+      stats = JSON.parse(project.stats);
+    } catch (e) {
+      console.error("Failed to parse project stats:", e);
+    }
+  } else {
+    stats = project.stats || {};
+  }
 
   return (
     <main className="w-full relative">

@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import { ADMIN_EMAIL } from "@/config/admin";
 
-const isAdmin = (email) => email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+const isAdmin = (email) => email && ADMIN_EMAIL && email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
 
 export async function updateSession(request) {
     let response = NextResponse.next({
@@ -52,7 +52,7 @@ export async function updateSession(request) {
     const pathname = request.nextUrl.pathname;
     const userEmail = user?.email;
 
-    // Protect admin routes — only saurabhkirve@gmail.com
+    // Protect admin routes — only admin users or configured admin email(s)
     if (pathname.startsWith("/admin")) {
         if (!user) {
             const loginUrl = new URL("/auth/login", request.url);

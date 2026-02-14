@@ -90,9 +90,19 @@ export default function RequestTimeline({ currentStage = "discover", interactive
                                     ${isCompleted ? "bg-neutral-900 border-neutral-900 text-white" : ""}
                                     ${isCurrent ? "bg-white border-neutral-900 text-neutral-900" : ""}
                                     ${!isCompleted && !isCurrent ? "bg-white border-neutral-200 text-neutral-400" : ""}
-                                    ${isClickable ? "cursor-pointer hover:border-neutral-600" : ""}
+                                    ${isClickable ? "cursor-pointer hover:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900" : ""}
                                 `}
                                 onClick={() => isClickable && onStageChange(stage.id)}
+                                onKeyDown={(e) => {
+                                    if (isClickable && (e.key === 'Enter' || e.key === ' ')) {
+                                        e.preventDefault();
+                                        onStageChange(stage.id);
+                                    }
+                                }}
+                                role={isClickable ? "button" : undefined}
+                                tabIndex={isClickable ? 0 : undefined}
+                                aria-label={`Select ${stage.label} stage`}
+                                aria-current={isCurrent ? "step" : undefined}
                                 whileHover={isClickable ? { scale: 1.05 } : {}}
                                 whileTap={isClickable ? { scale: 0.98 } : {}}
                             >

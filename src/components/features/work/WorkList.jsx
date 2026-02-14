@@ -147,7 +147,7 @@ function FeaturedProject({ project }) {
             transition={{ duration: 0.6 }}
             className="mb-12 sm:mb-16"
         >
-            <Link href={`/work/${project.id}`}>
+            <Link href={`/work/${project.id}`} className="group block">
                 <CornerFrame
                     className={`
             relative overflow-hidden bg-neutral-50 border-neutral-200

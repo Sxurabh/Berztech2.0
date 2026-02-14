@@ -29,14 +29,22 @@ export default function AnimatedCounter({
         hasAnimated.current = true;
 
         let start = 0;
+        let animationFrameId;
+
         const step = (timestamp) => {
             if (!start) start = timestamp;
             const progress = Math.min((timestamp - start) / duration, 1);
             const easeOut = 1 - Math.pow(1 - progress, 3);
             setCount(Math.floor(easeOut * value));
-            if (progress < 1) requestAnimationFrame(step);
+            if (progress < 1) {
+                animationFrameId = requestAnimationFrame(step);
+            }
         };
-        requestAnimationFrame(step);
+        animationFrameId = requestAnimationFrame(step);
+
+        return () => {
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        };
     }, [inView, value, duration]);
 
     return (

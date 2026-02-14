@@ -25,17 +25,18 @@ export async function PUT(req, { params }) {
         }
 
         const body = await req.json();
-        const payload = {
-            client: body.client,
-            role: body.role,
-            company: body.company,
-            content: body.content,
-            image: body.image,
-            metric: body.metric,
-            metric_label: body.metric_label || body.metricLabel,
-            color: body.color,
-            featured: body.featured
-        };
+
+        // Build payload only with defined fields
+        const payload = {};
+        const allowed = ["client", "role", "company", "content", "image", "metric", "color", "featured"];
+
+        for (const key of allowed) {
+            if (body[key] !== undefined) payload[key] = body[key];
+        }
+
+        // Handle camelCase mapping for metric_label
+        if (body.metric_label !== undefined) payload.metric_label = body.metric_label;
+        else if (body.metricLabel !== undefined) payload.metric_label = body.metricLabel;
 
         const updated = await updateTestimonial(id, payload);
         return NextResponse.json(updated);

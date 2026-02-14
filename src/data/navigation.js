@@ -33,7 +33,6 @@ export const footerLinks = {
         title: "Resources",
         links: [
             { label: "Case Studies", href: "/work" },
-            { label: "Documentation", href: "#" },
             { label: "Privacy Policy", href: "/privacy" },
             { label: "Terms of Service", href: "/terms" },
         ]

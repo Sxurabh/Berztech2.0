@@ -16,7 +16,7 @@ export async function GET(request, { params }) {
             query = query.eq("slug", id);
         }
 
-        const { data, error } = await query.single();
+        const { data, error } = await query.maybeSingle();
         if (error) throw error;
         if (!data) {
             return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -45,7 +45,12 @@ export async function PUT(request, { params }) {
             return NextResponse.json({ error: "Forbidden" }, { status: 403 });
         }
 
-        const body = await request.json();
+        let body;
+        try {
+            body = await request.json();
+        } catch (e) {
+            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+        }
 
         // Whitelist allowed fields
         const payload = {};
@@ -54,12 +59,18 @@ export async function PUT(request, { params }) {
             if (body[key] !== undefined) payload[key] = body[key];
         }
 
-        const { data, error } = await supabase
+        const isNumeric = /^\d+$/.test(id);
+        const query = supabase
             .from("blog_posts")
-            .update(payload)
-            .eq("id", parseInt(id))
-            .select()
-            .single();
+            .update(payload);
+
+        if (isNumeric) {
+            query.eq("id", parseInt(id));
+        } else {
+            query.eq("slug", id);
+        }
+
+        const { data, error } = await query.select().maybeSingle();
 
         if (error) throw error;
         return NextResponse.json(data);

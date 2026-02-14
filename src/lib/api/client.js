@@ -28,7 +28,11 @@ async function fetchJson(endpoint, options = {}) {
     // But our API returns JSON even for delete usually. 
     // If explicit null/empty body, handle it:
     const text = await res.text();
-    return text ? JSON.parse(text) : null;
+    try {
+        return text ? JSON.parse(text) : null;
+    } catch (e) {
+        throw new Error(`Failed to parse response: ${text.substring(0, 100)}... (Status: ${res.status})`);
+    }
 }
 
 export const projectsApi = {

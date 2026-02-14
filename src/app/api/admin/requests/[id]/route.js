@@ -8,6 +8,12 @@ export async function PATCH(request, context) {
     try {
         const params = await Promise.resolve(context.params);
         const id = params?.id;
+
+        // Validate ID format (UUID)
+        if (!id || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+            return NextResponse.json({ error: "Invalid ID format" }, { status: 400 });
+        }
+
         const supabase = await createServerSupabaseClient();
         const { data: { user }, error: authError } = await supabase.auth.getUser();
 
@@ -42,7 +48,11 @@ export async function PATCH(request, context) {
             .single();
 
         if (error) {
-            return NextResponse.json({ error: error.message }, { status: 500 });
+            if (error.code === 'PGRST116') {
+                return NextResponse.json({ error: "Request not found" }, { status: 404 });
+            }
+            console.error("Database error:", error);
+            return NextResponse.json({ error: "Internal server error" }, { status: 500 });
         }
 
         return NextResponse.json({ data }, { status: 200 });

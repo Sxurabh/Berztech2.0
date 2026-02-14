@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { isAdminEmail } from "@/config/admin";
 
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml"];
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
 // POST /api/upload — Upload an image to Supabase Storage (admin only)
@@ -43,8 +43,15 @@ export async function POST(request) {
         }
 
         // Generate unique filename (sanitize extension)
-        const fileExt = file.name.split(".").pop().toLowerCase().replace(/[^a-z0-9]/g, "");
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+        const lastDotIndex = file.name.lastIndexOf(".");
+        let fileExt = "";
+        if (lastDotIndex >= 0) {
+            fileExt = file.name.substring(lastDotIndex + 1).toLowerCase().replace(/[^a-z0-9]/g, "");
+        } else {
+            fileExt = "bin";
+        }
+
+        const fileName = fileExt ? `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}` : `${Date.now()}-${Math.random().toString(36).substring(2)}`;
         const filePath = `uploads/${fileName}`;
 
         // Upload to Supabase Storage
