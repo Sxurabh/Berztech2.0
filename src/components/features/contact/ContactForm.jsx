@@ -103,10 +103,10 @@ export default function ContactForm() {
 
   return (
     <CornerFrame
-      className="bg-white border-neutral-200 p-6 sm:p-8 lg:p-10 mx-auto max-w-2xl"
+      className="!block bg-transparent p-6 sm:p-8 lg:p-10 mx-auto max-w-5xl"
       bracketClassName="w-5 h-5 border-neutral-300"
     >
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <form onSubmit={handleSubmit} className="space-y-8 w-full max-w-3xl mx-auto">
         {error && (
           <div className="p-3 border border-red-200 bg-red-50 text-red-600 text-sm font-jetbrains-mono rounded-sm">
             {error}
@@ -121,7 +121,7 @@ export default function ContactForm() {
                 htmlFor="name"
                 className={`
                   block text-[10px] font-jetbrains-mono uppercase tracking-widest mb-2 transition-colors
-                  ${focusedField === 'name' ? 'text-neutral-900' : 'text-neutral-400'}
+                  ${focusedField === 'name' ? 'text-neutral-900' : 'text-neutral-500'}
                 `}
               >
                 Name
@@ -134,7 +134,7 @@ export default function ContactForm() {
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 onFocus={() => setFocusedField('name')}
                 onBlur={() => setFocusedField(null)}
-                className="w-full bg-transparent border-b border-neutral-200 py-2 font-space-grotesk text-lg text-neutral-900 focus:outline-none focus:border-neutral-900 transition-colors placeholder:text-neutral-200"
+                className="w-full bg-white/50 backdrop-blur-sm border-b border-neutral-200 py-3 px-2 font-space-grotesk text-lg text-neutral-900 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all placeholder:text-neutral-300"
                 placeholder="John Doe"
               />
             </div>
@@ -144,7 +144,7 @@ export default function ContactForm() {
                 htmlFor="email"
                 className={`
                   block text-[10px] font-jetbrains-mono uppercase tracking-widest mb-2 transition-colors
-                  ${focusedField === 'email' ? 'text-neutral-900' : 'text-neutral-400'}
+                  ${focusedField === 'email' ? 'text-neutral-900' : 'text-neutral-500'}
                 `}
               >
                 Email
@@ -157,7 +157,7 @@ export default function ContactForm() {
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 onFocus={() => setFocusedField('email')}
                 onBlur={() => setFocusedField(null)}
-                className="w-full bg-transparent border-b border-neutral-200 py-2 font-space-grotesk text-lg text-neutral-900 focus:outline-none focus:border-neutral-900 transition-colors placeholder:text-neutral-200"
+                className="w-full bg-white/50 backdrop-blur-sm border-b border-neutral-200 py-3 px-2 font-space-grotesk text-lg text-neutral-900 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all placeholder:text-neutral-300"
                 placeholder="john@company.com"
               />
             </div>
@@ -168,7 +168,7 @@ export default function ContactForm() {
               htmlFor="company"
               className={`
                 block text-[10px] font-jetbrains-mono uppercase tracking-widest mb-2 transition-colors
-                ${focusedField === 'company' ? 'text-neutral-900' : 'text-neutral-400'}
+                ${focusedField === 'company' ? 'text-neutral-900' : 'text-neutral-500'}
               `}
             >
               Company / Website
@@ -180,7 +180,7 @@ export default function ContactForm() {
               onChange={(e) => setFormData({ ...formData, company: e.target.value })}
               onFocus={() => setFocusedField('company')}
               onBlur={() => setFocusedField(null)}
-              className="w-full bg-transparent border-b border-neutral-200 py-2 font-space-grotesk text-lg text-neutral-900 focus:outline-none focus:border-neutral-900 transition-colors placeholder:text-neutral-200"
+              className="w-full bg-white/50 backdrop-blur-sm border-b border-neutral-200 py-3 px-2 font-space-grotesk text-lg text-neutral-900 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all placeholder:text-neutral-300"
               placeholder="acme.com"
             />
           </div>
@@ -188,7 +188,7 @@ export default function ContactForm() {
 
         {/* Services Selection */}
         <div>
-          <span className="block text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400 mb-4">
+          <span className="block text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 mb-4">
             I'm interested in...
           </span>
           <div className="flex flex-wrap gap-2">
@@ -198,10 +198,10 @@ export default function ContactForm() {
                 type="button"
                 onClick={() => handleServiceToggle(service)}
                 className={`
-                  px-3 py-2 text-xs font-jetbrains-mono border transition-all duration-200
+                  px-3 py-2 text-xs font-jetbrains-mono border transition-all duration-200 backdrop-blur-sm
                   ${formData.services.includes(service)
                     ? 'bg-neutral-900 text-white border-neutral-900'
-                    : 'bg-white text-neutral-500 border-neutral-200 hover:border-neutral-400'
+                    : 'bg-white/50 text-neutral-500 border-neutral-200 hover:border-neutral-400 hover:bg-white'
                   }
                 `}
               >
@@ -213,7 +213,7 @@ export default function ContactForm() {
 
         {/* Budget Selection */}
         <div>
-          <span className="block text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400 mb-4">
+          <span className="block text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 mb-4">
             Project Budget
           </span>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -223,10 +223,10 @@ export default function ContactForm() {
                 type="button"
                 onClick={() => setFormData({ ...formData, budget })}
                 className={`
-                  px-2 py-2 text-xs font-jetbrains-mono border transition-all duration-200 text-center
+                  px-2 py-2 text-xs font-jetbrains-mono border transition-all duration-200 text-center backdrop-blur-sm
                   ${formData.budget === budget
                     ? 'bg-neutral-900 text-white border-neutral-900'
-                    : 'bg-white text-neutral-500 border-neutral-200 hover:border-neutral-400'
+                    : 'bg-white/50 text-neutral-500 border-neutral-200 hover:border-neutral-400 hover:bg-white'
                   }
                 `}
               >
@@ -242,7 +242,7 @@ export default function ContactForm() {
             htmlFor="message"
             className={`
               block text-[10px] font-jetbrains-mono uppercase tracking-widest mb-2 transition-colors
-              ${focusedField === 'message' ? 'text-neutral-900' : 'text-neutral-400'}
+              ${focusedField === 'message' ? 'text-neutral-900' : 'text-neutral-500'}
             `}
           >
             Project Details
@@ -254,7 +254,7 @@ export default function ContactForm() {
             onChange={(e) => setFormData({ ...formData, message: e.target.value })}
             onFocus={() => setFocusedField('message')}
             onBlur={() => setFocusedField(null)}
-            className="w-full bg-neutral-50 border border-neutral-200 p-4 font-space-grotesk text-sm text-neutral-900 focus:outline-none focus:border-neutral-900 transition-colors resize-none placeholder:text-neutral-400"
+            className="w-full bg-white/50 backdrop-blur-sm border border-neutral-200 p-4 font-space-grotesk text-sm text-neutral-900 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all resize-none placeholder:text-neutral-300"
             placeholder="Tell us about your goals, timeline, and requirements..."
           />
         </div>

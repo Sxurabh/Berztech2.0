@@ -68,15 +68,15 @@ function LoginContent() {
                     <div className="flex items-center justify-center gap-2 mb-4">
                         <div className="h-px w-8 bg-neutral-300" />
                         <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500">
-                            Admin Access
+                            Client Access
                         </span>
                         <div className="h-px w-8 bg-neutral-300" />
                     </div>
                     <h1 className="font-space-grotesk text-3xl sm:text-4xl font-medium text-neutral-900 tracking-tight">
-                        Sign In
+                        Welcome Back
                     </h1>
                     <p className="mt-2 text-sm text-neutral-600">
-                        Access the Berztech admin dashboard
+                        Sign in to your client dashboard
                     </p>
                 </div>
 
@@ -137,7 +137,7 @@ function LoginContent() {
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
                                 className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-neutral-900 focus:outline-none transition-colors font-jetbrains-mono text-sm rounded-sm"
-                                placeholder="admin@berztech.com"
+                                placeholder="you@company.com"
                             />
                         </div>
                         <div>

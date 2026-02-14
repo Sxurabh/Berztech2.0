@@ -27,6 +27,7 @@ export async function GET() {
 
         return NextResponse.json({ data }, { status: 200 });
     } catch (error) {
+        console.error("API GET error:", error);
         return NextResponse.json({ error: "Unexpected error" }, { status: 500 });
     }
 }
@@ -64,7 +65,8 @@ export async function POST(request) {
 
         return NextResponse.json({ data }, { status: 201 });
     } catch (error) {
-        return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+        console.error("API POST error:", error);
+        return NextResponse.json({ error: "Invalid request body or server error" }, { status: 400 });
     }
 }
 
