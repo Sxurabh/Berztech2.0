@@ -246,7 +246,7 @@ function ServiceCard({ service, index, isExpanded, onToggle }) {
 }
 
 export default function Services() {
-  const [expandedIndex, setExpandedIndex] = useState(0);
+  const [expandedIndex, setExpandedIndex] = useState(-1);
 
   const toggleCard = (index) => {
     setExpandedIndex(expandedIndex === index ? -1 : index);

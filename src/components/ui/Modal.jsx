@@ -36,19 +36,19 @@ export default function Modal({ isOpen, onClose, title, children }) {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.96, y: 20 }}
                     transition={{ duration: 0.2 }}
-                    className="relative bg-white border border-neutral-200 shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col my-8 sm:my-0"
+                    className="relative bg-white border border-neutral-200 shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col my-8 sm:my-0 rounded-sm"
                 >
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200 shrink-0">
-                        <h2 className="font-space-grotesk text-lg font-medium text-neutral-900">{title}</h2>
+                    <div className="flex items-center justify-between px-5 py-3.5 border-b border-neutral-200 shrink-0 bg-neutral-50/50">
+                        <h2 className="font-space-grotesk text-base font-medium text-neutral-900">{title}</h2>
                         <button
                             onClick={onClose}
-                            className="p-2 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 transition-colors"
+                            className="p-1.5 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 transition-colors rounded-sm"
                             aria-label="Close"
                         >
-                            <FiX className="w-5 h-5" />
+                            <FiX className="w-4 h-4" />
                         </button>
                     </div>
-                    <div className="overflow-y-auto flex-1 p-4">
+                    <div className="overflow-y-auto flex-1 p-5 modal-scroll">
                         {children}
                     </div>
                 </motion.div>

@@ -2,13 +2,22 @@ import { layoutConfig } from "@/config/layout";
 import BlogHeader from "@/components/features/blog/BlogHeader";
 import BlogFeed from "@/components/features/blog/BlogFeed";
 import Newsletter from "@/components/features/blog/Newsletter";
+import { getPosts, getBlogCategories } from "@/lib/data/blogPosts";
 
 export const metadata = {
   title: "Blog | Berztech",
   description: "Thoughts on engineering, design, and building digital products that matter.",
 };
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  const posts = await getPosts();
+  let categories = await getBlogCategories();
+
+  // Ensure "All" is present
+  if (categories && !categories.includes("All")) {
+    categories = ["All", ...categories];
+  }
+
   return (
     <div className="w-full  relative">
       {/* Header */}
@@ -19,7 +28,7 @@ export default function BlogPage() {
       </section>
 
       <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 pb-20 sm:pb-32 z-10">
-        <BlogFeed />
+        <BlogFeed initialPosts={posts} categories={categories} />
         <Newsletter />
       </div>
     </div>

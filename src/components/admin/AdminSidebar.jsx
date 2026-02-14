@@ -13,6 +13,7 @@ import {
     FiMenu,
     FiX,
     FiUser,
+    FiMessageSquare,
 } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import { CornerFrame } from "@/components/ui/CornerFrame";
@@ -21,6 +22,7 @@ const navItems = [
     { title: "Dashboard", href: "/admin", icon: FiGrid },
     { title: "Projects", href: "/admin/projects", icon: FiBriefcase },
     { title: "Blog Posts", href: "/admin/blog", icon: FiFileText },
+    { title: "Testimonials", href: "/admin/testimonials", icon: FiMessageSquare },
 ];
 
 export default function AdminSidebar() {
@@ -52,7 +54,7 @@ export default function AdminSidebar() {
     const SidebarContent = () => (
         <div className="flex flex-col h-full">
             {/* Logo / Brand */}
-            <div className="p-4 sm:p-5 border-b border-neutral-200">
+            <div className="p-3 sm:p-4 border-b border-neutral-200">
                 <Link href="/admin" className="flex items-center gap-3">
                     <CornerFrame
                         className="w-10 h-10 bg-neutral-900 flex items-center justify-center"
@@ -84,7 +86,7 @@ export default function AdminSidebar() {
                             href={item.href}
                             onClick={() => setMobileOpen(false)}
                             className={`
-                                flex items-center gap-3 px-3 py-3 text-sm font-jetbrains-mono transition-all duration-200 rounded-sm
+                                flex items-center gap-3 px-3 py-2.5 text-sm font-jetbrains-mono transition-all duration-200 rounded-sm
                                 ${active
                                     ? "bg-neutral-900 text-white"
                                     : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100"
@@ -188,35 +190,43 @@ export default function AdminSidebar() {
                 </div>
             </header>
 
-            {/* Mobile Overlay */}
+            {/* Mobile Sidebar - Slide-in */}
             <AnimatePresence>
                 {mobileOpen && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="lg:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
-                        onClick={() => setMobileOpen(false)}
-                    />
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="lg:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+                            onClick={() => setMobileOpen(false)}
+                        />
+                        <motion.aside
+                            initial={{ x: "-100%" }}
+                            animate={{ x: 0 }}
+                            exit={{ x: "-100%" }}
+                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                            className="fixed top-0 left-0 h-full w-64 bg-white border-r border-neutral-200 flex flex-col z-50 shadow-2xl lg:hidden"
+                        >
+                            <SidebarContent />
+                            <div className="mt-auto p-4 border-t border-neutral-100">
+                                <button
+                                    onClick={() => setMobileOpen(false)}
+                                    className="flex items-center gap-2 text-sm text-neutral-500 hover:text-neutral-900"
+                                >
+                                    <FiX className="w-4 h-4" />
+                                    Close Menu
+                                </button>
+                            </div>
+                        </motion.aside>
+                    </>
                 )}
             </AnimatePresence>
 
-            {/* Sidebar - Desktop: Fixed, Mobile: Slide-in */}
-            <motion.aside
-                initial={false}
-                animate={{
-                    x: mobileOpen ? 0 : "-100%",
-                    opacity: mobileOpen ? 1 : 0
-                }}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className={`
-                    fixed top-0 left-0 h-full w-64 bg-white border-r border-neutral-200
-                    flex flex-col z-50 lg:translate-x-0 lg:opacity-100
-                    ${mobileOpen ? 'shadow-2xl' : ''}
-                `}
-            >
+            {/* Desktop Sidebar - Fixed & Always Visible */}
+            <aside className="hidden lg:flex fixed top-0 left-0 h-full w-64 bg-white border-r border-neutral-200 flex-col z-30">
                 <SidebarContent />
-            </motion.aside>
+            </aside>
         </>
     );
 }

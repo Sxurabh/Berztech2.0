@@ -347,7 +347,7 @@ export default function Header() {
               <DesktopNav pathname={pathname} />
               <div className="w-px h-6 bg-neutral-200" />
               <AuthButton />
-              {(!user || !isAdmin) && (
+              {!user && (
                 <>
                   <div className="w-px h-6 bg-neutral-200" />
                   <HireButton />
@@ -370,12 +370,23 @@ export default function Header() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <>
+            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25 }}
-              className="fixed inset-0 bg-white z-40 lg:hidden"
+              onClick={() => setMobileMenuOpen(false)}
+              className="fixed inset-0 bg-neutral-900/20 backdrop-blur-sm z-40 lg:hidden"
+            />
+
+            {/* Drawer */}
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+              className="fixed top-0 right-0 bottom-0 w-3/4 sm:w-1/2 bg-white z-50 lg:hidden shadow-2xl border-l border-neutral-100"
             >
               <div className="flex flex-col min-h-screen">
                 <div className="flex items-center justify-between px-4 py-5 border-b border-neutral-100">
@@ -417,7 +428,7 @@ export default function Header() {
                 </nav>
 
                 <div className="px-4 pb-8 pt-4 border-t border-neutral-100 space-y-3">
-                  {(!user || !isAdmin) && (
+                  {!user && (
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}

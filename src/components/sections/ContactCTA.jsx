@@ -71,7 +71,7 @@ const colorSchemes = {
 
 function QuickInfoCard({ item, index, isHovered, onHover }) {
   const colors = colorSchemes[item.color];
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -125,7 +125,7 @@ function QuickInfoCard({ item, index, isHovered, onHover }) {
                 {item.label}
               </span>
             </div>
-            
+
             {/* Stat Badge */}
             <span className={`
               font-jetbrains-mono text-[9px] sm:text-[10px] font-medium px-1.5 py-0.5
@@ -151,8 +151,8 @@ function QuickInfoCard({ item, index, isHovered, onHover }) {
             <span className={`
               inline-flex items-center gap-1 px-1.5 py-0.5 text-[8px] sm:text-[9px] font-jetbrains-mono uppercase tracking-wider
               border transition-colors duration-300
-              ${isHovered 
-                ? `${colors.bgLight} ${colors.text} ${colors.border}` 
+              ${isHovered
+                ? `${colors.bgLight} ${colors.text} ${colors.border}`
                 : 'bg-neutral-50 text-neutral-500 border-neutral-200'
               }
             `}>
@@ -187,192 +187,192 @@ export default function ContactCTA() {
 
       <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 xl:px-12">
         {/* Main Container */}
-        
-          <div className="grid grid-cols-1 lg:grid-cols-2">
-            
-            {/* Left Side: Content */}
-            <div className="p-6 sm:p-8 lg:p-10 xl:p-12 flex flex-col justify-center">
-              {/* Section Label */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                className="flex items-center gap-2 mb-4 sm:mb-6"
-              >
-                <div className="h-px w-6 sm:w-8 bg-neutral-300" />
-                <span className="text-[9px] sm:text-[10px] font-jetbrains-mono uppercase tracking-[0.2em] text-neutral-600">
-                  Start Your Project
-                </span>
-              </motion.div>
 
-              {/* Main Heading */}
-              <motion.h2
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-                className="font-space-grotesk text-2xl sm:text-3xl md:text-4xl lg:text-[2.5rem] xl:text-5xl font-medium text-neutral-900 tracking-tight leading-[0.95] mb-4 sm:mb-6"
-              >
-                Let&apos;s build something
-                <br />
-                <span className="text-neutral-500">extraordinary together</span>
-              </motion.h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2">
 
-              {/* Description */}
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="text-sm sm:text-base lg:text-lg text-neutral-600 leading-relaxed mb-6 sm:mb-8 max-w-lg"
-              >
-                Book a discovery call. We&apos;ll discuss your challenges, explore solutions, 
-                and outline a clear path forward—no commitment required.
-              </motion.p>
+          {/* Left Side: Content */}
+          <div className="p-6 sm:p-8 lg:p-10 xl:p-12 flex flex-col justify-center">
+            {/* Section Label */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="flex items-center gap-2 mb-4 sm:mb-6"
+            >
+              <div className="h-px w-6 sm:w-8 bg-neutral-300" />
+              <span className="text-[9px] sm:text-[10px] font-jetbrains-mono uppercase tracking-[0.2em] text-neutral-600">
+                Start Your Project
+              </span>
+            </motion.div>
 
-              {/* CTA Buttons */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8"
+            {/* Main Heading */}
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="font-space-grotesk text-2xl sm:text-3xl md:text-4xl lg:text-[2.5rem] xl:text-5xl font-medium text-neutral-900 tracking-tight leading-[0.95] mb-4 sm:mb-6"
+            >
+              Let&apos;s build something
+              <br />
+              <span className="text-neutral-500">extraordinary together</span>
+            </motion.h2>
+
+            {/* Description */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="text-sm sm:text-base lg:text-lg text-neutral-600 leading-relaxed mb-6 sm:mb-8 max-w-lg"
+            >
+              Book a discovery call. We&apos;ll discuss your challenges, explore solutions,
+              and outline a clear path forward—no commitment required.
+            </motion.p>
+
+            {/* CTA Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8"
+            >
+              <Link href="/contact" className="w-full sm:w-auto">
+                <CornerFrame
+                  className="inline-flex w-full sm:w-auto bg-neutral-900 text-white border-neutral-900 hover:bg-neutral-800 transition-all duration-300 hover:shadow-lg group"
+                  bracketClassName="w-2.5 h-2.5 sm:w-3 sm:h-3 border-white/30"
+                >
+                  <span className="flex items-center justify-center sm:justify-start gap-2 sm:gap-3 px-5 sm:px-6 py-3 sm:py-3.5 font-jetbrains-mono text-[10px] sm:text-xs uppercase tracking-widest font-semibold w-full sm:w-auto">
+                    Schedule a Call
+                    <motion.span
+                      animate={{ x: [0, 3, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                      className="inline-block"
+                    >
+                      →
+                    </motion.span>
+                  </span>
+                </CornerFrame>
+              </Link>
+
+              <Link
+                href="/work"
+                className="group inline-flex items-center justify-center sm:justify-start gap-2 text-[10px] sm:text-xs font-jetbrains-mono uppercase tracking-widest text-neutral-600 hover:text-neutral-900 transition-colors py-3 sm:py-0"
               >
-                <Link href="/contact" className="w-full sm:w-auto">
-                  <CornerFrame 
-                    className="inline-flex w-full sm:w-auto bg-neutral-900 text-white border-neutral-900 hover:bg-neutral-800 transition-all duration-300 hover:shadow-lg group"
-                    bracketClassName="w-2.5 h-2.5 sm:w-3 sm:h-3 border-white/30"
-                  >
-                    <span className="flex items-center justify-center sm:justify-start gap-2 sm:gap-3 px-5 sm:px-6 py-3 sm:py-3.5 font-jetbrains-mono text-[10px] sm:text-xs uppercase tracking-widest font-semibold w-full sm:w-auto">
-                      Schedule a Call
+                <span className="w-4 h-px bg-neutral-300 group-hover:w-6 sm:group-hover:w-8 group-hover:bg-neutral-900 transition-all duration-300" />
+                View Our Work
+              </Link>
+            </motion.div>
+
+            {/* Trust Indicators */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="flex flex-wrap items-center gap-3 sm:gap-4 pt-4 sm:pt-6 border-t border-neutral-100"
+            >
+              {[
+                { value: `${companyStats.projects.value}${companyStats.projects.suffix}`, label: companyStats.projects.label },
+                { value: `${companyStats.retention.value}${companyStats.retention.suffix}`, label: companyStats.retention.label },
+                { value: `${companyStats.rating.value}${companyStats.rating.suffix}`, label: companyStats.rating.label }
+              ].map((stat, i) => (
+                <div key={stat.label} className="flex items-center gap-2">
+                  <span className="font-space-grotesk text-lg sm:text-xl font-medium text-neutral-900">{stat.value}</span>
+                  <span className="text-[9px] sm:text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-600">{stat.label}</span>
+                  {i < 2 && <span className="hidden sm:inline text-neutral-300 mx-1">·</span>}
+                </div>
+              ))}
+            </motion.div>
+          </div>
+
+          {/* Right Side: Quick Info */}
+          <div className="relative p-6 sm:p-8 lg:p-10 xl:p-12">
+            {/* Decorative corner element */}
+            <div className="absolute top-0 right-0 w-16 h-16 sm:w-20 sm:h-20" style={{ clipPath: 'polygon(100% 0, 0 0, 100% 100%)' }} />
+
+            {/* Header */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="relative mb-5 sm:mb-6"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-[9px] sm:text-[10px] font-jetbrains-mono uppercase tracking-[0.15em] text-neutral-600 block mb-1">
+                    Why Work With Us
+                  </span>
+                  <span className="font-space-grotesk text-sm sm:text-base font-medium text-neutral-900">
+                    The Berztech Advantage
+                  </span>
+                </div>
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-neutral-900 flex items-center justify-center shrink-0">
+                  <span className="text-white font-jetbrains-mono text-xs sm:text-sm font-bold">B</span>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Info Cards */}
+            <div className="relative space-y-2.5 sm:space-y-3 mb-5 sm:mb-6">
+              {quickInfoItems.map((item, index) => (
+                <QuickInfoCard
+                  key={item.id}
+                  item={item}
+                  index={index}
+                  isHovered={hoveredIndex === index}
+                  onHover={setHoveredIndex}
+                />
+              ))}
+            </div>
+
+            {/* Email Contact */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="relative pt-4 sm:pt-5 border-t border-neutral-200"
+              onMouseEnter={() => setEmailHovered(true)}
+              onMouseLeave={() => setEmailHovered(false)}
+            >
+              <div className="flex items-start gap-2.5 sm:gap-3">
+                <div className={`
+                    w-1.5 h-1.5 sm:w-2 sm:h-2 mt-1.5 sm:mt-2 shrink-0 transition-colors duration-300
+                    ${emailHovered ? 'bg-neutral-900' : 'bg-neutral-400'}
+                  `} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] sm:text-xs text-neutral-500 leading-relaxed">
+                    <span className="text-neutral-700 font-medium">Prefer email?</span>{' '}
+                    <a
+                      href="mailto:hello@berztech.com"
+                      className="text-neutral-900 underline underline-offset-2 hover:text-neutral-600 transition-colors inline-flex items-center gap-1"
+                    >
+                      hello@berztech.com
                       <motion.span
-                        animate={{ x: [0, 3, 0] }}
-                        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                        animate={{ x: emailHovered ? 2 : 0 }}
+                        transition={{ duration: 0.2 }}
                         className="inline-block"
                       >
                         →
                       </motion.span>
-                    </span>
-                  </CornerFrame>
-                </Link>
-
-                <Link 
-                  href="/work" 
-                  className="group inline-flex items-center justify-center sm:justify-start gap-2 text-[10px] sm:text-xs font-jetbrains-mono uppercase tracking-widest text-neutral-600 hover:text-neutral-900 transition-colors py-3 sm:py-0"
-                >
-                  <span className="w-4 h-px bg-neutral-300 group-hover:w-6 sm:group-hover:w-8 group-hover:bg-neutral-900 transition-all duration-300" />
-                  View Our Work
-                </Link>
-              </motion.div>
-
-              {/* Trust Indicators */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-                className="flex flex-wrap items-center gap-3 sm:gap-4 pt-4 sm:pt-6 border-t border-neutral-100"
-              >
-                {[
-                  { value: `${companyStats.projects.value}${companyStats.projects.suffix}`, label: companyStats.projects.label },
-                  { value: `${companyStats.retention.value}${companyStats.retention.suffix}`, label: companyStats.retention.label },
-                  { value: `${companyStats.rating.value}${companyStats.rating.suffix}`, label: companyStats.rating.label }
-                ].map((stat, i) => (
-                  <div key={stat.label} className="flex items-center gap-2">
-                    <span className="font-space-grotesk text-lg sm:text-xl font-medium text-neutral-900">{stat.value}</span>
-                    <span className="text-[9px] sm:text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-600">{stat.label}</span>
-                    {i < 2 && <span className="hidden sm:inline text-neutral-300 mx-1">·</span>}
-                  </div>
-                ))}
-              </motion.div>
-            </div>
-
-            {/* Right Side: Quick Info */}
-            <div className="relative p-6 sm:p-8 lg:p-10 xl:p-12">
-              {/* Decorative corner element */}
-              <div className="absolute top-0 right-0 w-16 h-16 sm:w-20 sm:h-20" style={{ clipPath: 'polygon(100% 0, 0 0, 100% 100%)' }} />
-              
-              {/* Header */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                className="relative mb-5 sm:mb-6"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-[9px] sm:text-[10px] font-jetbrains-mono uppercase tracking-[0.15em] text-neutral-600 block mb-1">
-                      Why Work With Us
-                    </span>
-                    <span className="font-space-grotesk text-sm sm:text-base font-medium text-neutral-900">
-                      The Berztech Advantage
-                    </span>
-                  </div>
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-neutral-900 flex items-center justify-center shrink-0">
-                    <span className="text-white font-jetbrains-mono text-xs sm:text-sm font-bold">B</span>
-                  </div>
+                    </a>
+                  </p>
+                  <p className="text-[9px] sm:text-[10px] text-neutral-500 mt-1 font-jetbrains-mono">
+                    Typical response: 4 hours
+                  </p>
                 </div>
-              </motion.div>
-
-              {/* Info Cards */}
-              <div className="relative space-y-2.5 sm:space-y-3 mb-5 sm:mb-6">
-                {quickInfoItems.map((item, index) => (
-                  <QuickInfoCard
-                    key={item.id}
-                    item={item}
-                    index={index}
-                    isHovered={hoveredIndex === index}
-                    onHover={setHoveredIndex}
-                  />
-                ))}
               </div>
+            </motion.div>
 
-              {/* Email Contact */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className="relative pt-4 sm:pt-5 border-t border-neutral-200"
-                onMouseEnter={() => setEmailHovered(true)}
-                onMouseLeave={() => setEmailHovered(false)}
-              >
-                <div className="flex items-start gap-2.5 sm:gap-3">
-                  <div className={`
-                    w-1.5 h-1.5 sm:w-2 sm:h-2 mt-1.5 sm:mt-2 shrink-0 transition-colors duration-300
-                    ${emailHovered ? 'bg-neutral-900' : 'bg-neutral-400'}
-                  `} />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[10px] sm:text-xs text-neutral-500 leading-relaxed">
-                      <span className="text-neutral-700 font-medium">Prefer email?</span>{' '}
-                      <a 
-                        href="mailto:hello@berztech.com" 
-                        className="text-neutral-900 underline underline-offset-2 hover:text-neutral-600 transition-colors inline-flex items-center gap-1"
-                      >
-                        hello@berztech.com
-                        <motion.span
-                          animate={{ x: emailHovered ? 2 : 0 }}
-                          transition={{ duration: 0.2 }}
-                          className="inline-block"
-                        >
-                          →
-                        </motion.span>
-                      </a>
-                    </p>
-                    <p className="text-[9px] sm:text-[10px] text-neutral-500 mt-1 font-jetbrains-mono">
-                      Typical response: 4 hours
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
+            {/* Decorative Elements */}
 
-              {/* Decorative Elements */}
-              
-            </div>
           </div>
-        
+        </div>
+
 
         {/* Bottom Note - Full Width */}
         <motion.div

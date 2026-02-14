@@ -6,41 +6,33 @@ import Image from "next/image";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 
 
-const testimonials = [
-  {
-    id: 1,
-    quote: "They didn't just build our platform—they redefined how we think about digital products. The attention to architectural detail is unmatched.",
-    author: "Debra Fiscal",
-    role: "CEO",
-    company: "Family Fund",
-    image: "/images/testimonials/debra.jpg",
-    metric: "2.4x",
-    metricLabel: "Growth",
-    color: "blue"
-  },
-  {
-    id: 2,
-    quote: "Finally, a team that speaks both business and code. They translated our complex requirements into an elegant, scalable solution.",
-    author: "Marcus Chen",
-    role: "CTO",
-    company: "Unseal",
-    image: "/images/testimonials/marcus.jpg",
-    metric: "99.99%",
-    metricLabel: "Uptime",
-    color: "emerald"
-  },
-  {
-    id: 3,
-    quote: "The engineering excellence they delivered transformed our entire digital infrastructure. Every interaction felt like a true partnership.",
-    author: "Sarah Mitchell",
-    role: "VP Engineering",
-    company: "Bright Path",
-    image: "/images/testimonials/sarah.jpg",
-    metric: "10x",
-    metricLabel: "Speed",
-    color: "purple"
-  }
-];
+import { useQuery } from "@tanstack/react-query";
+import { testimonialsApi } from "@/lib/api/client";
+
+// Default empty to prevent map errors before fetch
+const defaultTestimonials = [];
+
+function useTestimonials() {
+  return useQuery({
+    queryKey: ["testimonials"],
+    queryFn: async () => {
+      const data = await testimonialsApi.list();
+      // Map DB fields to component fields if needed
+      return data.map(t => ({
+        id: t.id,
+        quote: t.content,
+        author: t.client,
+        role: t.role,
+        company: t.company,
+        image: t.image,
+        metric: t.metric,
+        metricLabel: t.metric_label, // DB uses snake_case likely, frontend uses camelCase
+        color: t.color || "blue"
+      }));
+    },
+    staleTime: 60 * 1000 * 5, // 5 minutes cache
+  });
+}
 
 const colorSchemes = {
   blue: { bg: "bg-blue-500", text: "text-blue-600", bgLight: "bg-blue-50", border: "border-blue-200", gradient: "from-blue-500/10" },
@@ -77,7 +69,7 @@ function useSwipe(onSwipeLeft, onSwipeRight, threshold = 50) {
 
 function ProgressBar({ isActive, duration, onComplete }) {
   const [progress, setProgress] = useState(0);
-  
+
   useEffect(() => {
     if (!isActive) {
       setProgress(0);
@@ -91,7 +83,7 @@ function ProgressBar({ isActive, duration, onComplete }) {
       if (!startTime) startTime = timestamp;
       const elapsed = timestamp - startTime;
       const newProgress = Math.min((elapsed / duration) * 100, 100);
-      
+
       setProgress(newProgress);
 
       if (newProgress < 100) {
@@ -108,7 +100,7 @@ function ProgressBar({ isActive, duration, onComplete }) {
 
   return (
     <div className="h-1 bg-neutral-200 overflow-hidden">
-      <motion.div 
+      <motion.div
         className="h-full bg-neutral-900"
         style={{ width: `${progress}%` }}
       />
@@ -116,35 +108,61 @@ function ProgressBar({ isActive, duration, onComplete }) {
   );
 }
 
+const defaultFallback = {
+  id: 0, quote: "", author: "", role: "", company: "", image: "", metric: "", metricLabel: "", color: "blue"
+};
+
 export default function Testimonial() {
+  const { data: fetchedTestimonials = [], isLoading } = useTestimonials();
+  const testimonials = fetchedTestimonials;
+  const hasData = testimonials.length > 0;
+
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [direction, setDirection] = useState(0);
   const containerRef = useRef(null);
   const isInView = useInView(containerRef, { amount: 0.5, margin: "0px" });
   const [isPageVisible, setIsPageVisible] = useState(true);
-  
+
+  // Reset index when data arrives
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [hasData, testimonials.length]);
+
   const AUTO_PLAY_DURATION = 6000;
-  const activeTestimonial = testimonials[activeIndex];
-  const colors = colorSchemes[activeTestimonial.color];
-  const shouldPlay = isAutoPlaying && isInView && isPageVisible;
+  const activeTestimonial = (hasData && testimonials[activeIndex]) || defaultFallback;
+  const colors = colorSchemes[activeTestimonial.color] || colorSchemes.blue;
+  const shouldPlay = isAutoPlaying && isInView && isPageVisible && hasData && !isLoading;
 
   // Navigation handlers
   const goToNext = useCallback(() => {
+    if (!hasData) return;
     setDirection(1);
     setActiveIndex((prev) => (prev + 1) % testimonials.length);
-  }, []);
+  }, [hasData, testimonials.length]);
 
   const goToPrev = useCallback(() => {
+    if (!hasData) return;
     setDirection(-1);
     setActiveIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-  }, []);
+  }, [hasData, testimonials.length]);
 
   const goToSlide = (index) => {
+    if (!hasData) return;
     setDirection(index > activeIndex ? 1 : -1);
     setActiveIndex(index);
     setIsAutoPlaying(false);
   };
+
+  if (isLoading) {
+    return (
+      <div className="py-20 flex justify-center">
+        <div className="animate-pulse bg-neutral-100 h-96 w-full max-w-5xl rounded-lg" />
+      </div>
+    );
+  }
+
+  if (!hasData) return null;
 
   // Swipe handlers for mobile
   const swipeHandlers = useSwipe(goToNext, goToPrev, 50);
@@ -218,7 +236,7 @@ export default function Testimonial() {
 
 
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-        
+
         {/* Section Header - Mobile Optimized */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -232,7 +250,7 @@ export default function Testimonial() {
               Client Stories
             </span>
           </div>
-          
+
           {/* Auto-play indicator - Desktop only */}
           <div className="hidden sm:flex items-center gap-2 text-[10px] font-jetbrains-mono text-neutral-600">
             <motion.span
@@ -245,21 +263,21 @@ export default function Testimonial() {
         </motion.div>
 
         {/* Main Testimonial Card - Mobile First Layout */}
-        <div 
+        <div
           ref={containerRef}
           className="relative"
           onMouseEnter={() => setIsAutoPlaying(false)}
           onMouseLeave={() => setIsAutoPlaying(true)}
           {...swipeHandlers}
         >
-          <CornerFrame 
+          <CornerFrame
             className="bg-white border-neutral-200 overflow-hidden shadow-lg"
             bracketClassName="w-4 h-4 sm:w-5 sm:h-5 border-neutral-300"
           >
             {/* Progress Bar - Top */}
             <div className="absolute top-0 left-0 right-0 z-20">
-              <ProgressBar 
-                isActive={shouldPlay} 
+              <ProgressBar
+                isActive={shouldPlay}
                 duration={AUTO_PLAY_DURATION}
                 onComplete={goToNext}
               />
@@ -278,13 +296,13 @@ export default function Testimonial() {
                 >
                   {/* Mobile: Stacked Layout | Desktop: Side by Side */}
                   <div className="grid grid-cols-1 lg:grid-cols-12 h-full">
-                    
+
                     {/* Image Section - Full width on mobile, 5 cols on desktop */}
                     <div className={`relative lg:col-span-5 ${colors.bgLight} p-6 sm:p-8 lg:p-10 flex flex-col justify-center`}>
                       {/* Quote Icon - Mobile optimized size */}
                       <div className={`w-10 h-10 sm:w-12 sm:h-12 ${colors.bg} flex items-center justify-center mb-4 sm:mb-6`}>
                         <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+                          <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
                         </svg>
                       </div>
 
@@ -324,7 +342,7 @@ export default function Testimonial() {
                             </div>
                           )}
                         </div>
-                        
+
                         <div className="min-w-0">
                           <div className="font-space-grotesk text-base sm:text-lg font-medium text-neutral-900 truncate">
                             {activeTestimonial.author}
@@ -343,7 +361,7 @@ export default function Testimonial() {
                         <span className={`absolute -top-2 -left-2 sm:-top-4 sm:-left-4 text-4xl sm:text-6xl ${colors.text} opacity-20 font-serif hidden sm:block`}>
                           "
                         </span>
-                        
+
                         <p className="font-space-grotesk text-lg sm:text-xl lg:text-2xl text-neutral-900 leading-relaxed sm:leading-relaxed relative z-10">
                           {activeTestimonial.quote}
                         </p>
@@ -385,7 +403,7 @@ export default function Testimonial() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
                   </button>
-                  
+
                   <button
                     onClick={() => {
                       goToNext();
@@ -414,8 +432,8 @@ export default function Testimonial() {
                     >
                       <div className={`
                         h-2 sm:h-2.5 rounded-full transition-all duration-300 mx-auto
-                        ${index === activeIndex 
-                          ? 'w-6 sm:w-8 bg-neutral-900' 
+                        ${index === activeIndex
+                          ? 'w-6 sm:w-8 bg-neutral-900'
                           : 'w-2 sm:w-2.5 bg-neutral-300 hover:bg-neutral-400'
                         }
                       `} />
@@ -480,8 +498,8 @@ export default function Testimonial() {
             { value: "98%", label: "Retention", icon: "◆" },
             { value: "12", label: "Countries", icon: "◎" }
           ].map((stat, i) => (
-            <div 
-              key={stat.label} 
+            <div
+              key={stat.label}
               className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-white border border-neutral-200"
             >
               <span className="text-lg sm:text-xl text-neutral-300">{stat.icon}</span>
@@ -498,7 +516,7 @@ export default function Testimonial() {
         </motion.div>
 
         {/* CTA - Mobile optimized */}
-        
+
       </div>
     </section>
   );

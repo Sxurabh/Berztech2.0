@@ -20,6 +20,7 @@ export async function createServerSupabaseClient() {
                     cookieStore.set({ name, value, ...options });
                 } catch (error) {
                     // Handle cookie set errors in Server Components
+                    console.warn("Supabase cookie set error:", error.message);
                 }
             },
             remove(name, options) {
@@ -27,6 +28,7 @@ export async function createServerSupabaseClient() {
                     cookieStore.set({ name, value: "", ...options });
                 } catch (error) {
                     // Handle cookie remove errors in Server Components
+                    console.warn("Supabase cookie remove error:", error.message);
                 }
             },
         },

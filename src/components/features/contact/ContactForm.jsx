@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "react-hot-toast";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 
 const services = [
@@ -62,6 +63,7 @@ export default function ContactForm() {
 
       setIsSubmitting(false);
       setIsSuccess(true);
+      toast.success("Request sent! Please sign in to track your request.", { duration: 5000 });
     } catch (err) {
       setIsSubmitting(false);
       setError(err.message || "Something went wrong. Please try again.");
@@ -70,7 +72,7 @@ export default function ContactForm() {
 
   if (isSuccess) {
     return (
-      <CornerFrame 
+      <CornerFrame
         className="h-full min-h-[400px] flex items-center justify-center bg-neutral-50 border-neutral-200"
         bracketClassName="w-4 h-4 border-neutral-900"
       >
@@ -88,7 +90,7 @@ export default function ContactForm() {
           <p className="text-neutral-500 max-w-xs mx-auto mb-6">
             We've received your inquiry. Our team will review your requirements and get back to you within 24 hours.
           </p>
-          <button 
+          <button
             onClick={() => setIsSuccess(false)}
             className="text-xs font-jetbrains-mono uppercase tracking-widest border-b border-neutral-900 pb-0.5 hover:text-neutral-600 hover:border-neutral-600 transition-colors"
           >
@@ -100,8 +102,8 @@ export default function ContactForm() {
   }
 
   return (
-    <CornerFrame 
-      className="bg-white border-neutral-200 p-6 sm:p-8 lg:p-10"
+    <CornerFrame
+      className="bg-white border-neutral-200 p-6 sm:p-8 lg:p-10 mx-auto max-w-2xl"
       bracketClassName="w-5 h-5 border-neutral-300"
     >
       <form onSubmit={handleSubmit} className="space-y-8">
@@ -110,12 +112,12 @@ export default function ContactForm() {
             {error}
           </div>
         )}
-        
+
         {/* Personal Details Group */}
         <div className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="relative">
-              <label 
+              <label
                 htmlFor="name"
                 className={`
                   block text-[10px] font-jetbrains-mono uppercase tracking-widest mb-2 transition-colors
@@ -129,7 +131,7 @@ export default function ContactForm() {
                 id="name"
                 required
                 value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 onFocus={() => setFocusedField('name')}
                 onBlur={() => setFocusedField(null)}
                 className="w-full bg-transparent border-b border-neutral-200 py-2 font-space-grotesk text-lg text-neutral-900 focus:outline-none focus:border-neutral-900 transition-colors placeholder:text-neutral-200"
@@ -138,7 +140,7 @@ export default function ContactForm() {
             </div>
 
             <div className="relative">
-              <label 
+              <label
                 htmlFor="email"
                 className={`
                   block text-[10px] font-jetbrains-mono uppercase tracking-widest mb-2 transition-colors
@@ -152,7 +154,7 @@ export default function ContactForm() {
                 id="email"
                 required
                 value={formData.email}
-                onChange={(e) => setFormData({...formData, email: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 onFocus={() => setFocusedField('email')}
                 onBlur={() => setFocusedField(null)}
                 className="w-full bg-transparent border-b border-neutral-200 py-2 font-space-grotesk text-lg text-neutral-900 focus:outline-none focus:border-neutral-900 transition-colors placeholder:text-neutral-200"
@@ -162,7 +164,7 @@ export default function ContactForm() {
           </div>
 
           <div className="relative">
-            <label 
+            <label
               htmlFor="company"
               className={`
                 block text-[10px] font-jetbrains-mono uppercase tracking-widest mb-2 transition-colors
@@ -175,7 +177,7 @@ export default function ContactForm() {
               type="text"
               id="company"
               value={formData.company}
-              onChange={(e) => setFormData({...formData, company: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, company: e.target.value })}
               onFocus={() => setFocusedField('company')}
               onBlur={() => setFocusedField(null)}
               className="w-full bg-transparent border-b border-neutral-200 py-2 font-space-grotesk text-lg text-neutral-900 focus:outline-none focus:border-neutral-900 transition-colors placeholder:text-neutral-200"
@@ -236,7 +238,7 @@ export default function ContactForm() {
 
         {/* Message */}
         <div className="relative">
-          <label 
+          <label
             htmlFor="message"
             className={`
               block text-[10px] font-jetbrains-mono uppercase tracking-widest mb-2 transition-colors
@@ -249,7 +251,7 @@ export default function ContactForm() {
             id="message"
             rows={4}
             value={formData.message}
-            onChange={(e) => setFormData({...formData, message: e.target.value})}
+            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
             onFocus={() => setFocusedField('message')}
             onBlur={() => setFocusedField(null)}
             className="w-full bg-neutral-50 border border-neutral-200 p-4 font-space-grotesk text-sm text-neutral-900 focus:outline-none focus:border-neutral-900 transition-colors resize-none placeholder:text-neutral-400"
@@ -275,7 +277,7 @@ export default function ContactForm() {
                 →
               </motion.span>
             )}
-            
+
             {/* Button Corners */}
             <span className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-white/30" />
             <span className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-white/30" />

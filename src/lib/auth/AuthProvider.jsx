@@ -23,9 +23,9 @@ export function AuthProvider({ children }) {
             return;
         }
 
-        // Get initial session
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setUser(session?.user ?? null);
+        // Get initial user (validated server-side)
+        supabase.auth.getUser().then(({ data: { user } }) => {
+            setUser(user ?? null);
             setLoading(false);
         });
 

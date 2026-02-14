@@ -1,53 +1,67 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { FiPlus, FiEdit2, FiTrash2, FiStar } from "react-icons/fi";
 import toast from "react-hot-toast";
-import { createClient } from "@/lib/supabase/client";
+import { projectsApi } from "@/lib/api/client";
 import DataTable from "@/components/admin/DataTable";
 import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
 
 export default function AdminProjectsPage() {
-    const [projects, setProjects] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [deleteTarget, setDeleteTarget] = useState(null);
-    const [deleting, setDeleting] = useState(false);
+    const queryClient = useQueryClient();
     const router = useRouter();
+    const [deleteTarget, setDeleteTarget] = useState(null);
+    const [bulkDelete, setBulkDelete] = useState(false);
 
-    useEffect(() => {
-        fetchProjects();
-    }, []);
+    // Fetch Projects using React Query
+    const { data: projects = [], isLoading: loading, error } = useQuery({
+        queryKey: ["projects"],
+        queryFn: projectsApi.list,
+    });
 
-    async function fetchProjects() {
-        setLoading(true);
+    // Delete Mutation
+    const deleteMutation = useMutation({
+        mutationFn: projectsApi.delete,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["projects"] });
+            toast.success("Project deleted");
+            setDeleteTarget(null);
+        },
+        onError: (err) => {
+            toast.error("Failed to delete project: " + err.message);
+        },
+    });
+
+    const deleting = deleteMutation.isPending;
+
+    // Handle single delete
+    async function handleDelete() {
+        if (!deleteTarget) return;
+        deleteMutation.mutate(deleteTarget.id);
+    }
+
+    // Handle bulk delete
+    async function handleDeleteAll() {
         try {
-            const res = await fetch("/api/projects");
-            const data = await res.json();
-            setProjects(data);
+            // Ideally we'd have a bulk delete API endpoint, but loop works for now
+            await Promise.all(projects.map((p) => projectsApi.delete(p.id)));
+            queryClient.invalidateQueries({ queryKey: ["projects"] });
+            toast.success(`Deleted ${projects.length} projects`);
+            setBulkDelete(false);
         } catch (err) {
-            toast.error("Failed to load projects");
-        } finally {
-            setLoading(false);
+            toast.error("Failed to delete all projects");
         }
     }
 
-    async function handleDelete() {
-        if (!deleteTarget) return;
-        setDeleting(true);
-        try {
-            const res = await fetch(`/api/projects/${deleteTarget.id}`, { method: "DELETE" });
-            if (!res.ok) throw new Error("Delete failed");
-            toast.success("Project deleted");
-            setProjects((prev) => prev.filter((p) => p.id !== deleteTarget.id));
-            setDeleteTarget(null);
-        } catch (err) {
-            toast.error("Failed to delete project");
-        } finally {
-            setDeleting(false);
-        }
+    if (error) {
+        return (
+            <div className="p-8 text-center text-red-500">
+                Failed to load projects: {error.message}
+            </div>
+        );
     }
 
     const columns = [
@@ -103,13 +117,24 @@ export default function AdminProjectsPage() {
                         Manage Projects
                     </h1>
                 </div>
-                <Link
-                    href="/admin/projects/new"
-                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-neutral-900 font-jetbrains-mono text-xs uppercase tracking-widest font-semibold hover:bg-neutral-100 transition-colors"
-                >
-                    <FiPlus className="w-4 h-4" />
-                    New Project
-                </Link>
+                <div className="flex items-center gap-2">
+                    <Link
+                        href="/admin/projects/new"
+                        className="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-neutral-900 font-jetbrains-mono text-xs uppercase tracking-widest font-semibold hover:bg-neutral-100 transition-colors"
+                    >
+                        <FiPlus className="w-4 h-4" />
+                        New Project
+                    </Link>
+                    {projects.length > 0 && (
+                        <button
+                            onClick={() => setBulkDelete(true)}
+                            className="inline-flex items-center gap-2 px-4 py-2.5 border border-red-500/30 text-red-400 font-jetbrains-mono text-xs uppercase tracking-widest font-semibold hover:bg-red-500/10 transition-colors"
+                        >
+                            <FiTrash2 className="w-4 h-4" />
+                            Delete All
+                        </button>
+                    )}
+                </div>
             </div>
 
             {loading ? (
@@ -147,10 +172,10 @@ export default function AdminProjectsPage() {
             )}
 
             <DeleteConfirmModal
-                isOpen={!!deleteTarget}
-                onClose={() => setDeleteTarget(null)}
-                onConfirm={handleDelete}
-                itemName="Project"
+                isOpen={!!deleteTarget || bulkDelete}
+                onClose={() => { setDeleteTarget(null); setBulkDelete(false); }}
+                onConfirm={bulkDelete ? handleDeleteAll : handleDelete}
+                itemName={bulkDelete ? `All ${projects.length} Projects` : "Project"}
                 loading={deleting}
             />
         </div>

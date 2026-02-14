@@ -1,30 +1,26 @@
 import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { isAdminEmail } from "@/config/admin";
+import { getProjectById, updateProject, deleteProject } from "@/lib/data/projects";
 
 // GET /api/projects/[id] — Get a single project
 export async function GET(request, { params }) {
     try {
-        const supabase = await createServerSupabaseClient();
-        const { data, error } = await supabase
-            .from("projects")
-            .select("*")
-            .or(`id.eq.${params.id},slug.eq.${params.id}`)
-            .single();
-
-        if (error) throw error;
-        if (!data) {
+        const project = await getProjectById(params.id);
+        if (!project) {
             return NextResponse.json({ error: "Not found" }, { status: 404 });
         }
-        return NextResponse.json(data);
+        return NextResponse.json(project);
     } catch (error) {
+        console.error("GET /api/projects/[id] error:", error);
         return NextResponse.json(
-            { error: error.message },
+            { error: "Internal server error" },
             { status: 500 }
         );
     }
 }
 
-// PUT /api/projects/[id] — Update a project (authenticated)
+// PUT /api/projects/[id] — Update a project (admin only)
 export async function PUT(request, { params }) {
     try {
         const supabase = await createServerSupabaseClient();
@@ -33,26 +29,32 @@ export async function PUT(request, { params }) {
         if (authError || !user) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
+        if (!isAdminEmail(user.email)) {
+            return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        }
 
         const body = await request.json();
-        const { data, error } = await supabase
-            .from("projects")
-            .update(body)
-            .eq("id", params.id)
-            .select()
-            .single();
 
-        if (error) throw error;
-        return NextResponse.json(data);
+        // Whitelist allowed fields
+        const payload = {};
+        const allowed = ["client", "title", "description", "category", "image", "services", "stats", "color", "year", "featured", "slug"];
+        for (const key of allowed) {
+            if (body[key] !== undefined) payload[key] = body[key];
+        }
+
+        // Service layer handles the DB update
+        const updated = await updateProject(params.id, payload);
+        return NextResponse.json(updated);
     } catch (error) {
+        console.error("PUT /api/projects/[id] error:", error);
         return NextResponse.json(
-            { error: error.message },
+            { error: "Internal server error" },
             { status: 500 }
         );
     }
 }
 
-// DELETE /api/projects/[id] — Delete a project (authenticated)
+// DELETE /api/projects/[id] — Delete a project (admin only)
 export async function DELETE(request, { params }) {
     try {
         const supabase = await createServerSupabaseClient();
@@ -61,17 +63,16 @@ export async function DELETE(request, { params }) {
         if (authError || !user) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
+        if (!isAdminEmail(user.email)) {
+            return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        }
 
-        const { error } = await supabase
-            .from("projects")
-            .delete()
-            .eq("id", params.id);
-
-        if (error) throw error;
+        await deleteProject(params.id);
         return NextResponse.json({ success: true });
     } catch (error) {
+        console.error("DELETE /api/projects/[id] error:", error);
         return NextResponse.json(
-            { error: error.message },
+            { error: "Internal server error" },
             { status: 500 }
         );
     }

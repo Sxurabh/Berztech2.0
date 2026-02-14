@@ -19,11 +19,11 @@ export async function getPosts({ published = true } = {}) {
 
         const { data, error } = await query;
         if (error) throw error;
-        if (data && data.length > 0) return data;
+        return data || [];
     } catch (err) {
-        console.warn("Supabase fetch failed, using static data:", err.message);
+        console.warn("Supabase fetch failed, returning empty array:", err.message);
+        return [];
     }
-    return staticPosts;
 }
 
 /**
@@ -46,9 +46,9 @@ export async function getPostById(identifier) {
         if (error) throw error;
         if (data) return data;
     } catch (err) {
-        console.warn("Supabase fetch failed, using static data:", err.message);
+        console.warn("Supabase fetch failed (getPostById):", err.message);
+        return null;
     }
-    return staticPosts.find((p) => p.id === parseInt(identifier) || p.slug === identifier) || null;
 }
 
 /**
@@ -69,9 +69,9 @@ export async function getBlogCategories() {
             return ["All", ...unique];
         }
     } catch (err) {
-        console.warn("Supabase fetch failed, using static categories:", err.message);
+        console.warn("Supabase fetch failed (getBlogCategories):", err.message);
+        return [];
     }
-    return staticCategories;
 }
 
 /**

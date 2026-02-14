@@ -24,7 +24,7 @@ export async function PATCH(request, context) {
             return NextResponse.json({ error: "Status required" }, { status: 400 });
         }
 
-        const validStatuses = ["discover", "define", "design", "develop", "deliver", "maintain"];
+        const validStatuses = ["discover", "define", "design", "develop", "deliver", "maintain", "completed", "archived"];
         if (!validStatuses.includes(status)) {
             return NextResponse.json({ error: "Invalid status" }, { status: 400 });
         }

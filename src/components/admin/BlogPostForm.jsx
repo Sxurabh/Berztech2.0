@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { FiSave, FiArrowLeft, FiEye } from "react-icons/fi";
 import toast from "react-hot-toast";
 import ImageUploader from "@/components/admin/ImageUploader";
+import { CornerFrame } from "../ui/CornerFrame";
 
 const colorOptions = ["blue", "purple", "emerald", "amber", "rose", "cyan"];
 const categoryOptions = ["Engineering", "Design", "Strategy", "Culture", "Product", "Tutorial"];
@@ -109,205 +110,216 @@ export default function BlogPostForm({ mode = "create", embedded, onClose, onSuc
         );
     }
 
+    // Simplified styles for white theme
+    const inputClass = "w-full bg-neutral-50 border border-neutral-200 p-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors placeholder:text-neutral-400 font-space-grotesk";
+    const labelClass = "block text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 mb-2";
+
     return (
         <div>
             {/* Header - hide in embedded modal */}
             {!embedded && (
-            <div className="flex items-center justify-between mb-8">
-                <div>
-                    <button
-                        onClick={() => router.push("/admin/blog")}
-                        className="flex items-center gap-2 text-sm font-jetbrains-mono text-neutral-500 hover:text-white transition-colors mb-3"
-                    >
-                        <FiArrowLeft className="w-4 h-4" />
-                        Back to Blog Posts
-                    </button>
-                    <h1 className="font-space-grotesk text-2xl sm:text-3xl font-medium text-white tracking-tight">
-                        {mode === "edit" ? "Edit Blog Post" : "New Blog Post"}
-                    </h1>
+                <div className="flex items-center justify-between mb-8">
+                    <div>
+                        <button
+                            onClick={() => router.push("/admin/blog")}
+                            className="flex items-center gap-2 text-sm font-jetbrains-mono text-neutral-500 hover:text-neutral-900 transition-colors mb-3"
+                        >
+                            <FiArrowLeft className="w-4 h-4" />
+                            Back to Blog Posts
+                        </button>
+                        <h1 className="font-space-grotesk text-2xl sm:text-3xl font-medium text-neutral-900 tracking-tight">
+                            {mode === "edit" ? "Edit Blog Post" : "New Blog Post"}
+                        </h1>
+                    </div>
                 </div>
-            </div>
             )}
 
-            <form onSubmit={handleSubmit}>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
+                <div className={`grid gap-6 ${embedded ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-3"}`}>
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-6">
                         {/* Title & Excerpt */}
-                        <div className="bg-neutral-900/50 border border-neutral-800 p-5 space-y-4">
-                            <h3 className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 mb-3">
+                        <CornerFrame className="bg-white p-5 border-neutral-200">
+                            <h3 className="font-space-grotesk font-semibold text-sm mb-4 text-neutral-900 border-b border-neutral-100 pb-2">
                                 Post Info
                             </h3>
-                            <div>
-                                <label className="block text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 mb-2">
-                                    Title *
-                                </label>
-                                <input
-                                    type="text"
-                                    value={form.title}
-                                    onChange={(e) => updateField("title", e.target.value)}
-                                    className="w-full px-4 py-2.5 bg-neutral-800/30 border border-neutral-700 text-white placeholder-neutral-600 focus:border-neutral-500 focus:outline-none font-space-grotesk text-sm"
-                                    placeholder="Your blog post title..."
-                                    required
-                                />
+                            <div className="space-y-4">
+                                <div>
+                                    <label className={labelClass}>
+                                        Title *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={form.title}
+                                        onChange={(e) => updateField("title", e.target.value)}
+                                        className={inputClass}
+                                        placeholder="Your blog post title..."
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className={labelClass}>
+                                        Excerpt
+                                    </label>
+                                    <textarea
+                                        value={form.excerpt || ""}
+                                        onChange={(e) => updateField("excerpt", e.target.value)}
+                                        rows={3}
+                                        className={`${inputClass} resize-none`}
+                                        placeholder="A brief summary of the post..."
+                                    />
+                                </div>
                             </div>
-                            <div>
-                                <label className="block text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 mb-2">
-                                    Excerpt
-                                </label>
-                                <textarea
-                                    value={form.excerpt || ""}
-                                    onChange={(e) => updateField("excerpt", e.target.value)}
-                                    rows={3}
-                                    className="w-full px-4 py-2.5 bg-neutral-800/30 border border-neutral-700 text-white placeholder-neutral-600 focus:border-neutral-500 focus:outline-none font-space-grotesk text-sm resize-none"
-                                    placeholder="A brief summary of the post..."
-                                />
-                            </div>
-                        </div>
+                        </CornerFrame>
 
                         {/* Content Editor */}
-                        <div className="bg-neutral-900/50 border border-neutral-800 p-5">
-                            <h3 className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 mb-3">
+                        <CornerFrame className="bg-white p-5 border-neutral-200">
+                            <h3 className="font-space-grotesk font-semibold text-sm mb-4 text-neutral-900 border-b border-neutral-100 pb-2">
                                 Content (Markdown)
                             </h3>
                             <textarea
                                 value={form.content || ""}
                                 onChange={(e) => updateField("content", e.target.value)}
                                 rows={20}
-                                className="w-full px-4 py-3 bg-neutral-800/30 border border-neutral-700 text-white placeholder-neutral-600 focus:border-neutral-500 focus:outline-none font-jetbrains-mono text-sm resize-y leading-relaxed"
+                                className={`${inputClass} font-jetbrains-mono resize-y leading-relaxed`}
                                 placeholder="# My Blog Post&#10;&#10;Write your content in markdown..."
                             />
-                            <p className="mt-2 text-[10px] font-jetbrains-mono text-neutral-600">
+                            <p className="mt-2 text-[10px] font-jetbrains-mono text-neutral-500">
                                 Supports Markdown formatting • {calcReadTime(form.content)}
                             </p>
-                        </div>
-
-                        {/* Cover Image */}
-                        <div className="bg-neutral-900/50 border border-neutral-800 p-5">
-                            <h3 className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 mb-3">
-                                Cover Image
-                            </h3>
-                            <ImageUploader value={form.image} onChange={(url) => updateField("image", url)} />
-                        </div>
+                        </CornerFrame>
                     </div>
 
                     {/* Sidebar */}
                     <div className="space-y-6">
                         {/* Publish Settings */}
-                        <div className="bg-neutral-900/50 border border-neutral-800 p-5 space-y-4">
-                            <h3 className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 mb-1">
+                        <CornerFrame className="bg-white p-5 border-neutral-200">
+                            <h3 className="font-space-grotesk font-semibold text-sm mb-4 text-neutral-900 border-b border-neutral-100 pb-2">
                                 Publish Settings
                             </h3>
-                            <div className="flex items-center justify-between py-2">
-                                <label className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500">
-                                    Published
-                                </label>
-                                <button
-                                    type="button"
-                                    onClick={() => updateField("published", !form.published)}
-                                    className={`
-                    w-10 h-5 rounded-full relative transition-colors duration-200
-                    ${form.published ? "bg-emerald-500" : "bg-neutral-700"}
-                  `}
-                                >
-                                    <span
+                            <div className="space-y-3">
+                                <div className="flex items-center justify-between p-2 bg-neutral-50 rounded-sm border border-neutral-100">
+                                    <label className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-600">
+                                        Published
+                                    </label>
+                                    <button
+                                        type="button"
+                                        onClick={() => updateField("published", !form.published)}
                                         className={`
-                      absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform duration-200
-                      ${form.published ? "left-5" : "left-0.5"}
-                    `}
-                                    />
-                                </button>
-                            </div>
-                            <div className="flex items-center justify-between py-2">
-                                <label className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500">
-                                    Featured
-                                </label>
-                                <button
-                                    type="button"
-                                    onClick={() => updateField("featured", !form.featured)}
-                                    className={`
-                    w-10 h-5 rounded-full relative transition-colors duration-200
-                    ${form.featured ? "bg-blue-500" : "bg-neutral-700"}
-                  `}
-                                >
-                                    <span
-                                        className={`
-                      absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform duration-200
-                      ${form.featured ? "left-5" : "left-0.5"}
-                    `}
-                                    />
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Meta */}
-                        <div className="bg-neutral-900/50 border border-neutral-800 p-5 space-y-4">
-                            <h3 className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 mb-1">
-                                Meta
-                            </h3>
-                            <div>
-                                <label className="block text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 mb-2">
-                                    Author *
-                                </label>
-                                <input
-                                    type="text"
-                                    value={form.author}
-                                    onChange={(e) => updateField("author", e.target.value)}
-                                    className="w-full px-3 py-2.5 bg-neutral-800/30 border border-neutral-700 text-white focus:border-neutral-500 focus:outline-none font-jetbrains-mono text-xs"
-                                    placeholder="John Doe"
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 mb-2">
-                                    Category *
-                                </label>
-                                <select
-                                    value={form.category}
-                                    onChange={(e) => updateField("category", e.target.value)}
-                                    className="w-full px-3 py-2.5 bg-neutral-800/30 border border-neutral-700 text-white focus:border-neutral-500 focus:outline-none font-jetbrains-mono text-xs"
-                                >
-                                    {categoryOptions.map((cat) => (
-                                        <option key={cat} value={cat}>{cat}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 mb-2">
-                                    Read Time
-                                </label>
-                                <input
-                                    type="text"
-                                    value={form.read_time || ""}
-                                    onChange={(e) => updateField("read_time", e.target.value)}
-                                    className="w-full px-3 py-2.5 bg-neutral-800/30 border border-neutral-700 text-white placeholder-neutral-600 focus:border-neutral-500 focus:outline-none font-jetbrains-mono text-xs"
-                                    placeholder="Auto-calculated"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 mb-2">
-                                    Color Theme
-                                </label>
-                                <div className="flex flex-wrap gap-2">
-                                    {colorOptions.map((color) => (
-                                        <button
-                                            key={color}
-                                            type="button"
-                                            onClick={() => updateField("color", color)}
+                                            w-9 h-5 rounded-full relative transition-colors duration-200
+                                            ${form.published ? "bg-neutral-900" : "bg-neutral-300"}
+                                        `}
+                                    >
+                                        <span
                                             className={`
-                        px-3 py-1.5 text-[10px] font-jetbrains-mono uppercase tracking-wider border transition-all
-                        ${form.color === color
-                                                    ? "bg-white/10 border-white text-white"
-                                                    : "border-neutral-700 text-neutral-500 hover:border-neutral-600"
-                                                }
-                      `}
-                                        >
-                                            {color}
-                                        </button>
-                                    ))}
+                                                absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform duration-200 shadow-sm
+                                                ${form.published ? "left-4.5" : "left-0.5"}
+                                            `}
+                                            style={{ left: form.published ? "calc(100% - 18px)" : "2px" }}
+                                        />
+                                    </button>
+                                </div>
+                                <div className="flex items-center justify-between p-2 bg-neutral-50 rounded-sm border border-neutral-100">
+                                    <label className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-600">
+                                        Featured
+                                    </label>
+                                    <button
+                                        type="button"
+                                        onClick={() => updateField("featured", !form.featured)}
+                                        className={`
+                                            w-9 h-5 rounded-full relative transition-colors duration-200
+                                            ${form.featured ? "bg-neutral-900" : "bg-neutral-300"}
+                                        `}
+                                    >
+                                        <span
+                                            className={`
+                                                absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform duration-200 shadow-sm
+                                                ${form.featured ? "left-4.5" : "left-0.5"}
+                                            `}
+                                            style={{ left: form.featured ? "calc(100% - 18px)" : "2px" }}
+                                        />
+                                    </button>
                                 </div>
                             </div>
-                        </div>
+                        </CornerFrame>
+
+                        {/* Meta */}
+                        <CornerFrame className="bg-white p-5 border-neutral-200">
+                            <h3 className="font-space-grotesk font-semibold text-sm mb-4 text-neutral-900 border-b border-neutral-100 pb-2">
+                                Meta Info
+                            </h3>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className={labelClass}>
+                                        Author *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={form.author}
+                                        onChange={(e) => updateField("author", e.target.value)}
+                                        className={inputClass}
+                                        placeholder="John Doe"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className={labelClass}>
+                                        Category *
+                                    </label>
+                                    <select
+                                        value={form.category}
+                                        onChange={(e) => updateField("category", e.target.value)}
+                                        className={inputClass}
+                                    >
+                                        {categoryOptions.map((cat) => (
+                                            <option key={cat} value={cat}>{cat}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className={labelClass}>
+                                        Read Time
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={form.read_time || ""}
+                                        onChange={(e) => updateField("read_time", e.target.value)}
+                                        className={inputClass}
+                                        placeholder="Auto-calculated"
+                                    />
+                                </div>
+                                <div>
+                                    <label className={labelClass}>
+                                        Color Theme
+                                    </label>
+                                    <div className="flex flex-wrap gap-2">
+                                        {colorOptions.map((color) => (
+                                            <button
+                                                key={color}
+                                                type="button"
+                                                onClick={() => updateField("color", color)}
+                                                className={`
+                                                    px-3 py-1.5 text-[10px] font-jetbrains-mono uppercase tracking-wider border transition-all
+                                                    ${form.color === color
+                                                        ? "bg-neutral-900 text-white border-neutral-900"
+                                                        : "bg-white text-neutral-500 border-neutral-200 hover:border-neutral-400"}
+                                                `}
+                                            >
+                                                {color}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </CornerFrame>
+
+                        {/* Cover Image */}
+                        <CornerFrame className="bg-white p-5 border-neutral-200">
+                            <h3 className="font-space-grotesk font-semibold text-sm mb-4 text-neutral-900 border-b border-neutral-100 pb-2">
+                                Cover Image
+                            </h3>
+                            <ImageUploader value={form.image} onChange={(url) => updateField("image", url)} />
+                        </CornerFrame>
 
                         {/* Save */}
                         <motion.button
@@ -315,7 +327,7 @@ export default function BlogPostForm({ mode = "create", embedded, onClose, onSuc
                             disabled={saving}
                             whileHover={{ scale: 1.01 }}
                             whileTap={{ scale: 0.99 }}
-                            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white text-neutral-900 font-jetbrains-mono text-xs uppercase tracking-widest font-semibold hover:bg-neutral-100 transition-colors disabled:opacity-50"
+                            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-neutral-900 text-white hover:bg-neutral-800 font-jetbrains-mono text-xs uppercase tracking-widest font-semibold transition-colors disabled:opacity-50"
                         >
                             <FiSave className="w-4 h-4" />
                             {saving ? "Saving..." : mode === "edit" ? "Update Post" : "Create Post"}

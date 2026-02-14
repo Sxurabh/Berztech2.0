@@ -3,24 +3,18 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import FeaturedPost from "./FeaturedPost";
 import PostCard from "./PostCard";
-import { categories, posts } from "@/data/blogPosts";
-
-export default function BlogFeed() {
+export default function BlogFeed({ initialPosts = [], categories = ["All"] }) {
   const [activeCategory, setActiveCategory] = useState("All");
 
-  const filteredPosts = activeCategory === "All" 
-    ? posts 
-    : posts.filter(p => p.category === activeCategory);
-    
-  const featuredPost = posts.find(p => p.featured);
-  // If active category doesn't contain the featured post, we just show regular posts
-  // But wait, the original logic was:
-  // const regularPosts = filteredPosts.filter(p => !p.featured);
-  // So if activeCategory is "All", regularPosts excludes featured.
-  // If activeCategory is "Engineering" (and featured IS Engineering), regularPosts excludes featured.
-  // If activeCategory is "Design" (and featured IS Engineering), filteredPosts is Design posts. Featured is NOT in filteredPosts. regularPosts = filteredPosts.
-  
-  const regularPosts = filteredPosts.filter(p => !p.featured);
+  const filteredPosts = activeCategory === "All"
+    ? initialPosts
+    : initialPosts.filter(p => p.category === activeCategory);
+
+  // Find dedicated featured post, or use the first post if none featured
+  const featuredPost = initialPosts.find(p => p.featured);
+
+  // Regular posts exclude the featured one to avoid duplication
+  const regularPosts = filteredPosts.filter(p => p.id !== featuredPost?.id);
 
   return (
     <>
@@ -50,7 +44,9 @@ export default function BlogFeed() {
         ))}
       </motion.div>
 
-      {/* Featured Post */}
+      {/* Featured Post (Only show on 'All' tab or if it matches category) */}
+      {/* Logic: If activeCategory is 'All', show featured. If activeCategory matches featured post's category, show it? */}
+      {/* Original logic: activeCategory === "All" && featuredPost */}
       {activeCategory === "All" && featuredPost && (
         <FeaturedPost post={featuredPost} />
       )}
@@ -61,6 +57,12 @@ export default function BlogFeed() {
           <PostCard key={post.id} post={post} index={index} />
         ))}
       </div>
+
+      {initialPosts.length === 0 && (
+        <div className="text-center py-20 text-neutral-500 font-jetbrains-mono text-sm">
+          No posts found.
+        </div>
+      )}
     </>
   );
 }

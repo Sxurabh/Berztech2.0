@@ -12,6 +12,7 @@ export default function AdminBlogPage() {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [deleteTarget, setDeleteTarget] = useState(null);
+    const [bulkDelete, setBulkDelete] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const router = useRouter();
 
@@ -43,6 +44,22 @@ export default function AdminBlogPage() {
             setDeleteTarget(null);
         } catch (err) {
             toast.error("Failed to delete post");
+        } finally {
+            setDeleting(false);
+        }
+    }
+
+    async function handleDeleteAll() {
+        setDeleting(true);
+        try {
+            for (const post of posts) {
+                await fetch(`/api/blog/${post.id}`, { method: "DELETE" });
+            }
+            toast.success(`Deleted ${posts.length} posts`);
+            setPosts([]);
+            setBulkDelete(false);
+        } catch (err) {
+            toast.error("Failed to delete all posts");
         } finally {
             setDeleting(false);
         }
@@ -99,8 +116,8 @@ export default function AdminBlogPage() {
             render: (item) => (
                 <span
                     className={`text-[10px] font-jetbrains-mono uppercase tracking-widest px-2 py-1 border ${item.published
-                            ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
-                            : "text-amber-400 bg-amber-500/10 border-amber-500/20"
+                        ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
+                        : "text-amber-400 bg-amber-500/10 border-amber-500/20"
                         }`}
                 >
                     {item.published ? "Published" : "Draft"}
@@ -135,13 +152,24 @@ export default function AdminBlogPage() {
                         Manage Blog Posts
                     </h1>
                 </div>
-                <Link
-                    href="/admin/blog/new"
-                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-neutral-900 font-jetbrains-mono text-xs uppercase tracking-widest font-semibold hover:bg-neutral-100 transition-colors"
-                >
-                    <FiPlus className="w-4 h-4" />
-                    New Post
-                </Link>
+                <div className="flex items-center gap-2">
+                    <Link
+                        href="/admin/blog/new"
+                        className="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-neutral-900 font-jetbrains-mono text-xs uppercase tracking-widest font-semibold hover:bg-neutral-100 transition-colors"
+                    >
+                        <FiPlus className="w-4 h-4" />
+                        New Post
+                    </Link>
+                    {posts.length > 0 && (
+                        <button
+                            onClick={() => setBulkDelete(true)}
+                            className="inline-flex items-center gap-2 px-4 py-2.5 border border-red-500/30 text-red-400 font-jetbrains-mono text-xs uppercase tracking-widest font-semibold hover:bg-red-500/10 transition-colors"
+                        >
+                            <FiTrash2 className="w-4 h-4" />
+                            Delete All
+                        </button>
+                    )}
+                </div>
             </div>
 
             {loading ? (
@@ -162,8 +190,8 @@ export default function AdminBlogPage() {
                             <button
                                 onClick={() => togglePublish(item)}
                                 className={`p-2 transition-colors ${item.published
-                                        ? "text-emerald-500 hover:text-emerald-400 hover:bg-emerald-500/10"
-                                        : "text-neutral-500 hover:text-amber-400 hover:bg-amber-500/10"
+                                    ? "text-emerald-500 hover:text-emerald-400 hover:bg-emerald-500/10"
+                                    : "text-neutral-500 hover:text-amber-400 hover:bg-amber-500/10"
                                     }`}
                                 title={item.published ? "Unpublish" : "Publish"}
                             >
@@ -189,10 +217,10 @@ export default function AdminBlogPage() {
             )}
 
             <DeleteConfirmModal
-                isOpen={!!deleteTarget}
-                onClose={() => setDeleteTarget(null)}
-                onConfirm={handleDelete}
-                itemName="Blog Post"
+                isOpen={!!deleteTarget || bulkDelete}
+                onClose={() => { setDeleteTarget(null); setBulkDelete(false); }}
+                onConfirm={bulkDelete ? handleDeleteAll : handleDelete}
+                itemName={bulkDelete ? `All ${posts.length} Blog Posts` : "Blog Post"}
                 loading={deleting}
             />
         </div>

@@ -205,62 +205,7 @@ function EcosystemVisual() {
 }
 
 // --- MOBILE: Dedicated Service Grid ---
-function MobileServiceGrid() {
-  const cards = [
-    {
-      title: "Web Dev",
-      icon: "⚡",
-      desc: "Next.js / React",
-      bg: "bg-blue-50 border-blue-100",
-      text: "text-blue-600"
-    },
-    {
-      title: "Mobile Apps",
-      icon: "📱",
-      desc: "iOS & Android",
-      bg: "bg-purple-50 border-purple-100",
-      text: "text-purple-600"
-    },
-    {
-      title: "Marketing",
-      icon: "📈",
-      desc: "SEO & Growth",
-      bg: "bg-emerald-50 border-emerald-100",
-      text: "text-emerald-600"
-    },
-    {
-      title: "Branding",
-      icon: "🎨",
-      desc: "Identity & UI",
-      bg: "bg-amber-50 border-amber-100",
-      text: "text-amber-600"
-    }
-  ];
 
-  return (
-    <div className="grid grid-cols-2 gap-3 w-full max-w-sm mx-auto mt-8">
-      {cards.map((card, i) => (
-        <motion.div
-          key={card.title}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 + (i * 0.1) }}
-        >
-          <div className={`p-4 ${card.bg} h-full flex flex-col justify-between min-h-[100px]`}>
-            <div className="flex grow justify-between items-start mb-2">
-              <span className="text-xl">{card.icon}</span>
-              <div className={`w-1.5 h-1.5 rounded-full ${card.text.replace('text', 'bg')}`} />
-            </div>
-            <div>
-              <h3 className={`font-space-grotesk font-medium text-sm ${card.text} mb-0.5`}>{card.title}</h3>
-              <p className="font-jetbrains-mono text-[9px] text-neutral-500 uppercase tracking-wide">{card.desc}</p>
-            </div>
-          </div>
-        </motion.div>
-      ))}
-    </div>
-  );
-}
 
 
 
@@ -428,7 +373,7 @@ export default function Hero() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
 
             {/* Left Content */}
-            <div className="lg:col-span-7 xl:col-span-6 order-2 lg:order-1">
+            <div className="lg:col-span-7 xl:col-span-6 order-1 lg:order-1">
               <StatusBadge />
 
               <div className="space-y-1 sm:space-y-2 mb-4 sm:mb-6">
@@ -487,11 +432,6 @@ export default function Hero() {
                 </MagneticButton>
               </motion.div>
 
-              {/* Mobile Service Grid: Visible ONLY on small screens */}
-              <div className="block lg:hidden">
-                <MobileServiceGrid />
-              </div>
-
               {/* Stats: Visible on all screens, adjusting padding for desktop/mobile */}
               <motion.div
                 initial={{ opacity: 0 }}
@@ -516,9 +456,12 @@ export default function Hero() {
               </motion.div>
             </div>
 
-            {/* Right Visual: Visible ONLY on Desktop */}
-            <div className="hidden lg:flex lg:col-span-5 xl:col-span-6 order-1 lg:order-2 items-center justify-center">
-              <EcosystemVisual />
+            {/* Visual: Visible on all devices, scaled for mobile/tablet */}
+            <div className="flex lg:col-span-5 xl:col-span-6 order-2 lg:order-2 items-center justify-center relative">
+              {/* Scaling wrapper */}
+              <div className="scale-[0.55] sm:scale-[0.75] lg:scale-100 origin-center lg:origin-center w-full flex justify-center -my-12 sm:-my-6 lg:my-0">
+                <EcosystemVisual />
+              </div>
             </div>
           </div>
         </div>
