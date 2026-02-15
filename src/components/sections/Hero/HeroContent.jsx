@@ -77,11 +77,11 @@ function StatusBadge({ shouldReduceMotion }) {
             <CornerFrame className="px-2.5 py-1.5 sm:px-3 sm:py-2 bg-white border-neutral-200 shadow-sm">
                 <div className="flex items-center gap-1.5 sm:gap-2">
                     <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-neutral-400 opacity-75" />
-                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 bg-neutral-600" />
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
+                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 bg-emerald-500" />
                     </span>
                     <span className="text-[9px] sm:text-[10px] font-jetbrains-mono font-medium uppercase tracking-wider text-neutral-600">
-                        Available for Q1 Projects
+                        Available for Projects
                     </span>
                 </div>
             </CornerFrame>
@@ -168,29 +168,6 @@ const HeroContent = ({ isLoaded, shouldReduceMotion, isCoarsePointer }) => {
 
                     {/* Mobile/Tablet Service Cards - Visible only on md and below */}
                     <MobileServiceCards shouldReduceMotion={shouldReduceMotion} isLoaded={isLoaded} />
-
-                    {/* Stats: Visible on all screens, adjusting padding for desktop/mobile */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.6, delay: 0.7 }}
-                        className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-neutral-100 grid grid-cols-3 gap-4 sm:gap-6 max-w-md"
-                    >
-                        {[
-                            { value: 50, suffix: "+", label: "Projects" },
-                            { value: 98, suffix: "%", label: "Retention" },
-                            { value: 7, suffix: "+", label: "Years" }
-                        ].map((stat) => (
-                            <div key={stat.label} className="text-center sm:text-left">
-                                <div className="font-space-grotesk text-lg sm:text-xl font-medium text-neutral-900">
-                                    <AnimatedCounter value={stat.value} suffix={stat.suffix} />
-                                </div>
-                                <div className="text-[9px] sm:text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-500 mt-0.5">
-                                    {stat.label}
-                                </div>
-                            </div>
-                        ))}
-                    </motion.div>
                 </>
             )}
         </div>

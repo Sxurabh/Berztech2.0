@@ -13,26 +13,26 @@ function AnimatedNumber({ value, suffix = "", prefix = "" }) {
 
   useEffect(() => {
     if (!isInView) return;
-    
+
     const duration = 1500;
     const steps = 30;
     const stepDuration = duration / steps;
     let current = 0;
-    
+
     const timer = setInterval(() => {
       current += 1;
       const progress = current / steps;
       const easeOut = 1 - Math.pow(1 - progress, 3);
       const currentValue = Math.floor(easeOut * parseFloat(value));
-      
+
       setDisplayValue(`${prefix}${currentValue}${suffix}`);
-      
+
       if (current >= steps) {
         setDisplayValue(`${prefix}${value}${suffix}`);
         clearInterval(timer);
       }
     }, stepDuration);
-    
+
     return () => clearInterval(timer);
   }, [isInView, value, suffix, prefix]);
 

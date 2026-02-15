@@ -41,13 +41,13 @@ export default function FeaturedCaseStudy() {
               Featured Work
             </span>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <h2 className="font-space-grotesk text-2xl sm:text-3xl lg:text-4xl font-medium text-neutral-900 tracking-tight leading-tight">
               Proven solutions for<br />
               <span className="text-neutral-500">real-world problems</span>
             </h2>
-            <Link 
+            <Link
               href="/work"
               className="group inline-flex items-center gap-2 text-xs font-jetbrains-mono uppercase tracking-widest text-neutral-600 hover:text-neutral-900 transition-colors shrink-0"
             >
@@ -66,7 +66,7 @@ export default function FeaturedCaseStudy() {
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          <CornerFrame 
+          <CornerFrame
             className="bg-neutral-50 border-neutral-200 hover:border-neutral-300 transition-colors overflow-hidden"
             bracketClassName="w-4 h-4 sm:w-5 sm:h-5 border-neutral-300"
           >
@@ -87,7 +87,7 @@ export default function FeaturedCaseStudy() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent to-neutral-50/20 lg:to-neutral-50/50" />
                 </motion.div>
-                
+
                 {/* Service Badge - Top Left */}
                 <div className="absolute top-3 left-3">
                   <span className="px-2 py-1 bg-white/90 backdrop-blur-sm text-[9px] font-jetbrains-mono uppercase tracking-wider text-neutral-600 border border-neutral-200">
@@ -114,7 +114,7 @@ export default function FeaturedCaseStudy() {
                   <h3 className="font-space-grotesk text-xl sm:text-2xl font-medium text-neutral-900 tracking-tight mb-2">
                     {caseStudy.title}
                   </h3>
-                  
+
                   <p className="text-sm text-neutral-600 leading-relaxed mb-4">
                     {caseStudy.description}
                   </p>
@@ -160,7 +160,7 @@ export default function FeaturedCaseStudy() {
                   </div>
 
                   {/* CTA */}
-                  <Link 
+                  <Link
                     href="/work/family-fund"
                     className="group inline-flex items-center gap-2 font-jetbrains-mono text-xs uppercase tracking-widest text-neutral-900 hover:text-neutral-600 transition-colors"
                   >
@@ -177,30 +177,6 @@ export default function FeaturedCaseStudy() {
               </div>
             </div>
           </CornerFrame>
-        </motion.div>
-
-        {/* Bottom Mini Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
-          className="mt-6 sm:mt-8 grid grid-cols-3 gap-4"
-        >
-          {[
-            { value: "50+", label: "Projects" },
-            { value: "12", label: "Industries" },
-            { value: "4.9", label: "Avg Rating" }
-          ].map((item, i) => (
-            <div key={item.label} className="text-center">
-              <div className="font-space-grotesk text-xl sm:text-2xl font-medium text-neutral-900">
-                {item.value}
-              </div>
-              <div className="text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-600 mt-0.5">
-                {item.label}
-              </div>
-            </div>
-          ))}
         </motion.div>
       </div>
     </section>
