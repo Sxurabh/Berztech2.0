@@ -1,0 +1,142 @@
+import { createServerSupabaseClient } from "@/lib/supabase/server";
+
+/**
+ * Get published blog posts from Supabase.
+ */
+export async function getPosts({ published = true } = {}) {
+    try {
+        const supabase = await createServerSupabaseClient();
+        if (!supabase) throw new Error("Supabase not configured");
+        let query = supabase
+            .from("blog_posts")
+            .select("*")
+            .order("created_at", { ascending: false });
+
+        if (published) {
+            query = query.eq("published", true);
+        }
+
+        const { data, error } = await query;
+        if (error) throw error;
+        return data || [];
+    } catch (err) {
+        console.warn("Supabase fetch failed, returning empty array:", err.message);
+        return [];
+    }
+}
+
+/**
+ * Get a single post by id or slug.
+ */
+export async function getPostById(identifier) {
+    try {
+        const supabase = await createServerSupabaseClient();
+        if (!supabase) throw new Error("Supabase not configured");
+
+        const isNumeric = !isNaN(identifier) && !isNaN(parseInt(identifier));
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier);
+
+        let query = supabase.from("blog_posts").select("*");
+
+        if (isUUID) {
+            query = query.eq("id", identifier);
+        } else if (isNumeric) {
+            query = query.eq("id", parseInt(identifier));
+        } else {
+            query = query.eq("slug", identifier);
+        }
+
+        const { data, error } = await query.maybeSingle();
+        if (error) throw error;
+        return data;
+    } catch (err) {
+        console.warn("Supabase fetch failed (getPostById):", err.message);
+        return null;
+    }
+}
+
+/**
+ * Get unique blog categories.
+ */
+export async function getBlogCategories() {
+    try {
+        const supabase = await createServerSupabaseClient();
+        if (!supabase) throw new Error("Supabase not configured");
+        const { data, error } = await supabase
+            .from("blog_posts")
+            .select("category")
+            .eq("published", true);
+
+        if (error) throw error;
+        if (data && data.length > 0) {
+            const unique = [...new Set(data.map((p) => p.category).filter(Boolean))];
+            return ["All", ...unique];
+        }
+    } catch (err) {
+        console.warn("Supabase fetch failed (getBlogCategories):", err.message);
+        return [];
+    }
+}
+
+/**
+ * Create a new blog post.
+ */
+export async function createPost(postData) {
+    const supabase = await createServerSupabaseClient();
+    if (!supabase) throw new Error("Supabase not configured");
+
+    // Auto-generate slug from title if not provided
+    if (!postData.slug) {
+        postData.slug = postData.title
+            ?.toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/(^-|-$)/g, "");
+    }
+
+    const { data, error } = await supabase
+        .from("blog_posts")
+        .insert(postData)
+        .select()
+        .single();
+
+    if (error) throw error;
+    return data;
+}
+
+/**
+ * Update an existing blog post.
+ */
+export async function updatePost(id, postData) {
+    const supabase = await createServerSupabaseClient();
+    if (!supabase) throw new Error("Supabase not configured");
+
+    const idValue = /^\d+$/.test(id) ? Number(id) : id;
+
+    const { data, error } = await supabase
+        .from("blog_posts")
+        .update(postData)
+        .eq("id", idValue)
+        .select()
+        .single();
+
+    if (error) throw error;
+    return data;
+}
+
+/**
+ * Delete a blog post.
+ */
+export async function deletePost(id) {
+    const supabase = await createServerSupabaseClient();
+    if (!supabase) throw new Error("Supabase not configured");
+
+    const idValue = /^\d+$/.test(id) ? Number(id) : id;
+
+    const { error } = await supabase
+        .from("blog_posts")
+        .delete()
+        .eq("id", idValue);
+
+    if (error) throw error;
+    return true;
+}

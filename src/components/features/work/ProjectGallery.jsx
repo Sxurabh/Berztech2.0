@@ -1,0 +1,58 @@
+"use client";
+
+import { useState } from "react";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { CornerFrame } from "@/components/ui/CornerFrame";
+import { spacing } from "@/lib/design-tokens";
+
+export default function ProjectGallery({ images = [], title }) {
+    const [activeImage, setActiveImage] = useState(0);
+
+    if (!images || images.length === 0) return null;
+
+    // derived safe index
+    const displayIndex = (images.length > 0 && activeImage < images.length) ? activeImage : 0;
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+        >
+            <CornerFrame
+                className="bg-neutral-100 border-neutral-200 overflow-hidden"
+                bracketClassName="w-4 h-4 sm:w-6 sm:h-6 border-neutral-300"
+            >
+                <div className="relative aspect-[16/9]">
+                    <Image
+                        src={images[displayIndex]}
+                        alt={title}
+                        fill
+                        className="object-cover"
+                        priority
+                    />
+                </div>
+            </CornerFrame>
+
+            {images.length > 1 && (
+                <div className={`flex ${spacing.gap.sm} mt-4 overflow-x-auto pb-2`}>
+                    {images.map((img, i) => (
+                        <button
+                            key={i}
+                            onClick={() => setActiveImage(i)}
+                            className={`
+                relative w-20 h-14 overflow-hidden border-2 transition-colors shrink-0
+                ${displayIndex === i ? `border-neutral-900` : 'border-neutral-200 hover:border-neutral-400'}
+              `}
+                            aria-label={`View image ${i + 1} of ${images.length}`}
+                            aria-current={displayIndex === i ? "true" : "false"}
+                        >
+                            <Image src={img} alt="" fill className="object-cover" />
+                        </button>
+                    ))}
+                </div>
+            )}
+        </motion.div>
+    );
+}

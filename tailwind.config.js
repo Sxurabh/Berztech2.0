@@ -6,6 +6,7 @@ module.exports = {
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/lib/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
@@ -13,21 +14,14 @@ module.exports = {
         "4xl": "2.5rem",
       },
       fontFamily: {
-        // Adding Space Grotesk and JetBrains Mono
-        'space-grotesk': ['Space Grotesk', ...defaultTheme.fontFamily.sans],
-        'jetbrains-mono': ['JetBrains Mono', ...defaultTheme.fontFamily.mono],
-        
-        // Overriding default sans to use Space Grotesk
-        sans: ["Space Grotesk", ...defaultTheme.fontFamily.sans],
-        
-        // Updating display font for headings
+        'space-grotesk': ['var(--font-sans)', ...defaultTheme.fontFamily.sans],
+        'jetbrains-mono': ['var(--font-mono)', ...defaultTheme.fontFamily.mono],
+        sans: ['var(--font-sans)', ...defaultTheme.fontFamily.sans],
         display: [
-          ["Space Grotesk", ...defaultTheme.fontFamily.sans],
+          ['var(--font-sans)', ...defaultTheme.fontFamily.sans],
           { fontVariationSettings: '"wdth" 125' },
         ],
-        
-        // Updating mono font
-        mono: ["JetBrains Mono", ...defaultTheme.fontFamily.mono],
+        mono: ['var(--font-mono)', ...defaultTheme.fontFamily.mono],
       },
     },
   },
