@@ -44,9 +44,16 @@ export async function PUT(request, { params }) {
 
         // Whitelist allowed fields
         const payload = {};
-        const allowed = ["client", "title", "description", "category", "image", "services", "stats", "color", "year", "featured", "slug"];
+        const allowed = ["client", "title", "description", "category", "image", "services", "stats", "color", "year", "featured", "slug", "gallery"];
         for (const key of allowed) {
-            if (body[key] !== undefined) payload[key] = body[key];
+            if (body[key] !== undefined) {
+                // Special handling for boolean fields to ensure they are consistent
+                if (key === "featured") {
+                    payload[key] = !!body[key];
+                } else {
+                    payload[key] = body[key];
+                }
+            }
         }
 
         if (Object.keys(payload).length === 0) {

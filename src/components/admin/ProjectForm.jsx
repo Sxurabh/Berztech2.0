@@ -32,6 +32,7 @@ export default function ProjectForm({ mode = "create", embedded, onClose, onSucc
         stats: {},
         color: "blue",
         featured: false,
+        gallery: [],
     });
 
     useEffect(() => {
@@ -42,10 +43,10 @@ export default function ProjectForm({ mode = "create", embedded, onClose, onSucc
 
     async function fetchProject() {
         try {
-            const res = await fetch(`/api/projects/${id}`);
+            const res = await fetch(`/api/projects/${id}`, { cache: "no-store" });
             if (!res.ok) throw new Error("Not found");
             const data = await res.json();
-            setForm(data);
+            setForm({ ...data, featured: !!data.featured });
         } catch (err) {
             toast.error("Failed to load project");
             if (embedded && onClose) onClose();
@@ -368,6 +369,45 @@ export default function ProjectForm({ mode = "create", embedded, onClose, onSucc
                                 Cover Image
                             </h3>
                             <ImageUploader value={form.image} onChange={(url) => updateField("image", url)} />
+                        </CornerFrame>
+
+                        {/* Gallery / Screenshots */}
+                        <CornerFrame className="bg-white p-5 border-neutral-200">
+                            <h3 className="font-space-grotesk font-semibold text-sm mb-4 text-neutral-900 border-b border-neutral-100 pb-2">
+                                Project Gallery
+                            </h3>
+                            <div className="grid grid-cols-2 gap-4 mb-4">
+                                {(form.gallery || []).map((img, i) => (
+                                    <div key={i} className="relative group">
+                                        <ImageUploader
+                                            value={img}
+                                            onChange={(url) => {
+                                                const newGallery = [...(form.gallery || [])];
+                                                newGallery[i] = url;
+                                                updateField("gallery", newGallery);
+                                            }}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                const newGallery = form.gallery.filter((_, idx) => idx !== i);
+                                                updateField("gallery", newGallery);
+                                            }}
+                                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors z-10"
+                                        >
+                                            <FiX className="w-3 h-3" />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => updateField("gallery", [...(form.gallery || []), ""])}
+                                className="flex items-center gap-2 text-xs font-jetbrains-mono uppercase tracking-widest text-neutral-500 hover:text-neutral-900 transition-colors"
+                            >
+                                <FiPlus className="w-4 h-4" />
+                                Add Gallery Image
+                            </button>
                         </CornerFrame>
 
                         {/* Save Button */}

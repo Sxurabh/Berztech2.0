@@ -57,6 +57,7 @@ export async function POST(request) {
             color: body.color,
             year: body.year,
             featured: !!body.featured,
+            gallery: body.gallery, // Array of strings
         };
 
         const newProject = await createProject(payload);

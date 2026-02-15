@@ -26,10 +26,11 @@ export default async function ProjectPage(props) {
 
   const colors = serviceColors[project.color] || serviceColors.blue;
 
-  // Use gallery if available, otherwise fallback to main image
-  const gallery = project.gallery && Array.isArray(project.gallery) && project.gallery.length > 0
-    ? project.gallery
-    : (project.image ? [project.image] : []);
+  // Combine cover image and gallery images
+  const gallery = [
+    project.image,
+    ...(project.gallery || [])
+  ].filter(Boolean);
 
   // Parse stats safely
   let stats = {};

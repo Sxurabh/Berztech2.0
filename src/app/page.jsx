@@ -13,7 +13,14 @@ const FeaturedCaseStudy = dynamic(() => import("@/components/sections/FeaturedCa
 const Services = dynamic(() => import("@/components/sections/Services"));
 const ContactCTA = dynamic(() => import("@/components/sections/ContactCTA"));
 
-export default function Home() {
+import { getProjects } from "@/lib/data/projects";
+
+export default async function Home() {
+  const projects = await getProjects();
+
+  // Find the featured project, or default to the first one available
+  const featuredProject = projects.find(p => p.featured) || projects[0];
+
   return (
     <div className="w-full relative selection:bg-neutral-900 selection:text-white">
       <Hero />
@@ -22,7 +29,7 @@ export default function Home() {
       <AITransparency />
       <BentoGrid />
       <Testimonial />
-      <FeaturedCaseStudy/>
+      {featuredProject && <FeaturedCaseStudy project={featuredProject} />}
       <Services />
       <ContactCTA />
     </div>

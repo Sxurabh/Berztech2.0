@@ -7,22 +7,26 @@ import Link from "next/link";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 
 
-const caseStudy = {
-  client: "Family Fund",
-  title: "Reinventing personal lending",
-  description: "A crowdfunding platform enabling friends and family to lend without traditional banking friction. Custom payment infrastructure handling $2M+ monthly.",
-  image: "/images/laptop.jpg",
-  stats: [
-    { label: "Users", value: "1.5M" },
-    { label: "Volume", value: "$2M+" },
-    { label: "Rating", value: "4.9" }
-  ],
-  tags: ["Fintech", "Web", "Mobile", "Payments"],
-  service: "Web development, CMS"
-};
-
-export default function FeaturedCaseStudy() {
+export default function FeaturedCaseStudy({ project }) {
   const [isHovered, setIsHovered] = useState(false);
+
+  // Fallback if no project is provided
+  if (!project) return null;
+
+  // Normalize data to match UI needs
+  const caseStudy = {
+    client: project.client || "Client",
+    title: project.title || "Untitled Project",
+    description: project.description || "",
+    image: project.image || "/images/laptop.jpg",
+    // Convert stats object to array if needed
+    stats: Array.isArray(project.stats)
+      ? project.stats
+      : Object.entries(project.stats || {}).map(([label, value]) => ({ label, value })).slice(0, 3),
+    tags: project.services || [],
+    service: project.category || "Service",
+    slug: project.slug
+  };
 
   return (
     <section className="relative py-12 sm:py-16 lg:py-20 overflow-hidden">
@@ -115,7 +119,7 @@ export default function FeaturedCaseStudy() {
                     {caseStudy.title}
                   </h3>
 
-                  <p className="text-sm text-neutral-600 leading-relaxed mb-4">
+                  <p className="text-sm text-neutral-600 leading-relaxed mb-4 line-clamp-3">
                     {caseStudy.description}
                   </p>
 
@@ -161,7 +165,7 @@ export default function FeaturedCaseStudy() {
 
                   {/* CTA */}
                   <Link
-                    href="/work/family-fund"
+                    href={`/work/${caseStudy.slug}`}
                     className="group inline-flex items-center gap-2 font-jetbrains-mono text-xs uppercase tracking-widest text-neutral-900 hover:text-neutral-600 transition-colors"
                   >
                     <span className="hidden sm:inline">View Case Study</span>

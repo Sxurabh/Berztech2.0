@@ -150,12 +150,16 @@ export async function updateProject(id, projectData) {
     const supabase = await createServerSupabaseClient();
     if (!supabase) throw new Error("Supabase not configured");
 
-    const { data, error } = await supabase
-        .from("projects")
-        .update(projectData)
-        .eq("id", id)
-        .select()
-        .single();
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    let query = supabase.from("projects").update(projectData);
+
+    if (isUUID) {
+        query = query.eq("id", id);
+    } else {
+        query = query.eq("slug", id);
+    }
+
+    const { data, error } = await query.select().single();
 
     if (error) throw error;
     return data;
@@ -170,10 +174,16 @@ export async function deleteProject(id) {
     const supabase = await createServerSupabaseClient();
     if (!supabase) throw new Error("Supabase not configured");
 
-    const { error } = await supabase
-        .from("projects")
-        .delete()
-        .eq("id", id);
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    let query = supabase.from("projects").delete();
+
+    if (isUUID) {
+        query = query.eq("id", id);
+    } else {
+        query = query.eq("slug", id);
+    }
+
+    const { error } = await query;
 
     if (error) throw error;
     return true;
