@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { isAdminEmail } from "@/config/admin";
+import { revalidatePath } from "next/cache";
 
 // GET /api/blog/[id] — Get a single blog post
 export async function GET(request, { params }) {
@@ -73,6 +74,13 @@ export async function PUT(request, { params }) {
         const { data, error } = await query.select().maybeSingle();
 
         if (error) throw error;
+
+        revalidatePath("/blog");
+        revalidatePath("/");
+        if (data && data.slug) {
+            revalidatePath(`/blog/${data.slug}`);
+        }
+
         return NextResponse.json(data);
     } catch (error) {
         console.error("PUT /api/blog/[id] error:", error);
@@ -103,6 +111,10 @@ export async function DELETE(request, { params }) {
             .eq("id", parseInt(id));
 
         if (error) throw error;
+
+        revalidatePath("/blog");
+        revalidatePath("/");
+
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error("DELETE /api/blog/[id] error:", error);

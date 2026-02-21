@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { isAdminEmail } from "@/config/admin";
 import { getProjects, createProject } from "@/lib/data/projects";
+import { revalidatePath } from "next/cache";
 
 // GET /api/projects — List all projects (public)
 export async function GET() {
@@ -61,6 +62,11 @@ export async function POST(request) {
         };
 
         const newProject = await createProject(payload);
+
+        // Invalidate ISR cache
+        revalidatePath("/work");
+        revalidatePath("/");
+
         return NextResponse.json(newProject, { status: 201 });
     } catch (error) {
         console.error("POST /api/projects error:", error);

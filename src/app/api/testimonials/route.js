@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getTestimonials, createTestimonial } from "@/lib/data/testimonials";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { isAdminEmail } from "@/config/admin";
+import { revalidatePath } from "next/cache";
 
 export async function GET() {
     try {
@@ -44,6 +45,10 @@ export async function POST(req) {
         };
 
         const newTestimonial = await createTestimonial(payload);
+
+        revalidatePath("/");
+        revalidatePath("/about");
+
         return NextResponse.json(newTestimonial, { status: 201 });
     } catch (error) {
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

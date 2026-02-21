@@ -9,6 +9,9 @@ export const metadata = {
   description: "Thoughts on engineering, design, and building digital products that matter.",
 };
 
+export const revalidate = 86400; // 24 hours
+
+
 export default async function BlogPage() {
   const posts = await getPosts();
   let categories = await getBlogCategories();
