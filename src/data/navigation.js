@@ -13,10 +13,10 @@ export const footerLinks = {
     services: {
         title: "Services",
         links: [
-            { label: "Web Development", href: "/services/web" },
-            { label: "Mobile Apps", href: "/services/mobile" },
-            { label: "UI/UX Design", href: "/services/design" },
-            { label: "Strategy", href: "/services/strategy" },
+            { label: "Web Development", href: "/process" },
+            { label: "Mobile Apps", href: "/work" },
+            { label: "UI/UX Design", href: "/work" },
+            { label: "Strategy", href: "/contact" },
         ]
     },
     company: {

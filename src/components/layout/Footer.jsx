@@ -7,9 +7,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 import { serviceColors } from "@/lib/design-tokens";
 
-// Assets
 import blackLogo from "@/assets/Logo/blacklogo.png";
 import compactLogoblack from "@/assets/Logo/CompactLogo-black.png";
+import LegalModal from "@/components/ui/LegalModal";
 
 import { socialLinks, footerLinks } from "@/data/navigation";
 
@@ -97,30 +97,38 @@ function NewsletterForm() {
   );
 }
 
-function LinkSection({ title, links }) {
+function LinkSection({ title, links, onLegalClick }) {
   return (
     <div className="space-y-3">
       <h3 className="font-space-grotesk text-sm font-medium text-neutral-900">
         {title}
       </h3>
       <ul className="space-y-2">
-        {links.map((link) => (
-          <li key={link.href}>
-            <Link
-              href={link.href}
-              className="group inline-flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-900 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2 rounded-sm"
-            >
-              <span className="w-0 group-hover:w-2 h-px bg-neutral-900 transition-all duration-200" />
-              {link.label}
-            </Link>
-          </li>
-        ))}
+        {links.map((link) => {
+          const isLegal = link.href === '/privacy' || link.href === '/terms';
+          const buttonClass = "group inline-flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-900 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2 rounded-sm";
+          return (
+            <li key={link.href}>
+              {isLegal ? (
+                <button onClick={() => onLegalClick(link.href.replace('/', ''))} className={buttonClass}>
+                  <span className="w-0 group-hover:w-2 h-px bg-neutral-900 transition-all duration-200" />
+                  {link.label}
+                </button>
+              ) : (
+                <Link href={link.href} className={buttonClass}>
+                  <span className="w-0 group-hover:w-2 h-px bg-neutral-900 transition-all duration-200" />
+                  {link.label}
+                </Link>
+              )}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
 }
 
-function MobileAccordion({ sections }) {
+function MobileAccordion({ sections, onLegalClick }) {
   const [openSection, setOpenSection] = useState(null);
 
   return (
@@ -154,16 +162,22 @@ function MobileAccordion({ sections }) {
                 className="overflow-hidden"
               >
                 <ul className="pb-4 space-y-2">
-                  {section.links.map((link) => (
-                    <li key={link.href}>
-                      <Link
-                        href={link.href}
-                        className="block text-sm text-neutral-500 hover:text-neutral-900 transition-colors py-1"
-                      >
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
+                  {section.links.map((link) => {
+                    const isLegal = link.href === '/privacy' || link.href === '/terms';
+                    return (
+                      <li key={link.href}>
+                        {isLegal ? (
+                          <button onClick={() => onLegalClick(link.href.replace('/', ''))} className="block w-full text-left text-sm text-neutral-500 hover:text-neutral-900 transition-colors py-1">
+                            {link.label}
+                          </button>
+                        ) : (
+                          <Link href={link.href} className="block text-sm text-neutral-500 hover:text-neutral-900 transition-colors py-1">
+                            {link.label}
+                          </Link>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               </motion.div>
             )}
@@ -176,6 +190,7 @@ function MobileAccordion({ sections }) {
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const [legalModal, setLegalModal] = useState(null);
 
   return (
     <footer className="relative  overflow-hidden">
@@ -237,9 +252,9 @@ export default function Footer() {
 
             {/* Links Columns - Desktop */}
             <div className="hidden lg:grid lg:col-span-5 grid-cols-3 gap-6">
-              <LinkSection {...footerLinks.services} />
-              <LinkSection {...footerLinks.company} />
-              <LinkSection {...footerLinks.resources} />
+              <LinkSection {...footerLinks.services} onLegalClick={setLegalModal} />
+              <LinkSection {...footerLinks.company} onLegalClick={setLegalModal} />
+              <LinkSection {...footerLinks.resources} onLegalClick={setLegalModal} />
             </div>
 
             {/* Newsletter Column */}
@@ -270,7 +285,7 @@ export default function Footer() {
 
           {/* Mobile Accordion Links */}
           <div className="lg:hidden mt-10">
-            <MobileAccordion sections={Object.entries(footerLinks)} />
+            <MobileAccordion sections={Object.entries(footerLinks)} onLegalClick={setLegalModal} />
           </div>
 
           {/* Contact Info Bar */}
@@ -302,18 +317,18 @@ export default function Footer() {
             </p>
 
             <div className="flex items-center gap-6">
-              <Link
-                href="/privacy"
+              <button
+                onClick={() => setLegalModal('privacy')}
                 className="text-xs font-jetbrains-mono text-neutral-500 hover:text-neutral-900 transition-colors uppercase tracking-wider"
               >
                 Privacy
-              </Link>
-              <Link
-                href="/terms"
+              </button>
+              <button
+                onClick={() => setLegalModal('terms')}
                 className="text-xs font-jetbrains-mono text-neutral-500 hover:text-neutral-900 transition-colors uppercase tracking-wider"
               >
                 Terms
-              </Link>
+              </button>
               <button
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                 className="group flex items-center gap-1 text-xs font-jetbrains-mono text-neutral-500 hover:text-neutral-900 transition-colors uppercase tracking-wider focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2 rounded-sm"
@@ -331,6 +346,7 @@ export default function Footer() {
           </div>
         </div>
       </div>
+      <LegalModal isOpen={!!legalModal} onClose={() => setLegalModal(null)} type={legalModal} />
     </footer>
   );
 }

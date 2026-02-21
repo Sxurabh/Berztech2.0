@@ -4,7 +4,7 @@ import ContactForm from "@/components/features/contact/ContactForm";
 import ContactHeader from "@/components/features/contact/ContactHeader";
 
 export const metadata = {
-  title: "Contact Us | Berztech",
+  title: "Contact Us",
   description: "Get in touch with our team to discuss your digital transformation needs.",
 };
 

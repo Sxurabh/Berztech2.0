@@ -44,35 +44,6 @@ const valueColorSchemes = {
   amber: { text: "text-amber-500", bracket: "!border-amber-400", bg: "bg-amber-500" }
 };
 
-const team = [
-  {
-    name: "Alex Chen",
-    role: "Founder & CTO",
-    bio: "Former Google engineer. 12 years building scalable systems.",
-    image: "/images/team/alex.jpg"
-  },
-  {
-    name: "Sarah Miller",
-    role: "Design Lead",
-    bio: "Ex-Apple designer. Obsessed with pixel-perfect interfaces.",
-    image: "/images/team/sarah.jpg"
-  },
-  {
-    name: "James Wilson",
-    role: "Engineering Lead",
-    bio: "Full-stack architect. Open source contributor.",
-    image: "/images/team/james.jpg"
-  },
-  {
-    name: "Emma Davis",
-    role: "Product Strategist",
-    bio: "Former McKinsey. Translates business goals into roadmaps.",
-    image: "/images/team/emma.jpg"
-  }
-];
-
-
-
 function ValueCard({ value, index }) {
   const [isHovered, setIsHovered] = useState(false);
   const colors = valueColorSchemes[value.color];
@@ -121,83 +92,6 @@ function ValueCard({ value, index }) {
   );
 }
 
-function TeamCard({ member, index }) {
-  const [isHovered, setIsHovered] = useState(false);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="group"
-    >
-      <CornerFrame
-        className={`
-          overflow-hidden bg-white border-neutral-200 transition-all duration-500
-          ${isHovered ? 'border-neutral-400 shadow-xl' : 'shadow-sm'}
-        `}
-        bracketClassName="w-3 h-3 border-neutral-300 group-hover:border-neutral-500 transition-colors"
-      >
-        <div className="relative aspect-[4/5] overflow-hidden bg-neutral-100">
-          <motion.div
-            animate={{ scale: isHovered ? 1.05 : 1 }}
-            transition={{ duration: 0.6 }}
-            className="absolute inset-0"
-          >
-            {member.image ? (
-              <Image
-                src={member.image}
-                alt={member.name}
-                fill
-                className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-              />
-            ) : (
-              <div
-                className="w-full h-full flex items-center justify-center bg-neutral-200"
-                role="img"
-                aria-label={`Portrait of ${member.name}`}
-              >
-                <span className="font-space-grotesk text-4xl font-bold text-neutral-400">
-                  {member.name.charAt(0)}
-                </span>
-              </div>
-            )}
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: isHovered ? 1 : 0 }}
-            transition={{ duration: 0.3 }}
-            className="absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-neutral-950/20 to-transparent"
-          />
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 20 }}
-            transition={{ duration: 0.3 }}
-            className="absolute bottom-0 left-0 right-0 p-4"
-          >
-            <p className="text-sm text-white/90 leading-relaxed">
-              {member.bio}
-            </p>
-          </motion.div>
-        </div>
-
-        <div className="p-4">
-          <h3 className="font-space-grotesk text-base font-medium text-neutral-900 mb-1">
-            {member.name}
-          </h3>
-          <p className="text-[11px] font-jetbrains-mono uppercase tracking-wider text-neutral-500">
-            {member.role}
-          </p>
-        </div>
-      </CornerFrame>
-    </motion.div>
-  );
-}
 
 export default function AboutClient({ initialImage, isAdmin }) {
   const containerRef = React.useRef(null);
@@ -431,50 +325,6 @@ export default function AboutClient({ initialImage, isAdmin }) {
               <ValueCard key={value.title} value={value} index={index} />
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Team Section with Grid */}
-      <section className="relative py-16 sm:py-24 z-10">
-        <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="h-px w-4 bg-neutral-300" />
-                <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-600">
-                  The Team
-                </span>
-              </div>
-              <h2 className="font-space-grotesk text-2xl sm:text-3xl lg:text-4xl font-medium text-neutral-900 tracking-tight">
-                Meet the <span className="text-neutral-500">builders</span>
-              </h2>
-            </div>
-            <p className="text-sm text-neutral-600 max-w-sm">
-              A small but mighty team of engineers, designers, and strategists passionate about craft.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {team.map((member, index) => (
-              <TeamCard key={member.name} member={member} index={index} />
-            ))}
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mt-12 text-center"
-          >
-            <p className="text-neutral-600 mb-4">Want to join the team?</p>
-            <Link
-              href="/contact"
-              className="inline-flex items-center gap-2 text-sm font-jetbrains-mono uppercase tracking-widest text-neutral-900 hover:text-neutral-600 transition-colors"
-            >
-              View Open Positions
-              <span className="w-4 h-px bg-neutral-900" />
-            </Link>
-          </motion.div>
         </div>
       </section>
 
