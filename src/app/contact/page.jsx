@@ -10,7 +10,7 @@ export const metadata = {
 
 const ContactPage = () => {
   return (
-    <div className="w-full bg-white relative">
+    <div className="w-full  relative">
       {/* Header */}
       <section className="relative pt-8 sm:pt-12 lg:pt-16 pb-0 z-10">
         <div className={layoutConfig.maxWidth + " " + layoutConfig.padding.mobile + " " + layoutConfig.padding.tablet + " " + layoutConfig.padding.desktop + " mx-auto"}>
