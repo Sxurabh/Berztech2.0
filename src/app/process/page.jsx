@@ -409,7 +409,7 @@ export default function ProcessPage() {
             </section>
 
             {/* Principles Section - CHANGED TO WHITE BACKGROUND */}
-            <section className="relative py-16 sm:py-24 bg-white border-t border-neutral-100 z-10">
+            <section className="relative py-16 sm:py-24 z-10">
                 <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
                         <div>
@@ -465,7 +465,7 @@ export default function ProcessPage() {
             </section>
 
             {/* FAQ Section */}
-            <section className="relative py-16 sm:py-24 bg-neutral-50/50 z-10">
+            <section className="relative py-16 sm:py-24 z-10">
                 <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-12">
                         <h2 className="font-space-grotesk text-2xl sm:text-3xl font-medium text-neutral-900 mb-4">

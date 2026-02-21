@@ -43,13 +43,13 @@ function NewsletterForm() {
           placeholder="Enter your email"
           required
           aria-describedby="newsletter-description"
-          className="flex-1 bg-neutral-50 border border-neutral-200 rounded px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-400 focus:ring-2 focus:ring-neutral-900 focus:border-transparent focus:outline-none transition-all"
+          className="flex-1 w-full min-w-0 bg-neutral-50 border border-neutral-200 rounded px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-400 focus:ring-2 focus:ring-neutral-900 focus:border-transparent focus:outline-none transition-all"
           disabled={status === "loading" || status === "success"}
         />
         <button
           type="submit"
           disabled={status === "loading" || status === "success"}
-          className="bg-neutral-900 text-white px-4 py-2 rounded text-xs font-jetbrains-mono uppercase tracking-wider font-medium hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed transition-colors"
+          className="shrink-0 whitespace-nowrap bg-neutral-900 text-white px-4 py-2 rounded text-xs font-jetbrains-mono uppercase tracking-wider font-medium hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed transition-colors"
         >
           {status === "loading" ? (
             <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />

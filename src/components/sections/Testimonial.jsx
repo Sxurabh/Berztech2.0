@@ -67,45 +67,16 @@ function useSwipe(onSwipeLeft, onSwipeRight, threshold = 50) {
   return { onTouchStart, onTouchMove, onTouchEnd };
 }
 
+// Disabled horizontal progress bar for a cleaner minimal look, but keeping the component as a shell if needed later
 function ProgressBar({ isActive, duration, onComplete }) {
-  const [progress, setProgress] = useState(0);
-
+  // We will rely on interval instead of visual progress bar in the minimal design
   useEffect(() => {
-    if (!isActive) {
-      setProgress(0);
-      return;
-    }
-
-    let startTime = null;
-    let animationFrame;
-
-    const animate = (timestamp) => {
-      if (!startTime) startTime = timestamp;
-      const elapsed = timestamp - startTime;
-      const newProgress = Math.min((elapsed / duration) * 100, 100);
-
-      setProgress(newProgress);
-
-      if (newProgress < 100) {
-        animationFrame = requestAnimationFrame(animate);
-      } else {
-        onComplete();
-      }
-    };
-
-    animationFrame = requestAnimationFrame(animate);
-
-    return () => cancelAnimationFrame(animationFrame);
+    if (!isActive) return;
+    const timer = setTimeout(onComplete, duration);
+    return () => clearTimeout(timer);
   }, [isActive, duration, onComplete]);
 
-  return (
-    <div className="h-1 bg-neutral-200 overflow-hidden">
-      <motion.div
-        className="h-full bg-neutral-900"
-        style={{ width: `${progress}%` }}
-      />
-    </div>
-  );
+  return null;
 }
 
 const defaultFallback = {
@@ -196,29 +167,25 @@ export default function Testimonial() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [shouldPlay, goToNext, goToPrev]);
 
-  // Animation variants
   const slideVariants = {
     enter: (direction) => ({
-      x: direction > 0 ? 300 : -300,
+      x: direction > 0 ? 50 : -50,
       opacity: 0,
-      scale: 0.95
     }),
     center: {
       x: 0,
       opacity: 1,
-      scale: 1,
       transition: {
-        duration: 0.5,
-        ease: [0.23, 1, 0.32, 1]
+        duration: 0.6,
+        ease: [0.22, 1, 0.36, 1]
       }
     },
     exit: (direction) => ({
-      x: direction < 0 ? 300 : -300,
+      x: direction < 0 ? 50 : -50,
       opacity: 0,
-      scale: 0.95,
       transition: {
         duration: 0.4,
-        ease: [0.23, 1, 0.32, 1]
+        ease: [0.22, 1, 0.36, 1]
       }
     })
   };
@@ -264,28 +231,26 @@ export default function Testimonial() {
           </div>
         </motion.div>
 
-        {/* Main Testimonial Card - Mobile First Layout */}
+        {/* Main Testimonial Card - Minimal Elegant Layout */}
         <div
           ref={containerRef}
-          className="relative"
+          className="relative group"
           onMouseEnter={() => setIsAutoPlaying(false)}
           onMouseLeave={() => setIsAutoPlaying(true)}
           {...swipeHandlers}
         >
           <CornerFrame
-            className="bg-white border-neutral-200 overflow-hidden shadow-lg"
-            bracketClassName="w-4 h-4 sm:w-5 sm:h-5 border-neutral-300"
+            className="bg-white border-neutral-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-500 rounded-sm"
+            bracketClassName="w-4 h-4 sm:w-5 sm:h-5 border-neutral-300 pointer-events-none"
           >
-            {/* Progress Bar - Top */}
-            <div className="absolute top-0 left-0 right-0 z-20">
-              <ProgressBar
-                isActive={shouldPlay}
-                duration={AUTO_PLAY_DURATION}
-                onComplete={goToNext}
-              />
-            </div>
+            {/* Logic-only Progress Bar */}
+            <ProgressBar
+              isActive={shouldPlay}
+              duration={AUTO_PLAY_DURATION}
+              onComplete={goToNext}
+            />
 
-            <div className="relative min-h-[400px] sm:min-h-[320px]">
+            <div className="relative min-h-[480px] sm:min-h-[400px] flex flex-col justify-center px-6 py-12 sm:px-12 sm:py-16 lg:px-20 lg:py-24">
               <AnimatePresence initial={false} custom={direction} mode="wait">
                 <motion.div
                   key={activeIndex}
@@ -294,92 +259,61 @@ export default function Testimonial() {
                   initial="enter"
                   animate="center"
                   exit="exit"
-                  className="absolute inset-0"
+                  className="flex flex-col items-center text-center w-full max-w-3xl mx-auto"
                 >
-                  {/* Mobile: Stacked Layout | Desktop: Side by Side */}
-                  <div className="grid grid-cols-1 lg:grid-cols-12 h-full">
+                  {/* Subtle Metric Badge (Optional) */}
+                  {activeTestimonial.metric && (
+                    <motion.div
+                      initial={{ scale: 0.9, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ delay: 0.2 }}
+                      className={`mb-8 px-4 py-1.5 rounded-full inline-flex items-center gap-2 border ${colors.border} ${colors.bgLight}`}
+                    >
+                      <span className={`w-1.5 h-1.5 rounded-full ${colors.bg}`} />
+                      <span className={`font-space-grotesk text-sm font-medium ${colors.text}`}>
+                        {activeTestimonial.metric} {activeTestimonial.metricLabel}
+                      </span>
+                    </motion.div>
+                  )}
 
-                    {/* Image Section - Full width on mobile, 5 cols on desktop */}
-                    <div className={`relative lg:col-span-5 ${colors.bgLight} p-6 sm:p-8 lg:p-10 flex flex-col justify-center`}>
-                      {/* Quote Icon - Mobile optimized size */}
-                      <div className={`w-10 h-10 sm:w-12 sm:h-12 ${colors.bg} flex items-center justify-center mb-4 sm:mb-6`}>
-                        <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
-                        </svg>
-                      </div>
+                  {/* Elegant Quote Area */}
+                  <blockquote className="relative mb-10 w-full">
+                    <span className="absolute -top-6 -left-2 sm:-top-8 sm:-left-6 text-6xl sm:text-8xl text-neutral-100 font-serif leading-none select-none -z-10">
+                      "
+                    </span>
+                    <p className="font-space-grotesk text-xl sm:text-2xl lg:text-3xl font-medium text-neutral-900 leading-snug tracking-tight">
+                      {activeTestimonial.quote}
+                    </p>
+                    <span className="absolute -bottom-10 -right-2 sm:-bottom-12 sm:-right-6 text-6xl sm:text-8xl text-neutral-100 font-serif leading-none select-none -z-10 rotate-180">
+                      "
+                    </span>
+                  </blockquote>
 
-                      {/* Metric - Prominent on mobile */}
-                      <div className="mb-4 sm:mb-6">
-                        <motion.div
-                          initial={{ scale: 0.8, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          transition={{ delay: 0.2 }}
-                          className={`inline-flex flex-col ${colors.bgLight} border ${colors.border} p-3 sm:p-4`}
-                        >
-                          <span className={`font-space-grotesk text-3xl sm:text-4xl font-medium ${colors.text}`}>
-                            {activeTestimonial.metric}
+                  {/* Author Block */}
+                  <div className="flex items-center gap-4 mt-auto">
+                    <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden shrink-0 border border-neutral-200">
+                      {activeTestimonial.image ? (
+                        <Image
+                          src={activeTestimonial.image}
+                          alt={activeTestimonial.author}
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-neutral-100">
+                          <span className="font-space-grotesk text-lg font-medium text-neutral-500">
+                            {activeTestimonial.author.charAt(0)}
                           </span>
-                          <span className="text-[10px] sm:text-xs font-jetbrains-mono uppercase tracking-wider text-neutral-500 mt-1">
-                            {activeTestimonial.metricLabel}
-                          </span>
-                        </motion.div>
-                      </div>
-
-                      {/* Author Info - Mobile optimized */}
-                      <div className="flex items-center gap-3 sm:gap-4">
-                        {/* Avatar - Larger on mobile for touch */}
-                        <div className="relative w-12 h-12 sm:w-14 sm:h-14 bg-neutral-200 overflow-hidden shrink-0">
-                          {activeTestimonial.image ? (
-                            <Image
-                              src={activeTestimonial.image}
-                              alt={activeTestimonial.author}
-                              fill
-                              className="object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-neutral-300">
-                              <span className="font-space-grotesk text-lg font-bold text-neutral-500">
-                                {activeTestimonial.author.charAt(0)}
-                              </span>
-                            </div>
-                          )}
                         </div>
-
-                        <div className="min-w-0">
-                          <div className="font-space-grotesk text-base sm:text-lg font-medium text-neutral-900 truncate">
-                            {activeTestimonial.author}
-                          </div>
-                          <div className="text-xs sm:text-sm text-neutral-500 truncate">
-                            {activeTestimonial.role}, {activeTestimonial.company}
-                          </div>
-                        </div>
-                      </div>
+                      )}
                     </div>
 
-                    {/* Quote Section - Full width on mobile, 7 cols on desktop */}
-                    <div className="lg:col-span-7 p-6 sm:p-8 lg:p-10 flex flex-col justify-center bg-white">
-                      <blockquote className="relative">
-                        {/* Large Quote Mark - Hidden on smallest mobile */}
-                        <span className={`absolute -top-2 -left-2 sm:-top-4 sm:-left-4 text-4xl sm:text-6xl ${colors.text} opacity-20 font-serif hidden sm:block`}>
-                          "
-                        </span>
-
-                        <p className="font-space-grotesk text-lg sm:text-xl lg:text-2xl text-neutral-900 leading-relaxed sm:leading-relaxed relative z-10">
-                          {activeTestimonial.quote}
-                        </p>
-                      </blockquote>
-
-                      {/* Mobile-only: Swipe hint */}
-                      <div className="mt-6 flex items-center gap-2 text-neutral-600 sm:hidden">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
-                        </svg>
-                        <span className="text-[10px] font-jetbrains-mono uppercase tracking-wider">
-                          Swipe to navigate
-                        </span>
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
+                    <div className="text-left">
+                      <div className="font-space-grotesk text-base sm:text-lg font-medium text-neutral-900">
+                        {activeTestimonial.author}
+                      </div>
+                      <div className="text-xs sm:text-sm font-jetbrains-mono text-neutral-500">
+                        {activeTestimonial.role}, <span className="text-neutral-900">{activeTestimonial.company}</span>
                       </div>
                     </div>
                   </div>
@@ -387,132 +321,80 @@ export default function Testimonial() {
               </AnimatePresence>
             </div>
 
-            {/* Bottom Navigation Bar */}
-            <div className="border-t border-neutral-100 p-4 sm:p-6 bg-neutral-50/50">
-              <div className="flex items-center justify-between gap-4">
-                {/* Prev/Next Buttons - Touch optimized (44px min) */}
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => {
-                      goToPrev();
-                      setIsAutoPlaying(false);
-                    }}
-                    className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center border border-neutral-200 bg-white text-neutral-600 hover:text-neutral-900 hover:border-neutral-400 transition-all active:scale-95 touch-manipulation"
-                    aria-label="Previous testimonial"
-                    style={{ minWidth: "44px", minHeight: "44px" }}
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      goToNext();
-                      setIsAutoPlaying(false);
-                    }}
-                    className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center border border-neutral-200 bg-white text-neutral-600 hover:text-neutral-900 hover:border-neutral-400 transition-all active:scale-95 touch-manipulation"
-                    aria-label="Next testimonial"
-                    style={{ minWidth: "44px", minHeight: "44px" }}
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
-                </div>
-
-                {/* Dot Indicators - Larger on mobile */}
-                <div className="flex items-center gap-2 sm:gap-3">
-                  {testimonials.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => goToSlide(index)}
-                      className="relative p-2 touch-manipulation"
-                      aria-label={`Go to testimonial ${index + 1}`}
-                      aria-current={index === activeIndex ? "true" : "false"}
-                      style={{ minWidth: "44px", minHeight: "44px" }}
-                    >
-                      <div className={`
-                        h-2 sm:h-2.5 rounded-full transition-all duration-300 mx-auto
-                        ${index === activeIndex
-                          ? 'w-6 sm:w-8 bg-neutral-900'
-                          : 'w-2 sm:w-2.5 bg-neutral-300 hover:bg-neutral-400'
-                        }
-                      `} />
-                      {index === activeIndex && shouldPlay && (
-                        <motion.div
-                          layoutId="activeIndicator"
-                          className="absolute inset-0 border-2 border-neutral-900 rounded-full"
-                          transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                        />
-                      )}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Counter - Hidden on smallest mobile */}
-                <div className="hidden sm:block text-xs font-jetbrains-mono text-neutral-400 tabular-nums">
-                  <span className="text-neutral-900 font-medium">{String(activeIndex + 1).padStart(2, '0')}</span>
-                  <span className="mx-1">/</span>
-                  <span>{String(testimonials.length).padStart(2, '0')}</span>
-                </div>
-
-                {/* Play/Pause Button */}
-                <button
-                  onClick={() => setIsAutoPlaying(!isAutoPlaying)}
-                  className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center border border-neutral-200 bg-white text-neutral-600 hover:text-neutral-900 hover:border-neutral-400 transition-all touch-manipulation"
-                  aria-label={isAutoPlaying ? "Pause autoplay" : "Start autoplay"}
-                  style={{ minWidth: "44px", minHeight: "44px" }}
-                >
-                  {isAutoPlaying ? (
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                      <rect x="6" y="4" width="4" height="16" />
-                      <rect x="14" y="4" width="4" height="16" />
-                    </svg>
-                  ) : (
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  )}
-                </button>
-              </div>
+            {/* Minimal Nav Controls - Hover Reveal on Desktop, Visible on Mobile */}
+            <div className="absolute inset-y-0 left-0 flex items-center sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
+              <button
+                onClick={() => { goToPrev(); setIsAutoPlaying(false); }}
+                className="w-12 h-12 pl-4 pr-2 flex items-center justify-center text-neutral-400 hover:text-neutral-900 transition-colors focus:outline-none touch-manipulation"
+                aria-label="Previous testimonial"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
             </div>
-          </CornerFrame>
 
-          {/* Swipe Gesture Overlay - Mobile only visual hint */}
-          <div className="absolute inset-0 pointer-events-none sm:hidden">
-            <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-neutral-900/5 to-transparent opacity-0" />
-            <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-neutral-900/5 to-transparent opacity-0" />
-          </div>
+            <div className="absolute inset-y-0 right-0 flex items-center sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
+              <button
+                onClick={() => { goToNext(); setIsAutoPlaying(false); }}
+                className="w-12 h-12 pr-4 pl-2 flex items-center justify-center text-neutral-400 hover:text-neutral-900 transition-colors focus:outline-none touch-manipulation"
+                aria-label="Next testimonial"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Pagination Dots - Positioned gracefully at the bottom */}
+            <div className="absolute bottom-6 left-0 right-0 flex items-center justify-center gap-2 z-20">
+              {testimonials.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => goToSlide(index)}
+                  className="p-2 touch-manipulation group/dot"
+                  aria-label={`Go to testimonial ${index + 1}`}
+                  aria-current={index === activeIndex ? "true" : "false"}
+                >
+                  <div className={`
+                    h-1.5 rounded-full transition-all duration-300
+                    ${index === activeIndex
+                      ? 'w-6 bg-neutral-900'
+                      : 'w-1.5 bg-neutral-300 group-hover/dot:bg-neutral-400'
+                    }
+                  `} />
+                </button>
+              ))}
+            </div>
+
+          </CornerFrame>
         </div>
 
-        {/* Trust Indicators - Mobile optimized grid */}
+        {/* Trust Indicators - Minimal Elegant Row */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
-          className="mt-8 sm:mt-10 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4"
+          className="mt-8 sm:mt-12 flex flex-wrap items-center justify-center gap-6 sm:gap-10"
         >
           {[
-            { value: "50+", label: "Happy Clients", icon: "★" },
-            { value: "4.9", label: "Avg. Rating", icon: "☆" },
-            { value: "98%", label: "Retention", icon: "◆" },
-            { value: "12", label: "Countries", icon: "◎" }
+            { value: "50+", label: "Happy Clients" },
+            { value: "4.9", label: "Avg. Rating" },
+            { value: "98%", label: "Retention" },
+            { value: "12", label: "Countries" }
           ].map((stat, i) => (
             <div
               key={stat.label}
-              className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-white border border-neutral-200"
+              className="flex items-baseline gap-1.5 sm:gap-2 border-b border-transparent hover:border-neutral-200 transition-colors pb-1"
             >
-              <span className="text-lg sm:text-xl text-neutral-300">{stat.icon}</span>
-              <div>
-                <div className="font-space-grotesk text-lg sm:text-xl font-medium text-neutral-900">
-                  {stat.value}
-                </div>
-                <div className="text-[9px] sm:text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-500">
-                  {stat.label}
-                </div>
+              <div className="font-space-grotesk text-xl sm:text-2xl font-medium text-neutral-900">
+                {stat.value}
               </div>
+              <div className="text-[10px] sm:text-xs font-jetbrains-mono uppercase tracking-wider text-neutral-500">
+                {stat.label}
+              </div>
+              {i < 3 && <div className="hidden sm:block ml-6 text-neutral-200 select-none">/</div>}
             </div>
           ))}
         </motion.div>
