@@ -358,7 +358,7 @@ export default function AITransparency() {
                     </p>
 
                     {/* Honesty Badge - Dynamic color */}
-                    <div className="flex items-start gap-2 mt-4 pt-4 border-t border-neutral-200/50">
+                    <div className="flex items-start gap-2 mt-4 pt-4">
                       <div className={`
                         w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5
                         ${colors.bgLight} ${colors.text} transition-colors duration-500

@@ -25,7 +25,7 @@ function StatCard({ icon: Icon, label, value, href, index }) {
         >
             <Link href={href}>
                 <CornerFrame
-                    className="p-2.5 sm:p-3 bg-white border border-neutral-200 hover:border-neutral-300 hover:shadow-sm transition-all duration-200 h-full"
+                    className="p-3 sm:p-4 bg-white border border-neutral-200 hover:border-neutral-300 hover:shadow-sm transition-all duration-200 h-full"
                     bracketClassName="w-2 h-2 border-neutral-400"
                 >
                     <div className="flex items-start justify-between mb-2">
@@ -58,7 +58,7 @@ function QuickActionCard({ onClick, title, subtitle, index }) {
                 className="w-full text-left"
             >
                 <CornerFrame
-                    className="p-3 bg-white border border-neutral-200 hover:border-neutral-300 hover:shadow-sm transition-all duration-200 group h-full"
+                    className="p-4 bg-white border border-neutral-200 hover:border-neutral-300 hover:shadow-sm transition-all duration-200 group h-full"
                     bracketClassName="w-2 h-2 border-neutral-400"
                 >
                     <div className="flex items-center gap-3">
@@ -103,9 +103,9 @@ export default function AdminDashboard() {
         const supabase = createClient();
         try {
             const [projectsRes, postsRes, testiRes] = await Promise.all([
-                supabase.from("projects").select("id, client, title, created_at", { count: "exact" }).order("created_at", { ascending: false }).limit(5),
-                supabase.from("blog_posts").select("id, title, published, created_at", { count: "exact" }).order("created_at", { ascending: false }).limit(5),
-                supabase.from("testimonials").select("id, client, company, content, created_at", { count: "exact" }).order("created_at", { ascending: false }).limit(5),
+                supabase.from("projects").select("id, client, title, created_at", { count: "exact" }).order("created_at", { ascending: false }).limit(15),
+                supabase.from("blog_posts").select("id, title, published, created_at", { count: "exact" }).order("created_at", { ascending: false }).limit(15),
+                supabase.from("testimonials").select("id, client, company, content, created_at", { count: "exact" }).order("created_at", { ascending: false }).limit(15),
             ]);
 
             setStats((s) => ({
@@ -168,9 +168,9 @@ export default function AdminDashboard() {
             const supabase = createClient();
 
             const [projectsRes, postsRes, testiRes] = await Promise.all([
-                supabase.from("projects").select("id, client, title, created_at", { count: "exact" }).order("created_at", { ascending: false }).limit(5),
-                supabase.from("blog_posts").select("id, title, published, created_at", { count: "exact" }).order("created_at", { ascending: false }).limit(5),
-                supabase.from("testimonials").select("id, client, company, content, created_at", { count: "exact" }).order("created_at", { ascending: false }).limit(5),
+                supabase.from("projects").select("id, client, title, created_at", { count: "exact" }).order("created_at", { ascending: false }).limit(15),
+                supabase.from("blog_posts").select("id, title, published, created_at", { count: "exact" }).order("created_at", { ascending: false }).limit(15),
+                supabase.from("testimonials").select("id, client, company, content, created_at", { count: "exact" }).order("created_at", { ascending: false }).limit(15),
             ]);
 
             setStats({
@@ -188,7 +188,7 @@ export default function AdminDashboard() {
     }, []);
 
     return (
-        <div className="space-y-3 sm:space-y-4">
+        <div className="space-y-6 sm:space-y-8">
             {/* Header */}
             <motion.div
                 initial={{ opacity: 0, y: 16 }}
@@ -206,21 +206,21 @@ export default function AdminDashboard() {
             </motion.div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+            <div className="grid grid-cols-3 gap-3 sm:gap-4">
                 <StatCard icon={FiBriefcase} label="Projects" value={stats.projects} href="/admin/projects" index={0} />
                 <StatCard icon={FiMessageSquare} label="Testimonials" value={stats.testimonials} href="/admin/testimonials" index={2} />
                 <StatCard icon={FiFileText} label="Posts" value={stats.posts} href="/admin/blog" index={1} />
             </div>
 
             {/* Quick Actions */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5 sm:gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                 <QuickActionCard onClick={() => setProjectModal({ open: true, mode: "create", id: null })} title="New Project" subtitle="Add case study" index={0} />
                 <QuickActionCard onClick={() => setTestimonialModal({ open: true, mode: "create", id: null })} title="New Testimonial" subtitle="Add client review" index={1} />
                 <QuickActionCard onClick={() => setBlogModal({ open: true, mode: "create", id: null })} title="New Blog Post" subtitle="Write article" index={2} />
             </div>
 
             {/* Recent Activity + Track Request */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-3">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
                 {/* Recent Projects */}
                 <motion.div
                     initial={{ opacity: 0, y: 16 }}
@@ -228,7 +228,7 @@ export default function AdminDashboard() {
                     transition={{ duration: 0.3, delay: 0.2 }}
                 >
                     <CornerFrame
-                        className="bg-white border border-neutral-200 p-3 h-full flex flex-col"
+                        className="bg-white border border-neutral-200 p-4 lg:p-5 h-full flex flex-col"
                         bracketClassName="w-2.5 h-2.5 border-neutral-400"
                     >
                         <div className="flex items-center justify-between mb-3 shrink-0">
@@ -254,7 +254,7 @@ export default function AdminDashboard() {
                                 </button>
                             </div>
                         ) : (
-                            <div className="overflow-y-auto max-h-[180px] pr-1 space-y-1 dash-scroll">
+                            <div className="overflow-y-auto max-h-[148px] pr-2 space-y-1 scrollbar-thin scrollbar-thumb-neutral-200 hover:scrollbar-thumb-neutral-300 scrollbar-track-transparent">
                                 {recentProjects.map((project) => (
                                     <button
                                         key={project.id}
@@ -285,7 +285,7 @@ export default function AdminDashboard() {
                     transition={{ duration: 0.3, delay: 0.25 }}
                 >
                     <CornerFrame
-                        className="bg-white border border-neutral-200 p-3 h-full flex flex-col"
+                        className="bg-white border border-neutral-200 p-4 lg:p-5 h-full flex flex-col"
                         bracketClassName="w-2.5 h-2.5 border-neutral-400"
                     >
                         <div className="flex items-center justify-between mb-3 shrink-0">
@@ -311,7 +311,7 @@ export default function AdminDashboard() {
                                 </button>
                             </div>
                         ) : (
-                            <div className="overflow-y-auto max-h-[180px] pr-1 space-y-1 dash-scroll">
+                            <div className="overflow-y-auto max-h-[148px] pr-2 space-y-1 scrollbar-thin scrollbar-thumb-neutral-200 hover:scrollbar-thumb-neutral-300 scrollbar-track-transparent">
                                 {recentTestimonials.map((t) => (
                                     <button
                                         key={t.id}
@@ -342,7 +342,7 @@ export default function AdminDashboard() {
                     transition={{ duration: 0.3, delay: 0.3 }}
                 >
                     <CornerFrame
-                        className="bg-white border border-neutral-200 p-3 h-full flex flex-col"
+                        className="bg-white border border-neutral-200 p-4 lg:p-5 h-full flex flex-col"
                         bracketClassName="w-2.5 h-2.5 border-neutral-400"
                     >
                         <div className="flex items-center justify-between mb-3 shrink-0">
@@ -368,7 +368,7 @@ export default function AdminDashboard() {
                                 </button>
                             </div>
                         ) : (
-                            <div className="overflow-y-auto max-h-[180px] pr-1 space-y-1 dash-scroll">
+                            <div className="overflow-y-auto max-h-[148px] pr-2 space-y-1 scrollbar-thin scrollbar-thumb-neutral-200 hover:scrollbar-thumb-neutral-300 scrollbar-track-transparent">
                                 {recentPosts.map((post) => (
                                     <button
                                         key={post.id}
@@ -406,7 +406,7 @@ export default function AdminDashboard() {
                     className="lg:col-span-3"
                 >
                     <CornerFrame
-                        className="bg-white border border-neutral-200 p-3 h-full flex flex-col"
+                        className="bg-white border border-neutral-200 p-4 lg:p-5 h-full flex flex-col"
                         bracketClassName="w-2.5 h-2.5 border-neutral-400"
                     >
                         <div className="flex items-center justify-between mb-3 shrink-0">
@@ -426,7 +426,7 @@ export default function AdminDashboard() {
                                 <p className="text-xs text-neutral-500 font-jetbrains-mono">No requests yet</p>
                             </div>
                         ) : (
-                            <div className="overflow-y-auto max-h-[180px] pr-1 space-y-2 dash-scroll">
+                            <div className="overflow-y-auto max-h-[220px] lg:max-h-[160px] pr-2 space-y-2 scrollbar-thin scrollbar-thumb-neutral-200 hover:scrollbar-thumb-neutral-300 scrollbar-track-transparent">
                                 {requests.map((request) => (
                                     <div
                                         key={request.id}

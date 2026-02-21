@@ -180,9 +180,9 @@ function AuthButton({ mobile = false }) {
     <div className="relative hidden lg:block" ref={dropdownRef}>
       <button
         onClick={() => setDropdownOpen(!dropdownOpen)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-neutral-200 bg-white hover:border-neutral-400 hover:bg-neutral-50 shadow-sm transition-all"
+        className="flex items-center justify-center w-8 h-8 rounded-full border border-neutral-200 bg-neutral-900 hover:ring-2 hover:ring-neutral-200 hover:ring-offset-2 transition-all overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2 shadow-sm relative group"
       >
-        <div className="w-8 h-8 rounded-full bg-neutral-900 flex items-center justify-center overflow-hidden">
+        <div className="w-full h-full flex items-center justify-center bg-neutral-900">
           {avatarUrl ? (
             // Use next/image for better performance
             <Image
@@ -194,22 +194,11 @@ function AuthButton({ mobile = false }) {
               referrerPolicy="no-referrer"
             />
           ) : (
-            <span className="font-jetbrains-mono text-[11px] font-bold text-white">
+            <span className="font-jetbrains-mono text-[11px] font-bold text-white group-hover:scale-105 transition-transform duration-300">
               {displayName?.[0]?.toUpperCase() || "A"}
             </span>
           )}
         </div>
-        <svg
-          className={clsx(
-            "w-3 h-3 text-neutral-400 transition-transform",
-            dropdownOpen && "rotate-180"
-          )}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
       </button>
       <AnimatePresence>
         {dropdownOpen && (

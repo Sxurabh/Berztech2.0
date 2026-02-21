@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 import ProjectGallery from "@/components/features/work/ProjectGallery";
-import { getProjectById } from "@/lib/data/projects";
+import { getProjectById, getProjects } from "@/lib/data/projects";
 import { typography, spacing, serviceColors } from "@/lib/design-tokens";
 
 export async function generateMetadata(props) {
@@ -44,45 +44,48 @@ export default async function ProjectPage(props) {
     stats = project.stats || {};
   }
 
+  // Next Case Study Logic
+  const allProjects = await getProjects();
+  const currentIndex = allProjects.findIndex(p => p.id === project.id);
+  const nextProject = allProjects.length > 1
+    ? allProjects[(currentIndex + 1) % allProjects.length]
+    : null;
+
   return (
-    <main className="w-full relative">
-      {/* Navigation / Breadcrumb */}
-      <div className="border-b border-neutral-200 sticky top-0 bg-white/80 backdrop-blur-md z-40">
-        <div className={`${spacing.container.wrapper} h-14 flex items-center justify-between`}>
+    <main className="w-full relative bg-transparent overflow-hidden">
+      {/* Navigation / Breadcrumb - Minimal Floating Bar */}
+      <div className="absolute top-0 left-0 right-0 z-50 pt-6 sm:pt-10 px-4 sm:px-8">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
           <Link
             href="/work"
-            className="flex items-center gap-2 text-xs font-jetbrains-mono uppercase tracking-wider text-neutral-500 hover:text-neutral-900 transition-colors"
+            className="group flex items-center gap-3 text-xs font-jetbrains-mono uppercase tracking-widest text-neutral-500 hover:text-neutral-900 transition-colors"
           >
-            <span>←</span>
+            <span className="w-8 h-[1px] bg-neutral-300 group-hover:bg-neutral-500 group-hover:w-12 transition-all duration-300"></span>
             <span>Back to Work</span>
           </Link>
           <div className="hidden sm:flex items-center gap-4">
-            <span className="text-xs font-jetbrains-mono text-neutral-400">
+            <span className="text-xs font-jetbrains-mono text-neutral-500">
               {project.year}
-            </span>
-            <span className={`px-2 py-1 text-[10px] font-jetbrains-mono uppercase tracking-widest ${colors.bgLight} ${colors.text} border ${colors.border}`}>
-              {project.category}
             </span>
           </div>
         </div>
       </div>
 
-      {/* Hero Section */}
-      <section className="pt-12 sm:pt-20 pb-12 sm:pb-16 border-b border-neutral-100 bg-neutral-50/30">
-        <div className={spacing.container.wrapper}>
-          <div className="max-w-4xl">
-            <div className="flex items-center gap-3 mb-6 sm:hidden">
-              <span className={`px-2 py-1 text-[10px] font-jetbrains-mono uppercase tracking-widest ${colors.bgLight} ${colors.text} border ${colors.border}`}>
+      {/* Clean Hero Section */}
+      <section className="relative min-h-[50vh] sm:min-h-[60vh] flex flex-col justify-end pb-12 sm:pb-16 pt-32 bg-transparent z-0">
+        <div className="mx-auto w-full px-4 sm:px-6 lg:px-8 max-w-6xl relative z-20">
+          <div>
+            <div className="flex items-center gap-3 mb-8">
+              <span className={`px-3 py-1 text-xs font-jetbrains-mono uppercase tracking-widest bg-neutral-100 text-neutral-600 border border-neutral-200 rounded-full`}>
                 {project.category}
               </span>
-              <span className="text-[10px] font-jetbrains-mono text-neutral-400">{project.year}</span>
             </div>
 
-            <h1 className={`${typography.fontFamily.sans} text-4xl sm:text-5xl lg:text-7xl font-medium text-neutral-900 tracking-tight leading-[0.9] mb-8`}>
+            <h1 className={`${typography.fontFamily.sans} text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-medium text-neutral-900 tracking-tight leading-[0.9] mb-8 sm:mb-12`}>
               {project.title}
             </h1>
 
-            <p className="text-lg sm:text-2xl text-neutral-600 leading-relaxed max-w-3xl font-light">
+            <p className="text-xl sm:text-3xl text-neutral-600 leading-relaxed max-w-3xl font-light">
               {project.description}
             </p>
           </div>
@@ -90,8 +93,8 @@ export default async function ProjectPage(props) {
       </section>
 
       {/* Main Image / Gallery */}
-      <section className="py-8 sm:py-12 bg-white">
-        <div className={spacing.container.wrapper}>
+      <section className="py-8 sm:py-12 bg-transparent relative z-10 px-4">
+        <div className="max-w-6xl mx-auto">
           <CornerFrame
             className="bg-white p-2 sm:p-3 border-neutral-200 shadow-xl"
             bracketClassName={`w-6 h-6 ${colors.bracket}`}
@@ -102,8 +105,8 @@ export default async function ProjectPage(props) {
       </section>
 
       {/* Content Grid */}
-      <section className="py-12 sm:py-20">
-        <div className={spacing.container.wrapper}>
+      <section className="py-12 sm:py-20 bg-transparent">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
 
             {/* Sidebar (Sticky) */}
@@ -158,33 +161,32 @@ export default async function ProjectPage(props) {
 
             {/* Main Content */}
             <div className="lg:col-span-8 order-1 lg:order-2">
-              <h2 className={`${typography.fontFamily.sans} text-2xl sm:text-3xl font-medium text-neutral-900 mb-8 flex items-center gap-3`}>
-                <span className={`w-8 h-1 ${colors.bg}`}></span>
+              <h2 className={`${typography.fontFamily.sans} text-2xl sm:text-4xl font-medium text-neutral-900 mb-8 sm:mb-12 flex items-center gap-4`}>
+                <span className={`w-12 h-[2px] ${colors.bg}`}></span>
                 Project Overview
               </h2>
 
-              <div className="prose prose-neutral prose-lg max-w-none text-neutral-600 leading-relaxed font-light">
-                <div className="whitespace-pre-line">
+              <div className="prose prose-neutral prose-lg lg:prose-xl max-w-none text-neutral-600 leading-relaxed font-light">
+                <div className="whitespace-pre-line first-letter:text-6xl first-letter:font-serif first-letter:float-left first-letter:mr-4 first-letter:text-neutral-900 first-letter:font-medium">
                   {project.long_description || project.description}
                 </div>
               </div>
 
-              {/* Stats Grid */}
+              {/* Stats Grid - Immersive Style */}
               {Object.keys(stats).length > 0 && (
-                <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="mt-20 grid grid-cols-1 sm:grid-cols-2 gap-px bg-neutral-200 border border-neutral-200">
                   {Object.entries(stats).map(([label, value], i) => (
-                    <CornerFrame
+                    <div
                       key={label}
-                      className={`p-6 ${colors.bgLight} border ${colors.border} flex flex-col justify-between min-h-[140px]`}
-                      bracketClassName={`w-3 h-3 ${colors.bracket}`}
+                      className="p-8 sm:p-12 bg-white hover:bg-neutral-50 transition-colors flex flex-col justify-between min-h-[200px]"
                     >
-                      <div className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500">
+                      <div className="text-xs font-jetbrains-mono uppercase tracking-widest text-neutral-400 mb-8">
                         {label}
                       </div>
-                      <div className={`${typography.fontFamily.sans} text-4xl sm:text-5xl font-medium text-neutral-900 tracking-tight`}>
+                      <div className={`${typography.fontFamily.sans} text-5xl sm:text-6xl font-medium text-neutral-900 tracking-tight`}>
                         {value}
                       </div>
-                    </CornerFrame>
+                    </div>
                   ))}
                 </div>
               )}
@@ -195,16 +197,26 @@ export default async function ProjectPage(props) {
       </section>
 
       {/* Next Project Navigation */}
-      <section className="py-12 border-t border-neutral-100 bg-neutral-50">
-        <div className={spacing.container.wrapper}>
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-jetbrains-mono uppercase tracking-widest text-neutral-400">Next Case Study</span>
+      <section className="py-24 sm:py-32 bg-transparent relative overflow-hidden group border-t border-neutral-100">
+        <div className="mx-auto w-full px-4 sm:px-6 lg:px-8 max-w-6xl relative z-10 text-center">
+          <span className="text-xs font-jetbrains-mono uppercase tracking-widest text-neutral-500 mb-6 block">Next Case Study</span>
+
+          <Link
+            href={nextProject ? `/work/${nextProject.slug}` : "/work"}
+            className="inline-block"
+          >
+            <h2 className={`${typography.fontFamily.sans} text-4xl sm:text-6xl lg:text-8xl font-medium text-neutral-900 tracking-tight hover:text-neutral-500 transition-colors duration-500`}>
+              {nextProject ? nextProject.title : "View All Projects"}
+            </h2>
+          </Link>
+
+          <div className="mt-12 flex justify-center">
             <Link
               href="/work"
-              className="group inline-flex items-center gap-2 text-sm font-jetbrains-mono text-neutral-900 font-medium hover:text-neutral-600 transition-colors"
+              className="group/btn flex items-center gap-3 text-xs font-jetbrains-mono uppercase tracking-widest text-neutral-400 hover:text-neutral-900 transition-colors"
             >
-              View All Projects
-              <span className="transition-transform group-hover:translate-x-1">→</span>
+              <span>View Project Index</span>
+              <span className="w-8 h-[1px] bg-neutral-400 group-hover/btn:bg-neutral-900 group-hover/btn:w-12 transition-all duration-300"></span>
             </Link>
           </div>
         </div>
