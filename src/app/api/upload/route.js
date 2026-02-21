@@ -5,9 +5,39 @@ import { isAdminEmail } from "@/config/admin";
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
+// Simple in-memory rate limiting map
+// Note: Clears on serverless cold starts, but prevents rapid DoS in warm instances
+const rateLimitMap = new Map();
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
+const MAX_UPLOADS_PER_WINDOW = 20;
+
+const MIME_TO_EXT = {
+    "image/jpeg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp",
+    "image/gif": "gif"
+};
+
 // POST /api/upload — Upload an image to Supabase Storage (admin only)
 export async function POST(request) {
     try {
+        // Enforce Basic Rate Limiting based on IP
+        const ip = request.headers.get("x-forwarded-for") || "unknown";
+        const now = Date.now();
+        const requestData = rateLimitMap.get(ip) || { count: 0, startTime: now };
+
+        if (now - requestData.startTime > RATE_LIMIT_WINDOW_MS) {
+            requestData.count = 1;
+            requestData.startTime = now;
+        } else {
+            requestData.count += 1;
+        }
+        rateLimitMap.set(ip, requestData);
+
+        if (requestData.count > MAX_UPLOADS_PER_WINDOW) {
+            return NextResponse.json({ error: "Rate limit exceeded. Try again later." }, { status: 429 });
+        }
+
         const supabase = await createServerSupabaseClient();
 
         // Verify admin
@@ -42,16 +72,9 @@ export async function POST(request) {
             );
         }
 
-        // Generate unique filename (sanitize extension)
-        const lastDotIndex = file.name.lastIndexOf(".");
-        let fileExt = "";
-        if (lastDotIndex >= 0) {
-            fileExt = file.name.substring(lastDotIndex + 1).toLowerCase().replace(/[^a-z0-9]/g, "");
-        } else {
-            fileExt = "bin";
-        }
-
-        const fileName = fileExt ? `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}` : `${Date.now()}-${Math.random().toString(36).substring(2)}`;
+        // Secure filename generation: ignore client-provided extension and strictly map to MIME
+        const fileExt = MIME_TO_EXT[file.type] || "bin";
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
         const filePath = `uploads/${fileName}`;
 
         // Upload to Supabase Storage
