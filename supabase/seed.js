@@ -39,7 +39,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 const projects = [
     {
-        id: "family-fund",
+        slug: "family-fund",
         slug: "family-fund",
         client: "Family Fund",
         title: "Skip the bank, borrow from those you trust",
@@ -53,7 +53,7 @@ const projects = [
         featured: true,
     },
     {
-        id: "unseal",
+        slug: "unseal",
         slug: "unseal",
         client: "Unseal",
         title: "Get a double-check on your SSL certificates",
@@ -67,7 +67,7 @@ const projects = [
         featured: true,
     },
     {
-        id: "phobia",
+        slug: "phobia",
         slug: "phobia",
         client: "Phobia",
         title: "Overcome your fears, find your match",
@@ -81,7 +81,7 @@ const projects = [
         featured: false,
     },
     {
-        id: "bright-path",
+        slug: "bright-path",
         slug: "bright-path",
         client: "Bright Path",
         title: "Illuminating educational journeys",
@@ -95,7 +95,7 @@ const projects = [
         featured: false,
     },
     {
-        id: "green-life",
+        slug: "green-life",
         slug: "green-life",
         client: "Green Life",
         title: "Sustainable living made simple",
@@ -109,7 +109,7 @@ const projects = [
         featured: false,
     },
     {
-        id: "north-adventures",
+        slug: "north-adventures",
         slug: "north-adventures",
         client: "North Adventures",
         title: "Expedition planning reimagined",
@@ -212,7 +212,7 @@ async function seed() {
     console.log("📁 Seeding projects...");
     const { data: projectsData, error: projectsError } = await supabase
         .from("projects")
-        .upsert(projects, { onConflict: "id" });
+        .upsert(projects, { onConflict: "slug" });
 
     if (projectsError) {
         console.error("  ❌ Error seeding projects:", projectsError.message);
