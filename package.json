@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@dotenvx/dotenvx": "^1.52.0",
@@ -29,6 +30,7 @@
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^16.1.6",
+    "@playwright/test": "^1.58.2",
     "eslint": "^10.0.1",
     "eslint-config-next": "^16.1.6"
   }
