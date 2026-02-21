@@ -47,7 +47,7 @@ export default async function ProjectPage(props) {
   // Next Case Study Logic
   const allProjects = await getProjects();
   const currentIndex = allProjects.findIndex(p => p.id === project.id);
-  const nextProject = allProjects.length > 1
+  const nextProject = (currentIndex !== -1 && allProjects.length > 1)
     ? allProjects[(currentIndex + 1) % allProjects.length]
     : null;
 

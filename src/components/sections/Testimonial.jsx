@@ -67,17 +67,7 @@ function useSwipe(onSwipeLeft, onSwipeRight, threshold = 50) {
   return { onTouchStart, onTouchMove, onTouchEnd };
 }
 
-// Disabled horizontal progress bar for a cleaner minimal look, but keeping the component as a shell if needed later
-function ProgressBar({ isActive, duration, onComplete }) {
-  // We will rely on interval instead of visual progress bar in the minimal design
-  useEffect(() => {
-    if (!isActive) return;
-    const timer = setTimeout(onComplete, duration);
-    return () => clearTimeout(timer);
-  }, [isActive, duration, onComplete]);
 
-  return null;
-}
 
 const defaultFallback = {
   id: 0, quote: "", author: "", role: "", company: "", image: "", metric: "", metricLabel: "", color: "blue"
@@ -243,12 +233,7 @@ export default function Testimonial() {
             className="bg-white border-neutral-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-500 rounded-sm"
             bracketClassName="w-4 h-4 sm:w-5 sm:h-5 border-neutral-300 pointer-events-none"
           >
-            {/* Logic-only Progress Bar */}
-            <ProgressBar
-              isActive={shouldPlay}
-              duration={AUTO_PLAY_DURATION}
-              onComplete={goToNext}
-            />
+
 
             <div className="relative min-h-[480px] sm:min-h-[400px] flex flex-col justify-center px-6 py-12 sm:px-12 sm:py-16 lg:px-20 lg:py-24">
               <AnimatePresence initial={false} custom={direction} mode="wait">

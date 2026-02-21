@@ -75,10 +75,12 @@ export async function PUT(request, { params }) {
 
         if (error) throw error;
 
-        revalidatePath("/blog");
-        revalidatePath("/");
-        if (data && data.slug) {
-            revalidatePath(`/blog/${data.slug}`);
+        if (data) {
+            revalidatePath("/blog");
+            revalidatePath("/");
+            if (data.slug) {
+                revalidatePath(`/blog/${data.slug}`);
+            }
         }
 
         return NextResponse.json(data);

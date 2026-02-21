@@ -1,7 +1,7 @@
 import { updateSession } from "@/lib/supabase/middleware";
 
-export async function proxy(request) {
-    return await updateSession(request);
+export async function middleware(request) {
+    return updateSession(request);
 }
 
 export const config = {

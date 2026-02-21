@@ -117,7 +117,7 @@ export default async function BlogPostPage(props) {
                         {/* Floating Social Share (Desktop Only placeholder for structure) */}
                         <div className="hidden lg:flex absolute -left-20 top-0 flex-col gap-4 text-neutral-400">
                             <div className="w-[1px] h-12 bg-neutral-200 mx-auto"></div>
-                            <span className="writing-vertical text-[10px] font-jetbrains-mono uppercase tracking-widest rotate-180">Share</span>
+                            <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest rotate-180" style={{ writingMode: 'vertical-rl' }}>Share</span>
                             <div className="w-[1px] h-24 bg-neutral-200 mx-auto"></div>
                         </div>
 
@@ -148,6 +148,7 @@ export default async function BlogPostPage(props) {
                                     <p className="text-neutral-600 mb-8 max-w-md mx-auto font-light text-lg">
                                         Subscribe to our newsletter for more monthly deep-dives on product building.
                                     </p>
+                                    {/* TODO: Implement client-side form wrapper, state, and onSubmit handler for newsletter subscription later */}
                                     <div className="flex flex-col sm:flex-row gap-2 justify-center max-w-sm mx-auto">
                                         <input
                                             type="email"
