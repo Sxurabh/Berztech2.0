@@ -24,4 +24,4 @@ const nextConfig = {
     turbopack: {},
 }
 
-module.exports = nextConfig
+module.exports = nextConfig; // Trigger Next.js reload
