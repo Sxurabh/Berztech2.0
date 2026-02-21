@@ -5,7 +5,7 @@ import Newsletter from "@/components/features/blog/Newsletter";
 import { getPosts, getBlogCategories } from "@/lib/data/blogPosts";
 
 export const metadata = {
-  title: "Blog | Berztech",
+  title: "Blog",
   description: "Thoughts on engineering, design, and building digital products that matter.",
 };
 

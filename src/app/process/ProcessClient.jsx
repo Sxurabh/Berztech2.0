@@ -1,7 +1,7 @@
 import ProcessClient from "./ProcessClient";
 
 export const metadata = {
-  title: "Our Process | Berztech",
+  title: "Our Process",
   description: "How we work: A transparent, collaborative process designed to mitigate risk and maximize velocity.",
 };
 

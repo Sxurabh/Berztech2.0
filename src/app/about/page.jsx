@@ -3,7 +3,7 @@ import { isAdminEmail } from "@/config/admin";
 import AboutClient from "./AboutClient";
 
 export const metadata = {
-    title: "About | Berztech",
+    title: "About",
     description: "Learn about our engineering excellence.",
 };
 
