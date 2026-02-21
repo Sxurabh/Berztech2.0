@@ -1,5 +1,5 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { projects as staticProjects, filters as staticFilters } from "@/data/projects";
+import { projects as staticProjects } from "@/data/projects";
 import { cache } from "react";
 
 /**

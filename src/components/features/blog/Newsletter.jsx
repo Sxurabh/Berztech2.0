@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 
@@ -7,17 +7,41 @@ export default function Newsletter() {
   const [newsletterEmail, setNewsletterEmail] = useState("");
   const [newsletterStatus, setNewsletterStatus] = useState("idle");
 
-  const handleNewsletterSubmit = (e) => {
+  const handleNewsletterSubmit = async (e) => {
     e.preventDefault();
     if (!newsletterEmail) return;
     setNewsletterStatus("loading");
-    // Simulate API call
-    setTimeout(() => {
-      setNewsletterStatus("success");
-      setNewsletterEmail("");
-      setTimeout(() => setNewsletterStatus("idle"), 3000);
-    }, 1500);
+
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: newsletterEmail })
+      });
+
+      if (res.ok) {
+        setNewsletterStatus("success");
+        setNewsletterEmail("");
+      } else {
+        setNewsletterStatus("error");
+      }
+    } catch (error) {
+      console.error("Newsletter submission error:", error);
+      setNewsletterStatus("error");
+    }
   };
+
+  useEffect(() => {
+    let timeoutId;
+    if (newsletterStatus === "success" || newsletterStatus === "error") {
+      timeoutId = setTimeout(() => {
+        setNewsletterStatus("idle");
+      }, 3000);
+    }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [newsletterStatus]);
 
   return (
     <motion.div
@@ -36,7 +60,7 @@ export default function Newsletter() {
               Get our latest articles delivered to your inbox. No spam, just insights on building better digital products.
             </p>
           </div>
-          
+
           <form className="relative flex gap-2" onSubmit={handleNewsletterSubmit}>
             <label htmlFor="blog-newsletter-email" className="sr-only">Email address</label>
             <input
@@ -56,7 +80,7 @@ export default function Newsletter() {
             >
               {newsletterStatus === "loading" ? "..." : newsletterStatus === "success" ? "Joined" : "Subscribe"}
             </button>
-            
+
             {newsletterStatus === "success" && (
               <motion.p
                 initial={{ opacity: 0, y: 5 }}
