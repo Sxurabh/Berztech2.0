@@ -291,26 +291,25 @@ export default function TestimonialForm({ mode = "create", embedded, onClose, on
                                 Author Image
                             </h3>
 
-                            <div className="mb-4">
+                            <div className="mb-4 flex flex-col items-center">
                                 {formData.image ? (
-                                    <div className="relative aspect-square w-full bg-neutral-100 overflow-hidden border border-neutral-200 mb-2">
+                                    <div className="relative w-24 h-24 rounded-full bg-neutral-100 overflow-hidden border border-neutral-200 mb-4 shadow-sm">
                                         <img src={formData.image} alt="Preview" className="w-full h-full object-cover" />
                                         <button
                                             type="button"
                                             onClick={() => setFormData(prev => ({ ...prev, image: "" }))}
-                                            className="absolute top-2 right-2 p-1 bg-white/90 text-red-600 rounded-full hover:bg-white transition-colors"
+                                            className="absolute top-1 right-1 p-1 bg-white border border-neutral-200 text-red-600 rounded-full hover:bg-neutral-50 transition-colors shadow-sm z-10"
                                         >
-                                            <FiX className="w-4 h-4" />
+                                            <FiX className="w-3 h-3" />
                                         </button>
                                     </div>
                                 ) : (
-                                    <div className="aspect-square w-full bg-neutral-50 border-2 border-dashed border-neutral-300 flex flex-col items-center justify-center text-neutral-400 mb-2">
-                                        <FiUploadCloud className="w-8 h-8 mb-2" />
-                                        <span className="text-xs text-center px-4">Upload Image</span>
+                                    <div className="w-24 h-24 rounded-full bg-neutral-50 border-2 border-dashed border-neutral-300 flex flex-col items-center justify-center text-neutral-400 mb-4">
+                                        <FiUploadCloud className="w-6 h-6" />
                                     </div>
                                 )}
 
-                                <label className="block">
+                                <label className="block w-full">
                                     <span className="sr-only">Choose profile photo</span>
                                     <input
                                         type="file"

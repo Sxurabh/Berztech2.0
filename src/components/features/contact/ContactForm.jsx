@@ -73,14 +73,14 @@ export default function ContactForm() {
   if (isSuccess) {
     return (
       <CornerFrame
-        className="h-full min-h-[400px] flex items-center justify-center bg-neutral-50 border-neutral-200"
+        className="h-full min-h-[400px] flex items-center justify-center"
         bracketClassName="w-4 h-4 border-neutral-900"
       >
         <div className="text-center p-8">
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="w-16 h-16 bg-neutral-900 text-white rounded-full flex items-center justify-center mx-auto mb-6"
+            className="w-16 h-16 text-white rounded-full flex items-center justify-center mx-auto mb-6"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-8 h-8">
               <polyline points="20 6 9 17 4 12" />
@@ -103,7 +103,7 @@ export default function ContactForm() {
 
   return (
     <CornerFrame
-      className="!block bg-transparent p-6 sm:p-8 lg:p-10 mx-auto max-w-5xl"
+      className="!block p-6 sm:p-8 lg:p-10 mx-auto max-w-5xl"
       bracketClassName="w-5 h-5 border-neutral-300"
     >
       <form onSubmit={handleSubmit} className="space-y-8 w-full max-w-3xl mx-auto">
@@ -134,7 +134,7 @@ export default function ContactForm() {
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 onFocus={() => setFocusedField('name')}
                 onBlur={() => setFocusedField(null)}
-                className="w-full bg-white/50 backdrop-blur-sm border-b border-neutral-200 py-3 px-2 font-space-grotesk text-lg text-neutral-900 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all placeholder:text-neutral-300"
+                className="w-full backdrop-blur-sm border-b border-neutral-200 py-3 px-2 font-space-grotesk text-lg text-neutral-900 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all placeholder:text-neutral-300"
                 placeholder="John Doe"
               />
             </div>

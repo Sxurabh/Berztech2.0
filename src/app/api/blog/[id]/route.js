@@ -8,11 +8,11 @@ export async function GET(request, { params }) {
     try {
         const { id } = await params;
         const supabase = await createServerSupabaseClient();
-        const isNumeric = !isNaN(id);
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
 
         let query = supabase.from("blog_posts").select("*");
-        if (isNumeric) {
-            query = query.eq("id", parseInt(id));
+        if (isUUID) {
+            query = query.eq("id", id);
         } else {
             query = query.eq("slug", id);
         }
@@ -60,13 +60,13 @@ export async function PUT(request, { params }) {
             if (body[key] !== undefined) payload[key] = body[key];
         }
 
-        const isNumeric = /^\d+$/.test(id);
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
         const query = supabase
             .from("blog_posts")
             .update(payload);
 
-        if (isNumeric) {
-            query.eq("id", parseInt(id));
+        if (isUUID) {
+            query.eq("id", id);
         } else {
             query.eq("slug", id);
         }
@@ -107,10 +107,17 @@ export async function DELETE(request, { params }) {
             return NextResponse.json({ error: "Forbidden" }, { status: 403 });
         }
 
-        const { error } = await supabase
-            .from("blog_posts")
-            .delete()
-            .eq("id", parseInt(id));
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+
+        // Use either id (UUID) or slug to locate and delete the post
+        let deleteQuery = supabase.from("blog_posts").delete();
+        if (isUUID) {
+            deleteQuery = deleteQuery.eq("id", id);
+        } else {
+            deleteQuery = deleteQuery.eq("slug", id);
+        }
+
+        const { error } = await deleteQuery;
 
         if (error) throw error;
 
