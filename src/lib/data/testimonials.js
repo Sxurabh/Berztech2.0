@@ -1,4 +1,5 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { cache } from "react";
 
 // Static fallback data for development (if needed/requested, but user wants to remove it)
 // We'll keep empty array as default to avoid showing dummy data.
@@ -6,7 +7,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 /**
  * Get all testimonials.
  */
-export async function getTestimonials() {
+export const getTestimonials = cache(async () => {
     try {
         const supabase = await createServerSupabaseClient();
         if (!supabase) throw new Error("Supabase not configured");
@@ -22,12 +23,12 @@ export async function getTestimonials() {
         console.warn("Supabase fetch failed (getTestimonials):", err.message);
         return [];
     }
-}
+});
 
 /**
  * Get a single testimonial.
  */
-export async function getTestimonialById(id) {
+export const getTestimonialById = cache(async (id) => {
     try {
         const supabase = await createServerSupabaseClient();
         if (!supabase) throw new Error("Supabase not configured");
@@ -44,7 +45,7 @@ export async function getTestimonialById(id) {
         console.error("Supabase fetch failed (getTestimonialById):", err);
         return null;
     }
-}
+});
 
 /**
  * Create a testimonial.

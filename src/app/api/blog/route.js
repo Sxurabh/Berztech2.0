@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { isAdminEmail } from "@/config/admin";
+import { revalidatePath } from "next/cache";
 
 // GET /api/blog — List blog posts
 // Public: returns published only. Admin: returns all.
@@ -85,6 +86,10 @@ export async function POST(request) {
             .single();
 
         if (error) throw error;
+
+        revalidatePath("/blog");
+        revalidatePath("/");
+
         return NextResponse.json(data, { status: 201 });
     } catch (error) {
         console.error("POST /api/blog error:", error);

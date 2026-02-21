@@ -1,5 +1,6 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { projects as staticProjects, filters as staticFilters } from "@/data/projects";
+import { cache } from "react";
 
 /**
  * @typedef {Object} Project
@@ -22,7 +23,7 @@ import { projects as staticProjects, filters as staticFilters } from "@/data/pro
  * Falls back to static data ONLY on connection error, not on empty data.
  * @returns {Promise<Project[]>}
  */
-export async function getProjects() {
+export const getProjects = cache(async () => {
     try {
         const supabase = await createServerSupabaseClient();
         if (!supabase) throw new Error("Supabase not configured");
@@ -40,14 +41,14 @@ export async function getProjects() {
         console.warn("Supabase fetch failed (getProjects), using static fallback:", err.message);
         return staticProjects;
     }
-}
+});
 
 /**
  * Get a single project by slug or ID.
  * @param {string} idOrSlug
  * @returns {Promise<Project|null>}
  */
-export async function getProjectById(idOrSlug) {
+export const getProjectById = cache(async (idOrSlug) => {
     try {
         const supabase = await createServerSupabaseClient();
         if (!supabase) throw new Error("Supabase not configured");
@@ -79,13 +80,13 @@ export async function getProjectById(idOrSlug) {
         console.warn(`Supabase fetch failed (getProjectById: ${idOrSlug}):`, err.message);
         return null;
     }
-}
+});
 
 /**
  * Get unique project categories.
  * @returns {Promise<string[]>}
  */
-export async function getProjectFilters() {
+export const getProjectFilters = cache(async () => {
     try {
         const supabase = await createServerSupabaseClient();
         if (!supabase) throw new Error("Supabase not configured");
@@ -102,7 +103,7 @@ export async function getProjectFilters() {
         console.warn("Supabase fetch failed (getProjectFilters):", err.message);
         return ["All"];
     }
-}
+});
 
 /**
  * Create a new project.

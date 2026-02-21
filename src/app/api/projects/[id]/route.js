@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { isAdminEmail } from "@/config/admin";
 import { getProjectById, updateProject, deleteProject } from "@/lib/data/projects";
+import { revalidatePath } from "next/cache";
 
 // GET /api/projects/[id] — Get a single project
 export async function GET(request, { params }) {
@@ -67,6 +68,11 @@ export async function PUT(request, { params }) {
             return NextResponse.json({ error: "Project not found" }, { status: 404 });
         }
 
+        // Invalidate ISR cache
+        revalidatePath("/work");
+        revalidatePath("/");
+        revalidatePath(`/work/${updated.slug}`);
+
         return NextResponse.json(updated);
     } catch (error) {
         console.error("PUT /api/projects/[id] error:", error);
@@ -92,6 +98,11 @@ export async function DELETE(request, { params }) {
         }
 
         await deleteProject(id);
+
+        // Invalidate ISR cache
+        revalidatePath("/work");
+        revalidatePath("/");
+
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error("DELETE /api/projects/[id] error:", error);

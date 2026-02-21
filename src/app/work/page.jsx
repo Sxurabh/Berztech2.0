@@ -7,6 +7,9 @@ export const metadata = {
   description: "Explore our portfolio of digital products and engineering solutions.",
 };
 
+export const revalidate = 86400; // 24 hours
+
+
 export default async function WorkPage() {
   const projects = await getProjects();
 

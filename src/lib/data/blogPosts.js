@@ -1,9 +1,10 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { cache } from "react";
 
 /**
  * Get published blog posts from Supabase.
  */
-export async function getPosts({ published = true } = {}) {
+export const getPosts = cache(async ({ published = true } = {}) => {
     try {
         const supabase = await createServerSupabaseClient();
         if (!supabase) throw new Error("Supabase not configured");
@@ -23,12 +24,12 @@ export async function getPosts({ published = true } = {}) {
         console.warn("Supabase fetch failed, returning empty array:", err.message);
         return [];
     }
-}
+});
 
 /**
  * Get a single post by id or slug.
  */
-export async function getPostById(identifier) {
+export const getPostById = cache(async (identifier) => {
     try {
         const supabase = await createServerSupabaseClient();
         if (!supabase) throw new Error("Supabase not configured");
@@ -53,12 +54,12 @@ export async function getPostById(identifier) {
         console.warn("Supabase fetch failed (getPostById):", err.message);
         return null;
     }
-}
+});
 
 /**
  * Get unique blog categories.
  */
-export async function getBlogCategories() {
+export const getBlogCategories = cache(async () => {
     try {
         const supabase = await createServerSupabaseClient();
         if (!supabase) throw new Error("Supabase not configured");
@@ -76,7 +77,7 @@ export async function getBlogCategories() {
         console.warn("Supabase fetch failed (getBlogCategories):", err.message);
         return [];
     }
-}
+});
 
 /**
  * Create a new blog post.

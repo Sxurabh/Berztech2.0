@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getTestimonialById, updateTestimonial, deleteTestimonial } from "@/lib/data/testimonials";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { isAdminEmail } from "@/config/admin";
+import { revalidatePath } from "next/cache";
 
 export async function GET(req, { params }) {
     try {
@@ -39,6 +40,10 @@ export async function PUT(req, { params }) {
         else if (body.metricLabel !== undefined) payload.metric_label = body.metricLabel;
 
         const updated = await updateTestimonial(id, payload);
+
+        revalidatePath("/");
+        revalidatePath("/about");
+
         return NextResponse.json(updated);
     } catch (error) {
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
@@ -56,6 +61,10 @@ export async function DELETE(req, { params }) {
         }
 
         await deleteTestimonial(id);
+
+        revalidatePath("/");
+        revalidatePath("/about");
+
         return NextResponse.json({ success: true });
     } catch (error) {
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
