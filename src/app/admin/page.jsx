@@ -413,6 +413,9 @@ export default function AdminDashboard() {
                             <h3 className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500">
                                 Track Requests
                             </h3>
+                            <Link href="/admin/requests" className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 hover:text-neutral-900 transition-colors">
+                                View all →
+                            </Link>
                         </div>
 
                         {requestsLoading ? (

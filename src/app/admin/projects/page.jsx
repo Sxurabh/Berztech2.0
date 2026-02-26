@@ -75,8 +75,8 @@ export default function AdminProjectsPage() {
             sortable: true,
             render: (item) => (
                 <div className="flex items-center gap-2">
-                    <span className="text-sm font-space-grotesk text-white font-medium">{item.client}</span>
-                    {item.featured && <FiStar className="w-3 h-3 text-amber-400 fill-amber-400" />}
+                    <span className="text-sm font-space-grotesk text-neutral-900 font-bold">{item.client}</span>
+                    {item.featured && <FiStar className="w-3 h-3 text-amber-500 fill-amber-500" />}
                 </div>
             ),
         },
@@ -85,7 +85,7 @@ export default function AdminProjectsPage() {
             label: "Title",
             sortable: true,
             render: (item) => (
-                <span className="text-sm text-neutral-400 line-clamp-1">{item.title}</span>
+                <span className="text-sm text-neutral-600 font-medium line-clamp-1">{item.title}</span>
             ),
         },
         {
@@ -93,7 +93,7 @@ export default function AdminProjectsPage() {
             label: "Category",
             sortable: true,
             render: (item) => (
-                <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 px-2 py-1 bg-neutral-800/50 border border-neutral-700">
+                <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-900 px-2 py-1 bg-white border-2 border-neutral-900 shadow-[1px_1px_0px_#171717]">
                     {item.category}
                 </span>
             ),
@@ -117,14 +117,14 @@ export default function AdminProjectsPage() {
                             Projects
                         </span>
                     </div>
-                    <h1 className="font-space-grotesk text-2xl sm:text-3xl font-medium text-white tracking-tight">
+                    <h1 className="font-space-grotesk text-2xl sm:text-3xl font-bold text-neutral-900 tracking-tight uppercase">
                         Manage Projects
                     </h1>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                     <button
                         onClick={() => setModal({ open: true, mode: "create", id: null })}
-                        className="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-neutral-900 font-jetbrains-mono text-xs uppercase tracking-widest font-semibold hover:bg-neutral-100 transition-colors"
+                        className="inline-flex items-center gap-2 px-4 py-2.5 bg-neutral-900 text-white font-jetbrains-mono text-xs uppercase tracking-widest font-bold hover:bg-neutral-800 transition-colors border-2 border-neutral-900 shadow-[2px_2px_0px_#171717] hover:shadow-[4px_4px_0px_#171717] hover:-translate-y-0.5"
                     >
                         <FiPlus className="w-4 h-4" />
                         New Project
@@ -132,7 +132,7 @@ export default function AdminProjectsPage() {
                     {projects.length > 0 && (
                         <button
                             onClick={() => setBulkDelete(true)}
-                            className="inline-flex items-center gap-2 px-4 py-2.5 border border-red-500/30 text-red-400 font-jetbrains-mono text-xs uppercase tracking-widest font-semibold hover:bg-red-500/10 transition-colors"
+                            className="inline-flex items-center gap-2 px-4 py-2.5 bg-white border-2 border-red-500 text-red-600 font-jetbrains-mono text-xs uppercase tracking-widest font-bold hover:bg-red-50 transition-all shadow-[2px_2px_0px_#ef4444] hover:shadow-[4px_4px_0px_#ef4444] hover:-translate-y-0.5"
                         >
                             <FiTrash2 className="w-4 h-4" />
                             Delete All
@@ -158,14 +158,14 @@ export default function AdminProjectsPage() {
                         <>
                             <button
                                 onClick={() => setModal({ open: true, mode: "edit", id: item.id })}
-                                className="p-2 text-neutral-500 hover:text-white hover:bg-white/10 transition-colors"
+                                className="p-1.5 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 border-2 border-transparent hover:border-neutral-900 hover:shadow-[2px_2px_0px_#171717] transition-all"
                                 title="Edit"
                             >
                                 <FiEdit2 className="w-4 h-4" />
                             </button>
                             <button
                                 onClick={() => setDeleteTarget(item)}
-                                className="p-2 text-neutral-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                                className="p-1.5 text-neutral-600 hover:text-red-600 hover:bg-red-50 border-2 border-transparent hover:border-red-500 hover:shadow-[2px_2px_0px_#ef4444] transition-all"
                                 title="Delete"
                             >
                                 <FiTrash2 className="w-4 h-4" />
