@@ -21,46 +21,58 @@ export default function RequestTimeline({ currentStage = "discover", interactive
 
     if (compact) {
         return (
-            <div className="w-full relative group">
-                {/* Horizontal scroll container */}
-                <div className="flex items-center gap-1.5 overflow-x-auto pb-2 -mb-2 scrollbar-none sm:scrollbar-thin sm:scrollbar-thumb-neutral-200 sm:scrollbar-track-transparent">
+            <div className="w-full">
+                <div className="flex items-center w-full max-w-sm">
                     {STAGES.map((stage, index) => {
                         const isCompleted = index < normalizedIndex;
                         const isCurrent = index === normalizedIndex;
+                        const isLast = index === STAGES.length - 1;
 
                         return (
-                            <motion.button
-                                key={stage.id}
-                                type="button"
-                                onClick={() => isClickable && onStageChange(stage.id)}
-                                className={`
-                                    relative flex-shrink-0 flex items-center gap-1.5 py-1 px-2.5 border transition-all duration-300
-                                    ${isClickable ? "cursor-pointer" : "cursor-default"}
-                                    ${isCompleted ? "bg-neutral-900 border-neutral-900 text-white" : ""}
-                                    ${isCurrent ? "bg-white border-neutral-900 text-neutral-900 shadow-[2px_2px_0px_#171717]" : ""}
-                                    ${!isCompleted && !isCurrent ? "bg-white border-neutral-200 text-neutral-400 hover:border-neutral-300 hover:text-neutral-600 hover:bg-neutral-50" : ""}
-                                `}
-                                whileHover={isClickable && !isCurrent ? { y: -1 } : {}}
-                                whileTap={isClickable ? { scale: 0.98, y: 0 } : {}}
-                            >
-                                <span className={`text-[10px] font-space-grotesk font-medium uppercase tracking-wider whitespace-nowrap ${isCompleted ? 'opacity-90' : ''}`}>
-                                    {stage.label}
-                                </span>
-                                {isCompleted && (
-                                    <svg className="w-3 h-3 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                    </svg>
+                            <div key={stage.id} className="flex items-center flex-1 last:flex-none">
+                                <motion.button
+                                    type="button"
+                                    onClick={() => isClickable && onStageChange(stage.id)}
+                                    className={`
+                                        relative flex items-center justify-center w-5 h-5 rounded-full border transition-all duration-300 shrink-0
+                                        ${isClickable ? "cursor-pointer" : "cursor-default"}
+                                        ${isCompleted ? "bg-neutral-900 border-neutral-900 text-white" : ""}
+                                        ${isCurrent ? "bg-white border-neutral-900 text-neutral-900 shadow-sm" : ""}
+                                        ${!isCompleted && !isCurrent ? "bg-white border-neutral-200 text-neutral-400 hover:border-neutral-300 hover:bg-neutral-50" : ""}
+                                    `}
+                                    whileHover={isClickable && !isCurrent ? { scale: 1.1 } : {}}
+                                    whileTap={isClickable ? { scale: 0.95 } : {}}
+                                >
+                                    {isCompleted ? (
+                                        <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    ) : isCurrent ? (
+                                        <div className="w-1.5 h-1.5 rounded-full bg-neutral-900" />
+                                    ) : null}
+                                </motion.button>
+
+                                {/* Connecting Line */}
+                                {!isLast && (
+                                    <div className={`
+                                        h-[1px] w-full transition-colors duration-300 mx-1
+                                        ${isCompleted ? "bg-neutral-900" : "bg-neutral-200"}
+                                    `} />
                                 )}
-                                {isCurrent && (
-                                    <div className="w-1.5 h-1.5 bg-neutral-900 shrink-0 ml-0.5" />
-                                )}
-                            </motion.button>
+                            </div>
                         );
                     })}
                 </div>
 
-                {/* Fade edges to indicate scrollability on mobile */}
-                <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-neutral-50 to-transparent pointer-events-none sm:hidden" />
+                {/* Status text display below the diagram */}
+                <div className="mt-1.5 flex items-center gap-2">
+                    <span className="text-[10px] font-space-grotesk font-bold text-neutral-900 uppercase tracking-widest">
+                        {STAGES[normalizedIndex]?.label}
+                    </span>
+                    <span className="text-[9px] font-jetbrains-mono text-neutral-500">
+                        {STAGES[normalizedIndex]?.desc}
+                    </span>
+                </div>
             </div>
         );
     }

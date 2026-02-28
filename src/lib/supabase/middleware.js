@@ -65,10 +65,10 @@ export async function updateSession(request) {
     }
 
     // Protect client dashboard — redirect admin to /admin
-    if (pathname.startsWith("/dashboard")) {
+    if (pathname.startsWith("/dashboard") || pathname.startsWith("/track")) {
         if (!user) {
             const loginUrl = new URL("/auth/login", request.url);
-            loginUrl.searchParams.set("redirect", "/dashboard");
+            loginUrl.searchParams.set("redirect", pathname);
             return NextResponse.redirect(loginUrl);
         }
         if (isAdmin(userEmail)) {

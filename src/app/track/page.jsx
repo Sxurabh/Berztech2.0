@@ -2,15 +2,16 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { FiArchive, FiCheckCircle, FiInbox, FiTrello, FiExternalLink, FiX, FiEye } from "react-icons/fi";
+import { FiInbox, FiTrello, FiExternalLink, FiX, FiEye } from "react-icons/fi";
 import { toast } from "react-hot-toast";
 import DataTable from "@/components/admin/DataTable";
 import RequestTimeline from "@/components/ui/RequestTimeline";
 
-export default function AdminRequestsPage() {
+export default function TrackPage() {
     const [requests, setRequests] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [viewingRequest, setViewingRequest] = useState(null); // Added state for viewing request details
+    const [viewingRequest, setViewingRequest] = useState(null);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         fetchRequests();
@@ -19,52 +20,38 @@ export default function AdminRequestsPage() {
     async function fetchRequests() {
         setLoading(true);
         try {
-            const res = await fetch("/api/admin/requests");
+            const res = await fetch("/api/requests");
             const json = await res.json();
+
             if (res.ok) {
-                // Show only active inquiries (exclude archived and completed)
-                setRequests((json.data || []).filter(r => r.status !== 'archived' && r.status !== 'completed'));
+                setRequests(json.data || []);
             } else {
-                toast.error("Failed to load requests: " + json.error);
+                setError(json.error || "Access Denied. Please ensure you are logged in.");
+                toast.error("Failed to load requests");
             }
         } catch (error) {
-            toast.error("Error fetching requests");
+            setError("Network error fetching data. Ensure you are authenticated.");
+            toast.error("Error fetching requests data");
         } finally {
             setLoading(false);
         }
     }
 
-    const updateRequestStatus = async (id, status) => {
-        try {
-            const res = await fetch(`/api/admin/requests/${id}`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status }),
-            });
-            if (res.ok) {
-                const { data } = await res.json();
-                if (status === 'archived') {
-                    setRequests((prev) => prev.filter((r) => r.id !== id));
-                    toast.success("Request archived");
-                } else if (status === 'completed') {
-                    setRequests((prev) => prev.map((r) => (r.id === id ? { ...r, status: data.status } : r)));
-                    toast.success("Request marked as completed!");
-                } else {
-                    setRequests((prev) => prev.map((r) => (r.id === id ? { ...r, status: data.status } : r)));
-                    toast.success("Timeline stage updated");
-                }
-            } else {
-                toast.error("Failed to update status");
-            }
-        } catch (error) {
-            toast.error("Error updating request status");
-        }
-    };
+    if (error) {
+        return (
+            <div className="max-w-4xl mx-auto py-20 px-6">
+                <div className="bg-rose-50 border-2 border-rose-200 p-8 text-center max-w-lg mx-auto">
+                    <h2 className="text-xl font-space-grotesk font-bold text-rose-800 mb-2">Access Denied</h2>
+                    <p className="text-rose-600 font-jetbrains-mono text-sm">{error}</p>
+                </div>
+            </div>
+        )
+    }
 
     const columns = [
         {
             key: "name",
-            label: "Client",
+            label: "Request",
             sortable: true,
             render: (item) => (
                 <div className="flex flex-col gap-0.5 max-w-[200px]">
@@ -80,15 +67,12 @@ export default function AdminRequestsPage() {
             ),
         },
         {
-            key: "email",
-            label: "Contact & Details",
+            key: "services",
+            label: "Details",
             sortable: false,
             className: "hidden sm:table-cell",
             render: (item) => (
                 <div className="flex flex-col gap-1 max-w-[200px]">
-                    <span className="text-xs font-jetbrains-mono text-neutral-600 truncate">
-                        {item.email}
-                    </span>
                     <div className="flex flex-wrap gap-1">
                         <span className="text-[9px] font-jetbrains-mono text-neutral-400 uppercase tracking-wider bg-neutral-100/80 px-1.5 py-0.5 rounded-sm">
                             {Array.isArray(item.services) ? item.services[0] + (item.services.length > 1 ? ` +${item.services.length - 1}` : "") : (item.services || "General")}
@@ -111,9 +95,8 @@ export default function AdminRequestsPage() {
                 <div className="py-1">
                     <RequestTimeline
                         currentStage={item.status || "discover"}
-                        interactive={item.status !== 'completed'}
+                        interactive={false}
                         compact
-                        onStageChange={(stage) => updateRequestStatus(item.id, stage)}
                     />
                 </div>
             ),
@@ -139,20 +122,13 @@ export default function AdminRequestsPage() {
                     <div className="flex items-center gap-2 mb-2">
                         <div className="h-px w-4 bg-neutral-900 border-b border-neutral-200" />
                         <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 font-medium">
-                            Inquiries
+                            Client Dashboard
                         </span>
                     </div>
                     <h1 className="font-space-grotesk text-2xl sm:text-3xl font-bold text-neutral-900 tracking-tight">
                         Track Requests
                     </h1>
                 </div>
-                <Link
-                    href="/admin/board"
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-neutral-200 text-neutral-900 font-jetbrains-mono text-xs uppercase tracking-widest font-medium hover:bg-neutral-50 hover:border-neutral-300 transition-colors rounded-sm shadow-sm"
-                >
-                    <FiTrello className="w-4 h-4" />
-                    Global Board
-                </Link>
             </div>
 
             {loading ? (
@@ -179,7 +155,7 @@ export default function AdminRequestsPage() {
                                 <FiEye className="w-4 h-4" />
                             </button>
                             <Link
-                                href={`/admin/board?requestId=${item.id}`}
+                                href={`/track/board?requestId=${item.id}`}
                                 className="p-2 text-neutral-400 hover:text-neutral-900 transition-colors rounded-full hover:bg-neutral-100"
                                 title="Open Board"
                             >
@@ -274,7 +250,7 @@ export default function AdminRequestsPage() {
                                 Close
                             </button>
                             <Link
-                                href={`/admin/board?requestId=${viewingRequest.id}`}
+                                href={`/track/board?requestId=${viewingRequest.id}`}
                                 className="px-5 py-2 text-[10px] font-jetbrains-mono font-medium uppercase tracking-widest text-white bg-neutral-900 hover:bg-neutral-800 rounded-sm shadow-sm transition-colors flex items-center gap-2"
                             >
                                 Open in Board <FiExternalLink className="w-3.5 h-3.5" />

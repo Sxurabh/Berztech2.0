@@ -72,19 +72,19 @@ export default function AdminTestimonialsPage() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
                 <div>
                     <div className="flex items-center gap-2 mb-2">
-                        <div className="h-px w-4 bg-neutral-900 border-b-2 border-neutral-900" />
-                        <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 font-bold">
+                        <div className="h-px w-4 bg-neutral-900 border-b border-neutral-200" />
+                        <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 font-medium">
                             Testimonials
                         </span>
                     </div>
-                    <h1 className="font-space-grotesk text-2xl sm:text-3xl font-bold text-neutral-900 tracking-tight uppercase">
+                    <h1 className="font-space-grotesk text-2xl sm:text-3xl font-bold text-neutral-900 tracking-tight">
                         Manage Reviews
                     </h1>
                 </div>
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => setModal({ open: true, mode: "create", id: null })}
-                        className="inline-flex items-center gap-2 px-4 py-2.5 bg-neutral-900 text-white font-jetbrains-mono text-xs uppercase tracking-widest font-bold hover:bg-neutral-800 transition-colors border-2 border-neutral-900 shadow-[2px_2px_0px_#171717] hover:shadow-[4px_4px_0px_#171717] hover:-translate-y-0.5"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-900 text-white font-jetbrains-mono text-xs uppercase tracking-widest font-medium hover:bg-neutral-800 transition-colors rounded-sm shadow-sm"
                     >
                         <FiPlus className="w-4 h-4" />
                         Add New
@@ -95,8 +95,8 @@ export default function AdminTestimonialsPage() {
             {isLoading ? (
                 <div className="flex items-center justify-center min-h-[400px]">
                     <div className="animate-pulse flex flex-col items-center">
-                        <div className="h-4 w-32 bg-neutral-200 border-2 border-neutral-300 rounded-none mb-4"></div>
-                        <div className="h-64 w-full max-w-2xl bg-neutral-100 border-2 border-neutral-300 rounded-none"></div>
+                        <div className="h-4 w-32 bg-neutral-200 rounded-sm mb-4"></div>
+                        <div className="h-64 w-full max-w-2xl bg-neutral-100 rounded-sm"></div>
                     </div>
                 </div>
             ) : (
@@ -110,76 +110,78 @@ export default function AdminTestimonialsPage() {
                     renderGridItem={(testimonial) => (
                         <div
                             key={testimonial.id}
-                            className="bg-white border-2 border-neutral-900 h-full flex flex-col shadow-[2px_2px_0px_#171717] hover:shadow-[6px_6px_0px_#171717] hover:-translate-y-1 transition-all"
+                            className="bg-white border border-neutral-200 rounded-sm h-full flex flex-col shadow-sm hover:shadow-md transition-shadow group relative"
                         >
-                            <div className="p-5 flex flex-col h-full relative">
+                            <div className="p-5 flex flex-col h-full">
                                 {/* Header: Author & Company */}
                                 <div className="flex items-start justify-between mb-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="relative w-12 h-12 bg-neutral-100 overflow-hidden shrink-0 border-2 border-neutral-900 shadow-[2px_2px_0px_#171717]">
-                                            {testimonial.image ? (
-                                                <Image
-                                                    src={testimonial.image}
-                                                    alt={testimonial.client}
-                                                    fill
-                                                    className="object-cover"
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center text-neutral-900 font-bold bg-neutral-100">
-                                                    {testimonial.client?.charAt(0)}
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div>
-                                            <h3 className="font-jetbrains-mono text-sm font-bold text-neutral-900 truncate max-w-[120px]">
-                                                {testimonial.client}
-                                            </h3>
-                                            <p className="text-xs font-jetbrains-mono font-medium text-neutral-500 truncate max-w-[120px]">
-                                                {testimonial.role ? `${testimonial.role} at ` : ''}{testimonial.company}
-                                            </p>
+                                    <div className="flex items-center justify-between w-full pr-12">
+                                        <div className="flex items-center gap-3">
+                                            <div className="relative w-10 h-10 bg-neutral-100 rounded-full overflow-hidden shrink-0 border border-neutral-200">
+                                                {testimonial.image ? (
+                                                    <Image
+                                                        src={testimonial.image}
+                                                        alt={testimonial.client}
+                                                        fill
+                                                        className="object-cover"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center text-neutral-600 font-medium bg-neutral-100 text-sm">
+                                                        {testimonial.client?.charAt(0)}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="min-w-0">
+                                                <h3 className="font-space-grotesk text-sm font-bold text-neutral-900 truncate max-w-[140px]">
+                                                    {testimonial.client}
+                                                </h3>
+                                                <p className="text-[10px] font-jetbrains-mono text-neutral-500 truncate max-w-[140px]">
+                                                    {testimonial.role ? `${testimonial.role} at ` : ''}{testimonial.company}
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    {/* Actions */}
-                                    <div className="flex items-center gap-1">
+                                    {/* Actions Hover Overlay */}
+                                    <div className="absolute top-4 right-4 flex items-center gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity bg-neutral-50/80 backdrop-blur-sm p-1 rounded-sm border border-neutral-200/50">
                                         <button
                                             onClick={() => setModal({ open: true, mode: "edit", id: testimonial.id })}
-                                            className="p-1.5 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 border-2 border-transparent hover:border-neutral-900 hover:shadow-[2px_2px_0px_#171717] transition-all"
+                                            className="p-1.5 text-neutral-400 hover:text-neutral-900 hover:bg-white rounded-sm transition-colors"
                                             title="Edit"
                                         >
-                                            <FiEdit2 className="w-4 h-4" />
+                                            <FiEdit2 className="w-3.5 h-3.5" />
                                         </button>
                                         <button
                                             onClick={() => handleDelete(testimonial.id)}
-                                            className="p-1.5 text-neutral-600 hover:text-red-600 hover:bg-red-50 border-2 border-transparent hover:border-red-500 hover:shadow-[2px_2px_0px_#ef4444] transition-all"
+                                            className="p-1.5 text-neutral-400 hover:text-red-600 hover:bg-white rounded-sm transition-colors"
                                             title="Delete"
                                         >
-                                            <FiTrash2 className="w-4 h-4" />
+                                            <FiTrash2 className="w-3.5 h-3.5" />
                                         </button>
                                     </div>
                                 </div>
 
                                 {/* Content */}
                                 <blockquote className="flex-1 mb-6">
-                                    <p className="text-neutral-700 font-space-grotesk text-sm leading-relaxed line-clamp-4 font-medium italic border-l-4 border-neutral-900 pl-3">
+                                    <p className="text-neutral-600 font-space-grotesk text-sm leading-relaxed line-clamp-4 italic">
                                         "{testimonial.content}"
                                     </p>
                                 </blockquote>
 
                                 {/* Footer: Metrics/Tags */}
-                                <div className="pt-4 border-t-2 border-neutral-900 mt-auto flex items-center justify-between">
+                                <div className="pt-4 border-t border-neutral-100 mt-auto flex items-center justify-between">
                                     {testimonial.metric ? (
                                         <div className="flex flex-col">
-                                            <span className="font-jetbrains-mono font-bold text-neutral-900 text-sm">{testimonial.metric}</span>
-                                            <span className="font-jetbrains-mono text-[9px] font-bold uppercase tracking-widest text-neutral-500">{testimonial.metric_label}</span>
+                                            <span className="font-jetbrains-mono font-medium text-neutral-900 text-xs">{testimonial.metric}</span>
+                                            <span className="font-jetbrains-mono text-[9px] uppercase tracking-widest text-neutral-400">{testimonial.metric_label}</span>
                                         </div>
                                     ) : (
                                         <span className="text-[10px] text-neutral-400 font-jetbrains-mono uppercase tracking-widest">No metric</span>
                                     )}
 
                                     <span className={`
-                                        px-2.5 py-1 text-[9px] font-jetbrains-mono font-bold uppercase tracking-widest border-2 shadow-[1px_1px_0px_#171717]
-                                        ${testimonial.featured ? 'bg-neutral-900 text-white border-neutral-900' : 'bg-white text-neutral-900 border-neutral-900'}
+                                        px-2 py-0.5 text-[9px] font-jetbrains-mono uppercase tracking-widest rounded-sm border
+                                        ${testimonial.featured ? 'bg-neutral-900 text-white border-neutral-900' : 'bg-neutral-50 text-neutral-600 border-neutral-200'}
                                     `}>
                                         {testimonial.featured ? 'Featured' : 'Standard'}
                                     </span>
