@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FiBriefcase, FiFileText, FiPlus, FiArrowRight, FiCheckCircle, FiArchive, FiMessageSquare } from "react-icons/fi";
-import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 import Modal from "@/components/ui/Modal";
@@ -13,73 +12,15 @@ import ProjectForm from "@/components/admin/ProjectForm";
 import BlogPostForm from "@/components/admin/BlogPostForm";
 import TestimonialForm from "@/components/admin/TestimonialForm";
 import RequestTimeline from "@/components/ui/RequestTimeline";
+import DashboardStats from "@/components/features/admin/DashboardStats";
+import DashboardQuickActions from "@/components/features/admin/DashboardQuickActions";
+import DashboardRecentProjects from "@/components/features/admin/DashboardRecentProjects";
+import DashboardRecentTestimonials from "@/components/features/admin/DashboardRecentTestimonials";
+import DashboardRecentPosts from "@/components/features/admin/DashboardRecentPosts";
+import { useProjectStats } from "@/lib/hooks/useProjectStats";
+import { useRequests } from "@/lib/hooks/useRequests";
 
 const REQUEST_STAGES = ["discover", "define", "design", "develop", "deliver", "maintain"];
-
-function StatCard({ icon: Icon, label, value, href, index }) {
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.05 }}
-        >
-            <Link href={href}>
-                <CornerFrame
-                    className="p-3 sm:p-4 bg-white border border-neutral-200 hover:border-neutral-300 hover:shadow-sm transition-all duration-200 h-full"
-                    bracketClassName="w-2 h-2 border-neutral-400"
-                >
-                    <div className="flex items-start justify-between mb-2">
-                        <div className="p-1.5 bg-neutral-100 border border-neutral-200 rounded-sm">
-                            <Icon className="w-3.5 h-3.5 text-neutral-700" />
-                        </div>
-                    </div>
-                    <div className="font-space-grotesk text-lg sm:text-xl font-medium text-neutral-900 mb-0.5">
-                        {value ?? "—"}
-                    </div>
-                    <div className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500">
-                        {label}
-                    </div>
-                </CornerFrame>
-            </Link>
-        </motion.div>
-    );
-}
-
-function QuickActionCard({ onClick, title, subtitle, index }) {
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.15 + index * 0.05 }}
-        >
-            <button
-                type="button"
-                onClick={onClick}
-                className="w-full text-left"
-            >
-                <CornerFrame
-                    className="p-4 bg-white border border-neutral-200 hover:border-neutral-300 hover:shadow-sm transition-all duration-200 group h-full"
-                    bracketClassName="w-2 h-2 border-neutral-400"
-                >
-                    <div className="flex items-center gap-3">
-                        <div className="p-1.5 bg-neutral-100 border border-neutral-200 rounded-sm">
-                            <FiPlus className="w-3.5 h-3.5 text-neutral-700" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <div className="font-space-grotesk text-sm font-medium text-neutral-900 group-hover:text-neutral-600 transition-colors">
-                                {title}
-                            </div>
-                            <div className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500">
-                                {subtitle}
-                            </div>
-                        </div>
-                        <FiArrowRight className="w-4 h-4 text-neutral-400 group-hover:text-neutral-600 transition-colors shrink-0" />
-                    </div>
-                </CornerFrame>
-            </button>
-        </motion.div>
-    );
-}
 
 export default function AdminDashboard() {
     const router = useRouter();
@@ -88,104 +29,18 @@ export default function AdminDashboard() {
         user?.user_metadata?.full_name?.split(" ")?.[0] ||
         user?.email?.split("@")[0] ||
         null;
-    const [stats, setStats] = useState({ projects: null, posts: null, testimonials: null });
-    const [recentProjects, setRecentProjects] = useState([]);
-    const [recentPosts, setRecentPosts] = useState([]);
-    const [recentTestimonials, setRecentTestimonials] = useState([]);
+    const { stats, recentProjects, recentPosts, recentTestimonials, loading, refreshStats } = useProjectStats();
+    const { requests: initialRequests, loading: requestsLoading, refreshRequests, updateRequestStatus } = useRequests("/api/admin/requests");
     const [requests, setRequests] = useState([]);
-    const [requestsLoading, setRequestsLoading] = useState(true);
-    const [loading, setLoading] = useState(true);
     const [projectModal, setProjectModal] = useState({ open: false, mode: "create", id: null });
     const [blogModal, setBlogModal] = useState({ open: false, mode: "create", id: null });
     const [testimonialModal, setTestimonialModal] = useState({ open: false, mode: "create", id: null });
 
-    const refreshStats = async () => {
-        const supabase = createClient();
-        try {
-            const [projectsRes, postsRes, testiRes] = await Promise.all([
-                supabase.from("projects").select("id, client, title, created_at", { count: "exact" }).order("created_at", { ascending: false }).limit(15),
-                supabase.from("blog_posts").select("id, title, published, created_at", { count: "exact" }).order("created_at", { ascending: false }).limit(15),
-                supabase.from("testimonials").select("id, client, company, content, created_at", { count: "exact" }).order("created_at", { ascending: false }).limit(15),
-            ]);
-
-            setStats((s) => ({
-                ...s,
-                projects: projectsRes.count ?? 0,
-                posts: postsRes.count ?? 0,
-                testimonials: testiRes.count ?? 0,
-            }));
-            setRecentProjects(projectsRes.data || []);
-            setRecentPosts(postsRes.data || []);
-            setRecentTestimonials(testiRes.data || []);
-        } catch (error) {
-            console.error("Failed to refresh stats:", error);
-        }
-    };
-
     useEffect(() => {
-        async function fetchRequests() {
-            try {
-                const res = await fetch("/api/admin/requests");
-                const json = await res.json();
-                if (res.ok) {
-                    setRequests((json.data || []).filter(r => r.status !== 'archived'));
-                } else {
-                    console.error("Failed to fetch requests:", json.error);
-                }
-            } catch (error) {
-                console.error("Error fetching requests:", error);
-            } finally {
-                setRequestsLoading(false);
-            }
+        if (initialRequests) {
+            setRequests(initialRequests.filter(r => r.status !== 'archived'));
         }
-        fetchRequests();
-    }, []);
-
-    const updateRequestStatus = async (id, status) => {
-        try {
-            const res = await fetch(`/api/admin/requests/${id}`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status }),
-            });
-            if (res.ok) {
-                const { data } = await res.json();
-                if (status === 'archived') {
-                    setRequests((prev) => prev.filter((r) => r.id !== id));
-                } else {
-                    setRequests((prev) => prev.map((r) => (r.id === id ? { ...r, status: data.status } : r)));
-                }
-            } else {
-                console.error("Failed to update request status");
-            }
-        } catch (error) {
-            console.error("Error updating request status:", error);
-        }
-    };
-
-    useEffect(() => {
-        async function fetchStats() {
-            const supabase = createClient();
-
-            const [projectsRes, postsRes, testiRes] = await Promise.all([
-                supabase.from("projects").select("id, client, title, created_at", { count: "exact" }).order("created_at", { ascending: false }).limit(15),
-                supabase.from("blog_posts").select("id, title, published, created_at", { count: "exact" }).order("created_at", { ascending: false }).limit(15),
-                supabase.from("testimonials").select("id, client, company, content, created_at", { count: "exact" }).order("created_at", { ascending: false }).limit(15),
-            ]);
-
-            setStats({
-                projects: projectsRes.count ?? 0,
-                posts: postsRes.count ?? 0,
-                testimonials: testiRes.count ?? 0,
-            });
-            setRecentProjects(projectsRes.data || []);
-            setRecentPosts(postsRes.data || []);
-            setRecentTestimonials(testiRes.data || []);
-            setLoading(false);
-        }
-
-        fetchStats();
-    }, []);
+    }, [initialRequests]);
 
     return (
         <div className="space-y-6 sm:space-y-8">
@@ -206,197 +61,40 @@ export default function AdminDashboard() {
             </motion.div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 md:gap-4">
-                <StatCard icon={FiBriefcase} label="Projects" value={stats.projects} href="/admin/projects" index={0} />
-                <StatCard icon={FiMessageSquare} label="Testimonials" value={stats.testimonials} href="/admin/testimonials" index={2} />
-                <StatCard icon={FiFileText} label="Posts" value={stats.posts} href="/admin/blog" index={1} />
-            </div>
+            <DashboardStats stats={stats} />
 
             {/* Quick Actions */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 md:gap-4">
-                <QuickActionCard onClick={() => setProjectModal({ open: true, mode: "create", id: null })} title="New Project" subtitle="Add case study" index={0} />
-                <QuickActionCard onClick={() => setTestimonialModal({ open: true, mode: "create", id: null })} title="New Testimonial" subtitle="Add client review" index={1} />
-                <QuickActionCard onClick={() => setBlogModal({ open: true, mode: "create", id: null })} title="New Blog Post" subtitle="Write article" index={2} />
-            </div>
+            <DashboardQuickActions
+                onNewProject={() => setProjectModal({ open: true, mode: "create", id: null })}
+                onNewTestimonial={() => setTestimonialModal({ open: true, mode: "create", id: null })}
+                onNewBlogPost={() => setBlogModal({ open: true, mode: "create", id: null })}
+            />
 
             {/* Recent Activity + Track Request */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
                 {/* Recent Projects */}
-                <motion.div
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: 0.2 }}
-                >
-                    <CornerFrame
-                        className="bg-white border border-neutral-200 p-4 lg:p-5 h-full flex flex-col"
-                        bracketClassName="w-2.5 h-2.5 border-neutral-400"
-                    >
-                        <div className="flex items-center justify-between mb-3 shrink-0">
-                            <h3 className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500">
-                                Recent Projects
-                            </h3>
-                            <Link href="/admin/projects" className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 hover:text-neutral-900 transition-colors">
-                                View all →
-                            </Link>
-                        </div>
-
-                        {loading ? (
-                            <div className="space-y-2 overflow-hidden">
-                                {[1, 2, 3].map((i) => (
-                                    <div key={i} className="h-10 bg-neutral-100 animate-pulse rounded-sm" />
-                                ))}
-                            </div>
-                        ) : recentProjects.length === 0 ? (
-                            <div className="py-6 text-center">
-                                <p className="text-xs text-neutral-500 font-jetbrains-mono">No projects</p>
-                                <button type="button" onClick={() => setProjectModal({ open: true, mode: "create", id: null })} className="text-xs text-neutral-700 hover:text-neutral-900 underline mt-1 inline-block">
-                                    Add project
-                                </button>
-                            </div>
-                        ) : (
-                            <div className="overflow-y-auto max-h-[148px] pr-2 space-y-1 scrollbar-thin scrollbar-thumb-neutral-200 hover:scrollbar-thumb-neutral-300 scrollbar-track-transparent">
-                                {recentProjects.map((project) => (
-                                    <button
-                                        key={project.id}
-                                        type="button"
-                                        onClick={() => setProjectModal({ open: true, mode: "edit", id: project.id })}
-                                        className="w-full flex items-center justify-between py-2 px-2.5 bg-neutral-50 hover:bg-neutral-100 transition-colors rounded-sm group text-left"
-                                    >
-                                        <div className="min-w-0 flex-1">
-                                            <div className="text-xs font-space-grotesk text-neutral-900 truncate">
-                                                {project.client || project.title}
-                                            </div>
-                                            <div className="text-[10px] font-jetbrains-mono text-neutral-500">
-                                                {new Date(project.created_at).toLocaleDateString()}
-                                            </div>
-                                        </div>
-                                        <FiArrowRight className="w-3.5 h-3.5 text-neutral-400 group-hover:text-neutral-600 transition-colors shrink-0 ml-2" />
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    </CornerFrame>
-                </motion.div>
+                <DashboardRecentProjects
+                    projects={recentProjects}
+                    loading={loading}
+                    onNewProject={() => setProjectModal({ open: true, mode: "create", id: null })}
+                    onEditProject={(id) => setProjectModal({ open: true, mode: "edit", id })}
+                />
 
                 {/* Recent Testimonials - NEW BLOCK */}
-                <motion.div
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: 0.25 }}
-                >
-                    <CornerFrame
-                        className="bg-white border border-neutral-200 p-4 lg:p-5 h-full flex flex-col"
-                        bracketClassName="w-2.5 h-2.5 border-neutral-400"
-                    >
-                        <div className="flex items-center justify-between mb-3 shrink-0">
-                            <h3 className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500">
-                                Recent Testimonials
-                            </h3>
-                            <Link href="/admin/testimonials" className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 hover:text-neutral-900 transition-colors">
-                                View all →
-                            </Link>
-                        </div>
-
-                        {loading ? (
-                            <div className="space-y-2 overflow-hidden">
-                                {[1, 2, 3].map((i) => (
-                                    <div key={i} className="h-10 bg-neutral-100 animate-pulse rounded-sm" />
-                                ))}
-                            </div>
-                        ) : recentTestimonials.length === 0 ? (
-                            <div className="py-6 text-center">
-                                <p className="text-xs text-neutral-500 font-jetbrains-mono">No testimonials</p>
-                                <button type="button" onClick={() => setTestimonialModal({ open: true, mode: "create", id: null })} className="text-xs text-neutral-700 hover:text-neutral-900 underline mt-1 inline-block">
-                                    Add testimonial
-                                </button>
-                            </div>
-                        ) : (
-                            <div className="overflow-y-auto max-h-[148px] pr-2 space-y-1 scrollbar-thin scrollbar-thumb-neutral-200 hover:scrollbar-thumb-neutral-300 scrollbar-track-transparent">
-                                {recentTestimonials.map((t) => (
-                                    <button
-                                        key={t.id}
-                                        type="button"
-                                        onClick={() => setTestimonialModal({ open: true, mode: "edit", id: t.id })}
-                                        className="w-full flex items-center justify-between py-2 px-2.5 bg-neutral-50 hover:bg-neutral-100 transition-colors rounded-sm group text-left"
-                                    >
-                                        <div className="min-w-0 flex-1">
-                                            <div className="text-xs font-space-grotesk text-neutral-900 truncate">
-                                                {t.client} <span className="text-neutral-500">({t.company})</span>
-                                            </div>
-                                            <div className="text-[10px] font-jetbrains-mono text-neutral-500 truncate mt-0.5">
-                                                "{t.content}"
-                                            </div>
-                                        </div>
-                                        <FiArrowRight className="w-3.5 h-3.5 text-neutral-400 group-hover:text-neutral-600 transition-colors shrink-0 ml-2" />
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    </CornerFrame>
-                </motion.div>
+                <DashboardRecentTestimonials
+                    testimonials={recentTestimonials}
+                    loading={loading}
+                    onNewTestimonial={() => setTestimonialModal({ open: true, mode: "create", id: null })}
+                    onEditTestimonial={(id) => setTestimonialModal({ open: true, mode: "edit", id })}
+                />
 
                 {/* Recent Posts */}
-                <motion.div
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: 0.3 }}
-                >
-                    <CornerFrame
-                        className="bg-white border border-neutral-200 p-4 lg:p-5 h-full flex flex-col"
-                        bracketClassName="w-2.5 h-2.5 border-neutral-400"
-                    >
-                        <div className="flex items-center justify-between mb-3 shrink-0">
-                            <h3 className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500">
-                                Recent Blog Posts
-                            </h3>
-                            <Link href="/admin/blog" className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 hover:text-neutral-900 transition-colors">
-                                View all →
-                            </Link>
-                        </div>
-
-                        {loading ? (
-                            <div className="space-y-2 overflow-hidden">
-                                {[1, 2, 3].map((i) => (
-                                    <div key={i} className="h-10 bg-neutral-100 animate-pulse rounded-sm" />
-                                ))}
-                            </div>
-                        ) : recentPosts.length === 0 ? (
-                            <div className="py-6 text-center">
-                                <p className="text-xs text-neutral-500 font-jetbrains-mono">No posts</p>
-                                <button type="button" onClick={() => setBlogModal({ open: true, mode: "create", id: null })} className="text-xs text-neutral-700 hover:text-neutral-900 underline mt-1 inline-block">
-                                    Write post
-                                </button>
-                            </div>
-                        ) : (
-                            <div className="overflow-y-auto max-h-[148px] pr-2 space-y-1 scrollbar-thin scrollbar-thumb-neutral-200 hover:scrollbar-thumb-neutral-300 scrollbar-track-transparent">
-                                {recentPosts.map((post) => (
-                                    <button
-                                        key={post.id}
-                                        type="button"
-                                        onClick={() => setBlogModal({ open: true, mode: "edit", id: post.id })}
-                                        className="w-full flex items-center justify-between py-2 px-2.5 bg-neutral-50 hover:bg-neutral-100 transition-colors rounded-sm group text-left"
-                                    >
-                                        <div className="min-w-0 flex-1">
-                                            <div className="text-xs font-space-grotesk text-neutral-900 truncate">
-                                                {post.title}
-                                            </div>
-                                            <div className="text-[10px] font-jetbrains-mono text-neutral-500">
-                                                {post.published ? "Published" : "Draft"} • {new Date(post.created_at).toLocaleDateString()}
-                                            </div>
-                                        </div>
-                                        <span className={`
-                                            text-[9px] font-jetbrains-mono uppercase px-1.5 py-0.5 rounded shrink-0 ml-2
-                                            border border-neutral-300
-                                            ${post.published ? "bg-white text-neutral-700" : "bg-neutral-100 text-neutral-600"}
-                                        `}>
-                                            {post.published ? "Live" : "Draft"}
-                                        </span>
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    </CornerFrame>
-                </motion.div>
+                <DashboardRecentPosts
+                    posts={recentPosts}
+                    loading={loading}
+                    onNewPost={() => setBlogModal({ open: true, mode: "create", id: null })}
+                    onEditPost={(id) => setBlogModal({ open: true, mode: "edit", id })}
+                />
 
                 {/* Track Request */}
                 <motion.div
@@ -461,7 +159,13 @@ export default function AdminDashboard() {
                                             <div className="absolute top-2 right-2 flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity bg-neutral-100 sm:bg-neutral-100/50 sm:backdrop-blur-sm p-1 rounded-sm border border-neutral-200/50">
                                                 {request.status !== 'completed' && (
                                                     <button
-                                                        onClick={(e) => { e.preventDefault(); updateRequestStatus(request.id, 'completed'); }}
+                                                        onClick={async (e) => {
+                                                            e.preventDefault();
+                                                            await updateRequestStatus(request.id, 'completed');
+                                                            // We no longer need manual state update here since refreshRequests will handle it
+                                                            // but since we derive local 'requests' state here, we update it too
+                                                            setRequests(prev => prev.filter(r => r.id !== request.id));
+                                                        }}
                                                         className="p-1.5 text-emerald-600 hover:text-emerald-700 hover:bg-white rounded transition-colors"
                                                         title="Mark Complete"
                                                     >

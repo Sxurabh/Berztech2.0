@@ -5,6 +5,9 @@ import { useRouter, useParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { FiSave, FiArrowLeft, FiX, FiPlus } from "react-icons/fi";
 import { CornerFrame } from "@/components/ui/CornerFrame";
+import Input from "@/components/ui/Input";
+import Textarea from "@/components/ui/Textarea";
+import Select from "@/components/ui/Select";
 import toast from "react-hot-toast";
 import ImageUploader from "@/components/admin/ImageUploader";
 
@@ -126,7 +129,6 @@ export default function ProjectForm({ mode = "create", embedded, onClose, onSucc
         );
     }
 
-    // Simplified styles for white theme
     const inputClass = "w-full bg-neutral-50 border border-neutral-200 p-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors placeholder:text-neutral-400 font-space-grotesk";
     const labelClass = "block text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 mb-2";
 
@@ -160,44 +162,26 @@ export default function ProjectForm({ mode = "create", embedded, onClose, onSucc
                                 Basic Info
                             </h3>
                             <div className="space-y-4">
-                                <div>
-                                    <label className={labelClass}>
-                                        Client Name *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={form.client}
-                                        onChange={(e) => updateField("client", e.target.value)}
-                                        className={inputClass}
-                                        placeholder="Acme Inc."
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className={labelClass}>
-                                        Project Title *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={form.title}
-                                        onChange={(e) => updateField("title", e.target.value)}
-                                        className={inputClass}
-                                        placeholder="Building the future of..."
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className={labelClass}>
-                                        Description
-                                    </label>
-                                    <textarea
-                                        value={form.description || ""}
-                                        onChange={(e) => updateField("description", e.target.value)}
-                                        rows={4}
-                                        className={`${inputClass} resize-none`}
-                                        placeholder="Brief description of the project..."
-                                    />
-                                </div>
+                                <Input
+                                    label="Client Name *"
+                                    value={form.client}
+                                    onChange={(e) => updateField("client", e.target.value)}
+                                    placeholder="Acme Inc."
+                                    required
+                                />
+                                <Input
+                                    label="Project Title *"
+                                    value={form.title}
+                                    onChange={(e) => updateField("title", e.target.value)}
+                                    placeholder="Building the future of..."
+                                    required
+                                />
+                                <Textarea
+                                    label="Description"
+                                    value={form.description || ""}
+                                    onChange={(e) => updateField("description", e.target.value)}
+                                    placeholder="Brief description of the project..."
+                                />
                             </div>
                         </CornerFrame>
 
@@ -220,12 +204,11 @@ export default function ProjectForm({ mode = "create", embedded, onClose, onSucc
                                 ))}
                             </div>
                             <div className="flex gap-2">
-                                <input
-                                    type="text"
+                                <Input
                                     value={newService}
                                     onChange={(e) => setNewService(e.target.value)}
                                     onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addService())}
-                                    className={`${inputClass} py-2`}
+                                    className="flex-1"
                                     placeholder="Add service..."
                                 />
                                 <button
@@ -256,19 +239,17 @@ export default function ProjectForm({ mode = "create", embedded, onClose, onSucc
                                 ))}
                             </div>
                             <div className="flex gap-2">
-                                <input
-                                    type="text"
+                                <Input
                                     value={newStatKey}
                                     onChange={(e) => setNewStatKey(e.target.value)}
-                                    className={`${inputClass} w-28 py-2`}
+                                    className="w-28"
                                     placeholder="Key"
                                 />
-                                <input
-                                    type="text"
+                                <Input
                                     value={newStatValue}
                                     onChange={(e) => setNewStatValue(e.target.value)}
                                     onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addStat())}
-                                    className={`${inputClass} flex-1 py-2`}
+                                    className="flex-1"
                                     placeholder="Value"
                                 />
                                 <button
@@ -291,32 +272,18 @@ export default function ProjectForm({ mode = "create", embedded, onClose, onSucc
                                 Settings
                             </h3>
                             <div className="space-y-4">
-                                <div>
-                                    <label className={labelClass}>
-                                        Category *
-                                    </label>
-                                    <select
-                                        value={form.category}
-                                        onChange={(e) => updateField("category", e.target.value)}
-                                        className={inputClass}
-                                    >
-                                        {categoryOptions.map((cat) => (
-                                            <option key={cat} value={cat}>{cat}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className={labelClass}>
-                                        Year
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={form.year || ""}
-                                        onChange={(e) => updateField("year", e.target.value)}
-                                        className={inputClass}
-                                        placeholder="2024"
-                                    />
-                                </div>
+                                <Select
+                                    label="Category *"
+                                    value={form.category}
+                                    onChange={(e) => updateField("category", e.target.value)}
+                                    options={categoryOptions}
+                                />
+                                <Input
+                                    label="Year"
+                                    value={form.year || ""}
+                                    onChange={(e) => updateField("year", e.target.value)}
+                                    placeholder="2024"
+                                />
                                 <div>
                                     <label className={labelClass}>
                                         Color Theme

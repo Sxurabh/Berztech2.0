@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { FiPlus, FiEdit2, FiTrash2, FiEye, FiEyeOff } from "react-icons/fi";
 import toast from "react-hot-toast";
-import DataTable from "@/components/admin/DataTable";
+import DataTable from "@/components/ui/DataTable";
 import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
 import Modal from "@/components/ui/Modal";
 import BlogPostForm from "@/components/admin/BlogPostForm";

@@ -3,6 +3,9 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CornerFrame } from "@/components/ui/CornerFrame";
+import Input from "@/components/ui/Input";
+import Textarea from "@/components/ui/Textarea";
+import Select from "@/components/ui/Select";
 import { FiSave, FiX, FiCheck, FiUploadCloud, FiArrowLeft } from "react-icons/fi";
 import { uploadApi, testimonialsApi } from "@/lib/api/client";
 import { toast } from "react-hot-toast";
@@ -152,63 +155,42 @@ export default function TestimonialForm({ mode = "create", embedded, onClose, on
                             </h3>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 mb-2">
-                                        Client Name *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="client"
-                                        required
-                                        value={formData.client}
-                                        onChange={handleChange}
-                                        className="w-full bg-neutral-50 border border-neutral-200 p-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors placeholder:text-neutral-400 font-space-grotesk"
-                                        placeholder="e.g. Jane Doe"
-                                    />
-                                </div>
+                                <Input
+                                    label="Client Name *"
+                                    name="client"
+                                    required
+                                    value={formData.client}
+                                    onChange={handleChange}
+                                    placeholder="e.g. Jane Doe"
+                                />
 
-                                <div>
-                                    <label className="block text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 mb-2">
-                                        Company
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="company"
-                                        value={formData.company}
-                                        onChange={handleChange}
-                                        className="w-full bg-neutral-50 border border-neutral-200 p-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors placeholder:text-neutral-400 font-space-grotesk"
-                                        placeholder="e.g. Acme Corp"
-                                    />
-                                </div>
+                                <Input
+                                    label="Company"
+                                    name="company"
+                                    value={formData.company}
+                                    onChange={handleChange}
+                                    placeholder="e.g. Acme Corp"
+                                />
 
-                                <div className="sm:col-span-2">
-                                    <label className="block text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 mb-2">
-                                        Role
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="role"
-                                        value={formData.role}
-                                        onChange={handleChange}
-                                        className="w-full bg-neutral-50 border border-neutral-200 p-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors placeholder:text-neutral-400 font-space-grotesk"
-                                        placeholder="e.g. CTO"
-                                    />
-                                </div>
+                                <Input
+                                    label="Role"
+                                    name="role"
+                                    value={formData.role}
+                                    onChange={handleChange}
+                                    className="sm:col-span-2"
+                                    placeholder="e.g. CTO"
+                                />
 
-                                <div className="sm:col-span-2">
-                                    <label className="block text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 mb-2">
-                                        Testimonial Content *
-                                    </label>
-                                    <textarea
-                                        name="content"
-                                        required
-                                        rows={4}
-                                        value={formData.content}
-                                        onChange={handleChange}
-                                        className="w-full bg-neutral-50 border border-neutral-200 p-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors placeholder:text-neutral-400 font-space-grotesk resize-y"
-                                        placeholder="The quote..."
-                                    />
-                                </div>
+                                <Textarea
+                                    label="Testimonial Content *"
+                                    name="content"
+                                    required
+                                    rows={4}
+                                    value={formData.content}
+                                    onChange={handleChange}
+                                    className="sm:col-span-2"
+                                    placeholder="The quote..."
+                                />
                             </div>
                         </CornerFrame>
 
@@ -218,49 +200,33 @@ export default function TestimonialForm({ mode = "create", embedded, onClose, on
                             </h3>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 mb-2">
-                                        Key Metric
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="metric"
-                                        value={formData.metric}
-                                        onChange={handleChange}
-                                        className="w-full bg-neutral-50 border border-neutral-200 p-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors placeholder:text-neutral-400 font-space-grotesk"
-                                        placeholder="e.g. 200%"
-                                    />
-                                </div>
+                                <Input
+                                    label="Key Metric"
+                                    name="metric"
+                                    value={formData.metric}
+                                    onChange={handleChange}
+                                    placeholder="e.g. 200%"
+                                />
 
-                                <div>
-                                    <label className="block text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 mb-2">
-                                        Metric Label
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="metric_label"
-                                        value={formData.metric_label}
-                                        onChange={handleChange}
-                                        className="w-full bg-neutral-50 border border-neutral-200 p-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors placeholder:text-neutral-400 font-space-grotesk"
-                                        placeholder="e.g. Growth"
-                                    />
-                                </div>
+                                <Input
+                                    label="Metric Label"
+                                    name="metric_label"
+                                    value={formData.metric_label}
+                                    onChange={handleChange}
+                                    placeholder="e.g. Growth"
+                                />
 
-                                <div>
-                                    <label className="block text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 mb-2">
-                                        Accent Color
-                                    </label>
-                                    <select
-                                        name="color"
-                                        value={formData.color}
-                                        onChange={handleChange}
-                                        className="w-full bg-neutral-50 border border-neutral-200 p-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors font-space-grotesk"
-                                    >
-                                        <option value="blue">Blue</option>
-                                        <option value="emerald">Emerald</option>
-                                        <option value="purple">Purple</option>
-                                    </select>
-                                </div>
+                                <Select
+                                    label="Accent Color"
+                                    name="color"
+                                    value={formData.color}
+                                    onChange={handleChange}
+                                    options={[
+                                        { value: "blue", label: "Blue" },
+                                        { value: "emerald", label: "Emerald" },
+                                        { value: "purple", label: "Purple" }
+                                    ]}
+                                />
 
                                 <div className="flex items-center mt-6">
                                     <label className="flex items-center gap-2 cursor-pointer select-none">

@@ -68,10 +68,10 @@ export async function POST(req, { params }) {
 
         const admin = createAdminClient();
 
-        // Check access
+        // Check access and get task details
         const { data: taskData, error: taskError } = await admin
             .from("tasks")
-            .select("client_id")
+            .select("client_id, title, request_id")
             .eq("id", id)
             .single();
 
@@ -80,7 +80,9 @@ export async function POST(req, { params }) {
         }
 
         const { isAdminEmail } = await import("@/config/admin");
-        if (!isAdminEmail(user.email) && taskData.client_id !== user.id) {
+        const userIsAdmin = isAdminEmail(user.email);
+
+        if (!userIsAdmin && taskData.client_id !== user.id) {
             return NextResponse.json({ error: "Forbidden" }, { status: 403 });
         }
 
@@ -96,6 +98,49 @@ export async function POST(req, { params }) {
 
         if (error) {
             return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+
+        // ── Create notifications for the other party ──
+        try {
+            const senderName = user.user_metadata?.full_name?.split(" ")?.[0] || user.email?.split("@")[0] || "Someone";
+            const truncatedContent = content.trim().length > 80 ? content.trim().slice(0, 80) + "…" : content.trim();
+
+            if (userIsAdmin && taskData.client_id) {
+                // Admin commented → notify the client
+                await admin.from("notifications").insert({
+                    user_id: taskData.client_id,
+                    type: "comment",
+                    title: `New reply on "${taskData.title}"`,
+                    message: `${senderName}: ${truncatedContent}`,
+                    task_id: id,
+                    request_id: taskData.request_id || null,
+                    source_user_id: user.id,
+                });
+            } else if (!userIsAdmin) {
+                // Client commented → notify all admins
+                const { data: admins } = await admin.from("admin_users").select("email");
+                if (admins && admins.length > 0) {
+                    // Get admin user IDs from auth.users via their emails
+                    for (const adminRow of admins) {
+                        const { data: adminAuth } = await admin.auth.admin.listUsers();
+                        const adminUser = adminAuth?.users?.find(u => u.email === adminRow.email);
+                        if (adminUser) {
+                            await admin.from("notifications").insert({
+                                user_id: adminUser.id,
+                                type: "comment",
+                                title: `New feedback on "${taskData.title}"`,
+                                message: `${senderName}: ${truncatedContent}`,
+                                task_id: id,
+                                request_id: taskData.request_id || null,
+                                source_user_id: user.id,
+                            });
+                        }
+                    }
+                }
+            }
+        } catch (notifError) {
+            // Don't fail the comment if notification fails
+            console.error("Failed to create notification:", notifError);
         }
 
         return NextResponse.json({ data }, { status: 201 });

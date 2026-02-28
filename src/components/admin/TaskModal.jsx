@@ -4,72 +4,25 @@ import { useState, useEffect, useRef } from "react";
 import { FiX, FiCheck, FiTrash2, FiMessageSquare, FiArchive, FiSend } from "react-icons/fi";
 import { COLUMNS } from "./KanbanBoard";
 import { toast } from "react-hot-toast";
-import { createClient } from "@/lib/supabase/client";
+import TaskModalDetails from "./TaskModalDetails";
+import TaskModalChat from "./TaskModalChat";
+import TaskModalHeader from "./TaskModalHeader";
+import TaskModalFooter from "./TaskModalFooter";
+import { useTaskComments } from "@/lib/hooks/useTaskComments";
 
 export default function TaskModal({ task, requestId, onClose, onUpdate, onDelete }) {
+    const isNew = !task?.id;
     const [title, setTitle] = useState(task?.title || "");
     const [description, setDescription] = useState(task?.description || "");
     const [status, setStatus] = useState(task?.status || "backlog");
     const [priority, setPriority] = useState(task?.priority || "medium");
-    const [comments, setComments] = useState([]);
+    const [activeTab, setActiveTab] = useState("details");
+    const { comments, setComments, sendComment } = useTaskComments(task?.id);
     const [newComment, setNewComment] = useState("");
     const [loading, setLoading] = useState(false);
     const [sending, setSending] = useState(false);
-    const [activeTab, setActiveTab] = useState("details");
     const chatEndRef = useRef(null);
     const chatContainerRef = useRef(null);
-
-    const isNew = !task;
-
-    useEffect(() => {
-        if (!isNew && activeTab === "comments") {
-            fetchComments();
-        }
-    }, [task, activeTab, isNew]);
-
-    async function fetchComments() {
-        if (!task?.id) return;
-        try {
-            const res = await fetch(`/api/tasks/${task.id}/comments`);
-            if (res.ok) {
-                const json = await res.json();
-                setComments(json.data || []);
-            }
-        } catch (error) {
-            console.error("Failed to load comments", error);
-        }
-    }
-
-    // Realtime subscription for comments
-    useEffect(() => {
-        const supabase = createClient();
-        if (!supabase || !task?.id) return;
-
-        const channel = supabase
-            .channel(`comments-admin-${task.id}`)
-            .on(
-                'postgres_changes',
-                { event: 'INSERT', schema: 'public', table: 'task_comments', filter: `task_id=eq.${task.id}` },
-                (payload) => {
-                    setComments(prev => {
-                        if (prev.some(c => c.id === payload.new.id)) return prev;
-                        return [...prev, payload.new];
-                    });
-                }
-            )
-            .on(
-                'postgres_changes',
-                { event: 'DELETE', schema: 'public', table: 'task_comments', filter: `task_id=eq.${task.id}` },
-                (payload) => {
-                    setComments(prev => prev.filter(c => c.id !== payload.old.id));
-                }
-            )
-            .subscribe();
-
-        return () => {
-            supabase.removeChannel(channel);
-        };
-    }, [task?.id]);
 
     // Auto-scroll to bottom when comments change
     useEffect(() => {
@@ -174,27 +127,14 @@ export default function TaskModal({ task, requestId, onClose, onUpdate, onDelete
     const postComment = async () => {
         if (!newComment.trim() || sending) return;
         setSending(true);
-        try {
-            const res = await fetch(`/api/tasks/${task.id}/comments`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ content: newComment })
-            });
-            const json = await res.json();
-            if (res.ok) {
-                setComments(prev => {
-                    if (prev.some(c => c.id === json.data.id)) return prev;
-                    return [...prev, json.data];
-                });
-                setNewComment("");
-            } else {
-                toast.error(json.error || "Failed to post comment");
-            }
-        } catch (error) {
-            toast.error("An error occurred");
-        } finally {
-            setSending(false);
+        const content = newComment;
+        setNewComment(""); // Clear input immediately for instant feel
+        const success = await sendComment(content);
+        if (!success) {
+            toast.error("Failed to post comment");
+            setNewComment(content); // Restore on failure
         }
+        setSending(false);
     };
 
     const handleCommentKeyDown = (e) => {
@@ -209,17 +149,7 @@ export default function TaskModal({ task, requestId, onClose, onUpdate, onDelete
             <div className="w-full max-w-2xl bg-white border border-neutral-200 shadow-2xl rounded-sm flex flex-col max-h-[90vh] overflow-hidden">
 
                 {/* Header */}
-                <div className="flex items-center justify-between p-4 sm:p-5 border-b border-neutral-100 bg-neutral-50/50">
-                    <h2 className="text-lg sm:text-xl font-space-grotesk font-medium text-neutral-900 tracking-tight">
-                        {isNew ? "New Task" : "Edit Task"}
-                    </h2>
-                    <button
-                        onClick={onClose}
-                        className="p-2 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 transition-colors rounded-sm"
-                    >
-                        <FiX className="w-5 h-5" />
-                    </button>
-                </div>
+                <TaskModalHeader isNew={isNew} onClose={onClose} />
 
                 {/* Tabs */}
                 {!isNew && (
@@ -245,205 +175,38 @@ export default function TaskModal({ task, requestId, onClose, onUpdate, onDelete
                 {/* Content area */}
                 <div className={`flex-1 ${activeTab === 'details' ? 'overflow-y-auto p-4 sm:p-6' : 'flex flex-col min-h-0 overflow-hidden'}`}>
                     {activeTab === "details" ? (
-                        <div className="space-y-6">
-                            <div>
-                                <label className="block text-[10px] font-jetbrains-mono font-medium text-neutral-500 uppercase tracking-widest mb-1.5">
-                                    Title
-                                </label>
-                                <input
-                                    type="text"
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
-                                    className="w-full px-4 py-2.5 bg-white border border-neutral-200 focus:border-neutral-400 focus:ring-1 focus:ring-neutral-400 outline-none transition-all font-space-grotesk font-medium rounded-sm shadow-sm"
-                                    placeholder="Task Title"
-                                />
-                            </div>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                                <div>
-                                    <label className="block text-[10px] font-jetbrains-mono font-medium text-neutral-500 uppercase tracking-widest mb-1.5">
-                                        Status
-                                    </label>
-                                    <select
-                                        value={status}
-                                        onChange={(e) => setStatus(e.target.value)}
-                                        className="w-full px-4 py-2.5 bg-white border border-neutral-200 focus:border-neutral-400 focus:ring-1 focus:ring-neutral-400 outline-none transition-all font-space-grotesk rounded-sm shadow-sm"
-                                    >
-                                        {COLUMNS.map(col => (
-                                            <option key={col.id} value={col.id}>{col.title}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-[10px] font-jetbrains-mono font-medium text-neutral-500 uppercase tracking-widest mb-1.5">
-                                        Priority
-                                    </label>
-                                    <select
-                                        value={priority}
-                                        onChange={(e) => setPriority(e.target.value)}
-                                        className="w-full px-4 py-2.5 bg-white border border-neutral-200 focus:border-neutral-400 focus:ring-1 focus:ring-neutral-400 outline-none transition-all font-space-grotesk rounded-sm shadow-sm"
-                                    >
-                                        <option value="low">Low</option>
-                                        <option value="medium">Medium</option>
-                                        <option value="high">High</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-[10px] font-jetbrains-mono font-medium text-neutral-500 uppercase tracking-widest mb-1.5">
-                                    Description
-                                </label>
-                                <textarea
-                                    value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                    rows={4}
-                                    className="w-full px-4 py-2.5 bg-white border border-neutral-200 focus:border-neutral-400 focus:ring-1 focus:ring-neutral-400 outline-none transition-all font-space-grotesk resize-y min-h-[100px] rounded-sm shadow-sm"
-                                    placeholder="Add more details about this task..."
-                                />
-                            </div>
-                        </div>
+                        <TaskModalDetails
+                            title={title} setTitle={setTitle}
+                            description={description} setDescription={setDescription}
+                            status={status} setStatus={setStatus}
+                            priority={priority} setPriority={setPriority}
+                        />
                     ) : (
                         /* ============ CHAT WINDOW ============ */
-                        <div className="flex flex-col flex-1 min-h-0">
-                            {/* Scrollable chat area — fixed height */}
-                            <div
-                                ref={chatContainerRef}
-                                className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-5 space-y-3"
-                                style={{ maxHeight: 'clamp(200px, 50vh, 400px)', minHeight: '180px' }}
-                            >
-                                {comments.length === 0 ? (
-                                    <div className="flex flex-col items-center justify-center h-full text-neutral-400 py-12">
-                                        <FiMessageSquare className="w-8 h-8 mb-3 opacity-30" />
-                                        <p className="font-jetbrains-mono text-xs uppercase tracking-widest">No messages yet</p>
-                                    </div>
-                                ) : (
-                                    <>
-                                        {comments.map((c, idx) => {
-                                            const isAdmin = c.user_id !== task?.client_id;
-                                            const showDateSep = idx === 0 ||
-                                                getDateLabel(c.created_at) !== getDateLabel(comments[idx - 1].created_at);
-
-                                            return (
-                                                <div key={c.id}>
-                                                    {showDateSep && (
-                                                        <div className="flex items-center gap-3 my-4">
-                                                            <div className="flex-1 h-px bg-neutral-200" />
-                                                            <span className="text-[10px] font-jetbrains-mono text-neutral-400 uppercase tracking-widest">
-                                                                {getDateLabel(c.created_at)}
-                                                            </span>
-                                                            <div className="flex-1 h-px bg-neutral-200" />
-                                                        </div>
-                                                    )}
-                                                    <div className={`flex ${isAdmin ? 'justify-end' : 'justify-start'}`}>
-                                                        <div className="max-w-[80%]">
-                                                            <div className={`px-4 py-2.5 ${isAdmin
-                                                                ? 'bg-neutral-900 text-white rounded-t-lg rounded-bl-lg'
-                                                                : 'bg-neutral-100 text-neutral-900 border border-neutral-200 rounded-t-lg rounded-br-lg'
-                                                                }`}>
-                                                                <p className="text-sm font-space-grotesk whitespace-pre-wrap leading-relaxed">
-                                                                    {c.content}
-                                                                </p>
-                                                            </div>
-                                                            <div className={`flex items-center gap-2 mt-1 px-1 ${isAdmin ? 'justify-end' : 'justify-start'}`}>
-                                                                <span className="text-[10px] font-jetbrains-mono font-bold text-neutral-400 uppercase tracking-widest">
-                                                                    {isAdmin ? 'You' : 'Client'}
-                                                                </span>
-                                                                <span className="text-[10px] font-jetbrains-mono text-neutral-300">
-                                                                    {new Date(c.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                        <div ref={chatEndRef} />
-                                    </>
-                                )}
-                            </div>
-
-                            {/* Chat Input */}
-                            <div className="border-t border-neutral-200 bg-neutral-50/80 p-3 sm:p-4">
-                                <div className="flex items-end gap-2">
-                                    <textarea
-                                        value={newComment}
-                                        onChange={(e) => setNewComment(e.target.value)}
-                                        placeholder="Type a message..."
-                                        rows={1}
-                                        className="flex-1 px-4 py-2.5 bg-white border border-neutral-200 focus:border-neutral-900 focus:ring-0 outline-none transition-colors font-space-grotesk text-sm rounded-lg resize-none max-h-24 overflow-y-auto"
-                                        onKeyDown={handleCommentKeyDown}
-                                        style={{ minHeight: '42px' }}
-                                        onInput={(e) => {
-                                            e.target.style.height = 'auto';
-                                            e.target.style.height = Math.min(e.target.scrollHeight, 96) + 'px';
-                                        }}
-                                    />
-                                    <button
-                                        onClick={postComment}
-                                        disabled={!newComment.trim() || sending}
-                                        aria-label="Send message"
-                                        className="p-2.5 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all shrink-0"
-                                    >
-                                        {sending ? (
-                                            <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin block" />
-                                        ) : (
-                                            <FiSend className="w-5 h-5" />
-                                        )}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        <TaskModalChat
+                            task={task}
+                            comments={comments}
+                            newComment={newComment}
+                            setNewComment={setNewComment}
+                            postComment={postComment}
+                            sending={sending}
+                            handleCommentKeyDown={handleCommentKeyDown}
+                            chatContainerRef={chatContainerRef}
+                            chatEndRef={chatEndRef}
+                        />
                     )}
                 </div>
 
                 {/* Footer Actions */}
                 {/* Footer Actions */}
-                <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between p-4 sm:p-5 border-t border-neutral-100 bg-neutral-50/50 gap-3 sm:gap-0">
-                    {!isNew ? (
-                        <div className="flex items-center justify-between sm:justify-start gap-2">
-                            <button
-                                onClick={handleArchive}
-                                disabled={loading}
-                                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-neutral-600 hover:text-neutral-900 bg-white border border-neutral-200 hover:border-neutral-400 rounded-sm transition-all shadow-sm"
-                                title="Move task out of board"
-                            >
-                                <FiArchive className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-                                <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest font-medium">Archive</span>
-                            </button>
-                            <button
-                                onClick={handleDelete}
-                                disabled={loading}
-                                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-rose-600 hover:text-white hover:bg-rose-600 border border-transparent hover:border-rose-600 rounded-sm transition-colors"
-                            >
-                                <FiTrash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-                                <span className="text-[10px] sm:hidden font-jetbrains-mono uppercase tracking-widest font-medium">Del</span>
-                                <span className="hidden sm:inline text-[10px] font-jetbrains-mono uppercase tracking-widest font-medium">Delete</span>
-                            </button>
-                        </div>
-                    ) : <div className="hidden sm:block" />}
-
-                    <div className="flex items-center gap-2 sm:gap-4">
-                        <button
-                            onClick={onClose}
-                            className="flex-1 sm:flex-none px-4 sm:px-6 py-2 sm:py-2.5 border border-neutral-200 text-neutral-600 hover:border-neutral-400 hover:text-neutral-900 hover:bg-white rounded-sm transition-colors text-[10px] font-jetbrains-mono uppercase tracking-widest font-medium bg-white sm:bg-transparent"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            onClick={handleSave}
-                            disabled={loading}
-                            className="flex-[2] sm:flex-none justify-center px-4 sm:px-6 py-2 sm:py-2.5 bg-neutral-900 text-white hover:bg-neutral-800 rounded-sm shadow-sm transition-colors text-[10px] font-jetbrains-mono uppercase tracking-widest font-medium flex items-center gap-2"
-                        >
-                            {loading ? (
-                                <span className="w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-current border-t-transparent rounded-full animate-spin shrink-0" />
-                            ) : (
-                                <FiCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-                            )}
-                            <span className="truncate">{isNew ? "Create Task" : "Save Changes"}</span>
-                        </button>
-                    </div>
-                </div>
+                <TaskModalFooter
+                    isNew={isNew}
+                    loading={loading}
+                    onClose={onClose}
+                    handleSave={handleSave}
+                    handleArchive={handleArchive}
+                    handleDelete={handleDelete}
+                />
 
             </div>
         </div >

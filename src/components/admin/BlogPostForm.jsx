@@ -7,6 +7,9 @@ import { FiSave, FiArrowLeft, FiEye } from "react-icons/fi";
 import toast from "react-hot-toast";
 import ImageUploader from "@/components/admin/ImageUploader";
 import { CornerFrame } from "../ui/CornerFrame";
+import Input from "@/components/ui/Input";
+import Textarea from "@/components/ui/Textarea";
+import Select from "@/components/ui/Select";
 
 const colorOptions = ["blue", "purple", "emerald", "amber", "rose", "cyan"];
 const categoryOptions = ["Engineering", "Design", "Strategy", "Culture", "Product", "Tutorial"];
@@ -144,31 +147,21 @@ export default function BlogPostForm({ mode = "create", embedded, onClose, onSuc
                                 Post Info
                             </h3>
                             <div className="space-y-4">
-                                <div>
-                                    <label className={labelClass}>
-                                        Title *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={form.title}
-                                        onChange={(e) => updateField("title", e.target.value)}
-                                        className={inputClass}
-                                        placeholder="Your blog post title..."
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className={labelClass}>
-                                        Excerpt
-                                    </label>
-                                    <textarea
-                                        value={form.excerpt || ""}
-                                        onChange={(e) => updateField("excerpt", e.target.value)}
-                                        rows={3}
-                                        className={`${inputClass} resize-none`}
-                                        placeholder="A brief summary of the post..."
-                                    />
-                                </div>
+                                <Input
+                                    label="Title *"
+                                    value={form.title}
+                                    onChange={(e) => updateField("title", e.target.value)}
+                                    placeholder="Your blog post title..."
+                                    required
+                                />
+                                <Textarea
+                                    label="Excerpt"
+                                    value={form.excerpt || ""}
+                                    onChange={(e) => updateField("excerpt", e.target.value)}
+                                    rows={3}
+                                    className="resize-none"
+                                    placeholder="A brief summary of the post..."
+                                />
                             </div>
                         </CornerFrame>
 
@@ -177,12 +170,13 @@ export default function BlogPostForm({ mode = "create", embedded, onClose, onSuc
                             <h3 className="font-space-grotesk font-semibold text-sm mb-4 text-neutral-900 border-b border-neutral-100 pb-2">
                                 Content (Markdown)
                             </h3>
-                            <textarea
+                            <Textarea
                                 value={form.content || ""}
                                 onChange={(e) => updateField("content", e.target.value)}
                                 rows={20}
-                                className={`${inputClass} font-jetbrains-mono resize-y leading-relaxed`}
+                                className="font-jetbrains-mono resize-y leading-relaxed"
                                 placeholder="# My Blog Post&#10;&#10;Write your content in markdown..."
+                                noLabel
                             />
                             <p className="mt-2 text-[10px] font-jetbrains-mono text-neutral-500">
                                 Supports Markdown formatting • {calcReadTime(form.content)}
@@ -249,45 +243,25 @@ export default function BlogPostForm({ mode = "create", embedded, onClose, onSuc
                                 Meta Info
                             </h3>
                             <div className="space-y-4">
-                                <div>
-                                    <label className={labelClass}>
-                                        Author *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={form.author}
-                                        onChange={(e) => updateField("author", e.target.value)}
-                                        className={inputClass}
-                                        placeholder="John Doe"
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className={labelClass}>
-                                        Category *
-                                    </label>
-                                    <select
-                                        value={form.category}
-                                        onChange={(e) => updateField("category", e.target.value)}
-                                        className={inputClass}
-                                    >
-                                        {categoryOptions.map((cat) => (
-                                            <option key={cat} value={cat}>{cat}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className={labelClass}>
-                                        Read Time
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={form.read_time || ""}
-                                        onChange={(e) => updateField("read_time", e.target.value)}
-                                        className={inputClass}
-                                        placeholder="Auto-calculated"
-                                    />
-                                </div>
+                                <Input
+                                    label="Author *"
+                                    value={form.author}
+                                    onChange={(e) => updateField("author", e.target.value)}
+                                    placeholder="John Doe"
+                                    required
+                                />
+                                <Select
+                                    label="Category *"
+                                    value={form.category}
+                                    onChange={(e) => updateField("category", e.target.value)}
+                                    options={categoryOptions.map(cat => ({ value: cat, label: cat }))}
+                                />
+                                <Input
+                                    label="Read Time"
+                                    value={form.read_time || ""}
+                                    onChange={(e) => updateField("read_time", e.target.value)}
+                                    placeholder="Auto-calculated"
+                                />
                                 <div>
                                     <label className={labelClass}>
                                         Color Theme
