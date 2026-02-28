@@ -429,49 +429,56 @@ export default function AdminDashboard() {
                                 <p className="text-xs text-neutral-500 font-jetbrains-mono">No requests yet</p>
                             </div>
                         ) : (
-                            <div className="overflow-y-auto max-h-[220px] lg:max-h-[160px] pr-2 space-y-2 scrollbar-thin scrollbar-thumb-neutral-200 hover:scrollbar-thumb-neutral-300 scrollbar-track-transparent">
-                                {requests.map((request) => (
-                                    <div
-                                        key={request.id}
-                                        className="py-2 px-2.5 bg-neutral-50 rounded-sm border border-neutral-100"
-                                    >
-                                        <div className="mb-2">
-                                            <div className="text-xs font-space-grotesk text-neutral-900 truncate">
-                                                {request.company || request.name}
+                            <div className="overflow-y-auto max-h-[300px] lg:max-h-[320px] pr-2 scrollbar-thin scrollbar-thumb-neutral-200 hover:scrollbar-thumb-neutral-300 scrollbar-track-transparent">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                    {requests.map((request) => (
+                                        <div
+                                            key={request.id}
+                                            className="flex flex-col gap-3 py-3 px-4 border border-neutral-100 bg-neutral-50 hover:bg-neutral-100 transition-colors rounded-sm group relative"
+                                        >
+                                            <div className="pr-12">
+                                                <div className="text-sm font-space-grotesk font-bold text-neutral-900 truncate">
+                                                    {request.company || request.name}
+                                                </div>
+                                                <div className="text-[10px] font-jetbrains-mono text-neutral-500 mt-0.5 truncate">
+                                                    {request.email}
+                                                </div>
                                             </div>
-                                            <div className="text-[10px] font-jetbrains-mono text-neutral-500 mt-0.5">
-                                                {new Date(request.created_at).toLocaleDateString()} • {request.email}
+
+                                            <div className="flex items-center justify-between mt-auto pt-1">
+                                                <span className={`
+                                                    text-[9px] font-jetbrains-mono uppercase px-1.5 py-0.5 rounded shrink-0
+                                                    border border-neutral-300 bg-white text-neutral-700
+                                                `}>
+                                                    {request.status || "discover"}
+                                                </span>
+                                                <div className="text-[10px] font-jetbrains-mono text-neutral-400">
+                                                    {new Date(request.created_at).toLocaleDateString()}
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="pt-2 border-t border-neutral-100">
-                                            <RequestTimeline
-                                                currentStage={request.status || "discover"}
-                                                interactive
-                                                compact
-                                                onStageChange={(stage) => updateRequestStatus(request.id, stage)}
-                                            />
-                                            {/* Actions */}
-                                            <div className="mt-3 flex items-center justify-end gap-2">
+
+                                            {/* Actions Hover Overlay */}
+                                            <div className="absolute top-2 right-2 flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity bg-neutral-100 sm:bg-neutral-100/50 sm:backdrop-blur-sm p-1 rounded-sm border border-neutral-200/50">
                                                 {request.status !== 'completed' && (
                                                     <button
-                                                        onClick={() => updateRequestStatus(request.id, 'completed')}
-                                                        className="flex items-center gap-1.5 px-2 py-1 text-[10px] font-jetbrains-mono uppercase tracking-wider text-green-600 bg-green-50 hover:bg-green-100 border border-green-200 rounded transition-colors"
+                                                        onClick={(e) => { e.preventDefault(); updateRequestStatus(request.id, 'completed'); }}
+                                                        className="p-1.5 text-emerald-600 hover:text-emerald-700 hover:bg-white rounded transition-colors"
+                                                        title="Mark Complete"
                                                     >
-                                                        <FiCheckCircle className="w-3 h-3" />
-                                                        Mark Complete
+                                                        <FiCheckCircle className="w-3.5 h-3.5" />
                                                     </button>
                                                 )}
                                                 <button
-                                                    onClick={() => updateRequestStatus(request.id, 'archived')}
-                                                    className="flex items-center gap-1.5 px-2 py-1 text-[10px] font-jetbrains-mono uppercase tracking-wider text-neutral-500 bg-neutral-50 hover:bg-neutral-100 border border-neutral-200 hover:border-neutral-300 rounded transition-colors"
+                                                    onClick={(e) => { e.preventDefault(); updateRequestStatus(request.id, 'archived'); }}
+                                                    className="p-1.5 text-neutral-500 hover:text-neutral-700 hover:bg-white rounded transition-colors"
+                                                    title="Archive"
                                                 >
-                                                    <FiArchive className="w-3 h-3" />
-                                                    Archive
+                                                    <FiArchive className="w-3.5 h-3.5" />
                                                 </button>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
                         )}
                     </CornerFrame>
