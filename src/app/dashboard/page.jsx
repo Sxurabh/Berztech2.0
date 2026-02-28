@@ -43,28 +43,28 @@ export default function DashboardPage() {
   const [viewingRequest, setViewingRequest] = useState(null);
 
   return (
-    <div className="min-h-screen py-12 sm:py-16">
+    <div className="min-h-screen py-8 sm:py-12 md:py-16">
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8 sm:mb-12 flex items-end justify-between"
+          className="mb-6 sm:mb-8 md:mb-12 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4"
         >
           <div>
-            <h1 className="font-space-grotesk text-3xl sm:text-4xl font-medium text-neutral-900 tracking-tight">
+            <h1 className="font-space-grotesk text-2xl sm:text-3xl md:text-4xl font-medium text-neutral-900 tracking-tight">
               Welcome back, <span className="text-neutral-500">{firstName}</span>
             </h1>
-            <p className="text-xs font-jetbrains-mono uppercase tracking-widest text-neutral-500 mt-2">
+            <p className="text-[10px] sm:text-xs font-jetbrains-mono uppercase tracking-widest text-neutral-500 mt-1.5 sm:mt-2">
               {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
             </p>
           </div>
-          <Link href="/contact">
+          <Link href="/contact" className="self-start sm:self-auto">
             <CornerFrame
-              className="bg-neutral-900 text-white hover:bg-neutral-800 transition-colors px-5 py-2.5 group"
+              className="bg-neutral-900 text-white hover:bg-neutral-800 transition-colors px-4 sm:px-5 py-2 sm:py-2.5 group"
               bracketClassName="border-white/20 group-hover:border-white/40"
             >
-              <div className="font-jetbrains-mono text-xs uppercase tracking-widest">
+              <div className="font-jetbrains-mono text-[10px] sm:text-xs uppercase tracking-widest">
                 New Request +
               </div>
             </CornerFrame>
@@ -93,7 +93,7 @@ export default function DashboardPage() {
             </CornerFrame>
           </motion.div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[800px] overflow-y-auto pr-2 custom-scrollbar">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 sm:max-h-[800px] sm:overflow-y-auto sm:pr-2 custom-scrollbar">
             {requests.map((request, index) => (
               <motion.div
                 key={request.id}
@@ -102,7 +102,7 @@ export default function DashboardPage() {
                 transition={{ delay: index * 0.1 }}
               >
                 <div
-                  className="flex flex-col gap-3 py-3 px-4 border border-neutral-100 bg-neutral-50 hover:bg-neutral-100 transition-colors rounded-sm group relative h-full"
+                  className="flex flex-col gap-2.5 sm:gap-3 py-3 px-3 sm:px-4 border border-neutral-100 bg-neutral-50 hover:bg-neutral-100 transition-colors rounded-sm group relative h-full"
                 >
                   <div className="pr-16">
                     <div className="text-sm font-space-grotesk font-bold text-neutral-900 truncate">

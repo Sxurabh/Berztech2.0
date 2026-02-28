@@ -110,31 +110,31 @@ function ClientBoardContent() {
     }
 
     return (
-        <div className="h-[calc(100vh-80px)] flex flex-col pt-4 overflow-hidden">
-            {/* Header Area — mirrors admin board */}
-            <div className="flex-shrink-0 mb-4 sm:mb-8 px-4 sm:px-8">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="min-h-[calc(100vh-80px)] md:h-[calc(100vh-80px)] flex flex-col pt-4 md:overflow-hidden">
+            {/* Header Area */}
+            <div className="flex-shrink-0 mb-4 sm:mb-6 md:mb-8 px-4 sm:px-6 md:px-8">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                     <div>
-                        <Link href="/track" className="inline-flex items-center gap-2 text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 font-bold mb-4 hover:text-neutral-900 transition-colors">
+                        <Link href="/track" className="inline-flex items-center gap-2 text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 font-bold mb-3 sm:mb-4 hover:text-neutral-900 transition-colors">
                             <FiArrowLeft className="w-3 h-3" /> Back to My Requests
                         </Link>
-                        <h1 className="text-2xl sm:text-3xl font-space-grotesk font-medium text-neutral-900 tracking-tight">
+                        <h1 className="text-xl sm:text-2xl md:text-3xl font-space-grotesk font-medium text-neutral-900 tracking-tight">
                             Request Board
                         </h1>
-                        <p className="text-sm font-space-grotesk text-neutral-500 mt-1">
-                            View task progress and provide feedback on deliverables.
+                        <p className="text-xs sm:text-sm font-space-grotesk text-neutral-500 mt-1">
+                            View task progress and provide feedback.
                         </p>
                     </div>
                 </div>
             </div>
 
             {loading ? (
-                <div className="flex-1 flex items-center justify-center">
+                <div className="flex-1 flex items-center justify-center py-12">
                     <div className="animate-spin w-8 h-8 border-4 border-neutral-200 border-t-neutral-900 rounded-full" />
                 </div>
             ) : (
-                <div className="flex-1 min-h-0 pb-6 relative">
-                    <div className="absolute inset-0">
+                <div className="flex-1 min-h-0 pb-6 px-4 sm:px-6 md:px-8 md:relative">
+                    <div className="md:absolute md:inset-0 md:px-8">
                         <ClientKanbanBoard
                             tasks={tasks}
                             onTaskClick={(t) => setModalData({ open: true, task: t })}

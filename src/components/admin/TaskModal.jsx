@@ -309,8 +309,8 @@ export default function TaskModal({ task, requestId, onClose, onUpdate, onDelete
                             {/* Scrollable chat area — fixed height */}
                             <div
                                 ref={chatContainerRef}
-                                className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3"
-                                style={{ maxHeight: '400px', minHeight: '280px' }}
+                                className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-5 space-y-3"
+                                style={{ maxHeight: 'clamp(200px, 50vh, 400px)', minHeight: '180px' }}
                             >
                                 {comments.length === 0 ? (
                                     <div className="flex flex-col items-center justify-center h-full text-neutral-400 py-12">
