@@ -108,7 +108,7 @@ function LinkSection({ title, links, onLegalClick }) {
           const isLegal = link.href === '/privacy' || link.href === '/terms';
           const buttonClass = "group inline-flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-900 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2 rounded-sm";
           return (
-            <li key={link.href}>
+            <li key={link.label}>
               {isLegal ? (
                 <button onClick={() => onLegalClick(link.href.replace('/', ''))} className={buttonClass}>
                   <span className="w-0 group-hover:w-2 h-px bg-neutral-900 transition-all duration-200" />
@@ -165,7 +165,7 @@ function MobileAccordion({ sections, onLegalClick }) {
                   {section.links.map((link) => {
                     const isLegal = link.href === '/privacy' || link.href === '/terms';
                     return (
-                      <li key={link.href}>
+                      <li key={link.label}>
                         {isLegal ? (
                           <button onClick={() => onLegalClick(link.href.replace('/', ''))} className="block w-full text-left text-sm text-neutral-500 hover:text-neutral-900 transition-colors py-1">
                             {link.label}

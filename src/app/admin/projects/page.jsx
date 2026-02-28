@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { FiPlus, FiEdit2, FiTrash2, FiStar } from "react-icons/fi";
 import toast from "react-hot-toast";
 import { projectsApi } from "@/lib/api/client";
-import DataTable from "@/components/admin/DataTable";
+import DataTable from "@/components/ui/DataTable";
 import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
 import Modal from "@/components/ui/Modal";
 import ProjectForm from "@/components/admin/ProjectForm";

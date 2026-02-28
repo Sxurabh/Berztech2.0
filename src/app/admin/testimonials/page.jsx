@@ -8,7 +8,7 @@ import { testimonialsApi } from "@/lib/api/client";
 import Image from "next/image";
 import Modal from "@/components/ui/Modal";
 import TestimonialForm from "@/components/admin/TestimonialForm";
-import DataTable from "@/components/admin/DataTable";
+import DataTable from "@/components/ui/DataTable";
 
 export default function AdminTestimonialsPage() {
     const queryClient = useQueryClient();

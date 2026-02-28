@@ -9,7 +9,9 @@ import clsx from "clsx";
 import { layoutConfig } from "@/config/layout";
 import { isAdminEmail } from "@/config/admin";
 import { useAuth } from "@/lib/auth/AuthProvider";
-import { FiUser, FiLogOut, FiGrid } from "react-icons/fi";
+import { FiUser, FiLogOut, FiGrid, FiBell } from "react-icons/fi";
+import NotificationDropdown from "@/components/ui/NotificationDropdown";
+import { useNotifications } from "@/lib/hooks/useNotifications";
 
 import blackLogo from "@/assets/Logo/blacklogo.png";
 import whiteLogo from "@/assets/Logo/WhiteLogo.png";
@@ -96,6 +98,91 @@ function HireButton() {
   );
 }
 
+// Mobile Auth Menu — shown in the hamburger drawer
+function MobileAuthMenu({ isAdmin, handleSignOut }) {
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
+  const [showNotifs, setShowNotifs] = useState(false);
+
+  return (
+    <div className="space-y-1 border-t border-neutral-100 pt-3 mt-3">
+      <Link
+        href={isAdmin ? "/admin" : "/dashboard"}
+        className="flex items-center gap-2 py-2 text-neutral-500 hover:text-neutral-900 transition-colors"
+      >
+        <FiGrid className="w-4 h-4" />
+        <span className="font-space-grotesk text-base font-medium">{isAdmin ? "Admin Dashboard" : "My Requests"}</span>
+      </Link>
+
+      {/* Notifications toggle */}
+      <button
+        onClick={() => setShowNotifs(!showNotifs)}
+        className="flex items-center gap-2 py-2 text-neutral-500 hover:text-neutral-900 transition-colors w-full text-left"
+      >
+        <FiBell className="w-4 h-4" />
+        <span className="font-space-grotesk text-base font-medium">Notifications</span>
+        {unreadCount > 0 && (
+          <span className="ml-auto flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-neutral-900 text-white text-[10px] font-jetbrains-mono font-bold rounded-full">
+            {unreadCount > 99 ? "99+" : unreadCount}
+          </span>
+        )}
+      </button>
+
+      {/* Expandable notification list */}
+      <AnimatePresence>
+        {showNotifs && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="overflow-hidden"
+          >
+            <div className="ml-6 border-l-2 border-neutral-100 pl-3 py-1 space-y-1">
+              {unreadCount > 0 && (
+                <button
+                  onClick={markAllAsRead}
+                  className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-400 hover:text-neutral-900 transition-colors mb-2"
+                >
+                  Mark all read
+                </button>
+              )}
+              {notifications.length === 0 ? (
+                <p className="text-xs font-jetbrains-mono text-neutral-400 py-2">No notifications</p>
+              ) : (
+                notifications.slice(0, 10).map((n) => (
+                  <Link
+                    key={n.id}
+                    href={
+                      n.task_id && n.request_id
+                        ? isAdmin ? `/admin/board?requestId=${n.request_id}` : `/track/board?requestId=${n.request_id}`
+                        : isAdmin ? "/admin" : "/dashboard"
+                    }
+                    onClick={() => !n.is_read && markAsRead(n.id)}
+                    className={`block py-1.5 transition-colors ${!n.is_read ? "text-neutral-900" : "text-neutral-400"}`}
+                  >
+                    <p className={`text-sm font-space-grotesk truncate ${!n.is_read ? "font-bold" : "font-medium"}`}>
+                      {n.title}
+                    </p>
+                    <p className="text-[11px] font-jetbrains-mono text-neutral-500 truncate">{n.message}</p>
+                  </Link>
+                ))
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <button
+        onClick={handleSignOut}
+        className="flex items-center gap-2 py-2 text-neutral-500 hover:text-neutral-900 transition-colors w-full text-left"
+      >
+        <FiLogOut className="w-4 h-4" />
+        <span className="font-space-grotesk text-base font-medium">Sign Out</span>
+      </button>
+    </div>
+  );
+}
+
 // Auth Button — Sign In, Admin dropdown, or Client Dashboard
 function AuthButton({ mobile = false }) {
   const { user, loading, signOut } = useAuth();
@@ -157,88 +244,78 @@ function AuthButton({ mobile = false }) {
 
   if (mobile) {
     return (
-      <div className="space-y-1 border-t border-neutral-100 pt-3 mt-3">
-        <Link
-          href={isAdmin ? "/admin" : "/dashboard"}
-          className="flex items-center gap-2 py-2 text-neutral-500 hover:text-neutral-900 transition-colors"
-        >
-          <FiGrid className="w-4 h-4" />
-          <span className="font-space-grotesk text-base font-medium">{isAdmin ? "Admin Dashboard" : "My Requests"}</span>
-        </Link>
-        <button
-          onClick={handleSignOut}
-          className="flex items-center gap-2 py-2 text-neutral-500 hover:text-neutral-900 transition-colors w-full text-left"
-        >
-          <FiLogOut className="w-4 h-4" />
-          <span className="font-space-grotesk text-base font-medium">Sign Out</span>
-        </button>
-      </div>
+      <MobileAuthMenu isAdmin={isAdmin} handleSignOut={handleSignOut} />
     );
   }
 
   return (
-    <div className="relative hidden lg:block" ref={dropdownRef}>
-      <button
-        onClick={() => setDropdownOpen(!dropdownOpen)}
-        className="flex items-center justify-center w-8 h-8 rounded-full border border-neutral-200 bg-neutral-900 hover:ring-2 hover:ring-neutral-200 hover:ring-offset-2 transition-all overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2 shadow-sm relative group"
-      >
-        <div className="w-full h-full flex items-center justify-center bg-neutral-900">
-          {avatarUrl ? (
-            // Use next/image for better performance
-            <Image
-              src={avatarUrl}
-              alt={displayName}
-              width={32}
-              height={32}
-              className="w-full h-full object-cover"
-              referrerPolicy="no-referrer"
-            />
-          ) : (
-            <span className="font-jetbrains-mono text-[11px] font-bold text-white group-hover:scale-105 transition-transform duration-300">
-              {displayName?.[0]?.toUpperCase() || "A"}
-            </span>
-          )}
-        </div>
-      </button>
-      <AnimatePresence>
-        {dropdownOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -5 }}
-            className="absolute right-0 top-full mt-2 w-56 bg-white border border-neutral-200 rounded-md shadow-lg z-50 overflow-hidden"
-          >
-            <div className="px-4 py-3 border-b border-neutral-100">
-              <p className="text-[11px] font-jetbrains-mono text-neutral-500 uppercase tracking-widest">
-                Account
-              </p>
-              <p className="mt-1 text-sm font-space-grotesk text-neutral-900">
-                {displayName}
-              </p>
-              {user.email && (
-                <p className="text-xs font-jetbrains-mono text-neutral-500 truncate">
-                  {user.email}
+    <div className="relative hidden lg:flex items-center gap-2">
+      {/* Notification Bell */}
+      <NotificationDropdown isAdmin={isAdmin} />
+
+      {/* Avatar Dropdown */}
+      <div className="relative" ref={dropdownRef}>
+        <button
+          onClick={() => setDropdownOpen(!dropdownOpen)}
+          className="flex items-center justify-center w-8 h-8 rounded-full border border-neutral-200 bg-neutral-900 hover:ring-2 hover:ring-neutral-200 hover:ring-offset-2 transition-all overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2 shadow-sm relative group"
+        >
+          <div className="w-full h-full flex items-center justify-center bg-neutral-900">
+            {avatarUrl ? (
+              <Image
+                src={avatarUrl}
+                alt={displayName}
+                width={32}
+                height={32}
+                className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <span className="font-jetbrains-mono text-[11px] font-bold text-white group-hover:scale-105 transition-transform duration-300">
+                {displayName?.[0]?.toUpperCase() || "A"}
+              </span>
+            )}
+          </div>
+        </button>
+        <AnimatePresence>
+          {dropdownOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+              className="absolute right-0 top-full mt-2 w-56 bg-white border border-neutral-200 rounded-md shadow-lg z-50 overflow-hidden"
+            >
+              <div className="px-4 py-3 border-b border-neutral-100">
+                <p className="text-[11px] font-jetbrains-mono text-neutral-500 uppercase tracking-widest">
+                  Account
                 </p>
-              )}
-            </div>
-            <Link
-              href={isAdmin ? "/admin" : "/dashboard"}
-              onClick={() => setDropdownOpen(false)}
-              className="flex items-center gap-2 px-4 py-2.5 text-sm font-jetbrains-mono text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 transition-colors"
-            >
-              <FiGrid className="w-3.5 h-3.5" />
-              {isAdmin ? "Admin Dashboard" : "My Requests"}
-            </Link>
-            <button
-              onClick={() => { handleSignOut(); setDropdownOpen(false); }}
-              className="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-jetbrains-mono text-neutral-600 hover:bg-neutral-100 transition-colors text-left"
-            >
-              <FiLogOut className="w-3.5 h-3.5" />
-              Sign Out
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                <p className="mt-1 text-sm font-space-grotesk text-neutral-900">
+                  {displayName}
+                </p>
+                {user.email && (
+                  <p className="text-xs font-jetbrains-mono text-neutral-500 truncate">
+                    {user.email}
+                  </p>
+                )}
+              </div>
+              <Link
+                href={isAdmin ? "/admin" : "/dashboard"}
+                onClick={() => setDropdownOpen(false)}
+                className="flex items-center gap-2 px-4 py-2.5 text-sm font-jetbrains-mono text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 transition-colors"
+              >
+                <FiGrid className="w-3.5 h-3.5" />
+                {isAdmin ? "Admin Dashboard" : "My Requests"}
+              </Link>
+              <button
+                onClick={() => { handleSignOut(); setDropdownOpen(false); }}
+                className="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-jetbrains-mono text-neutral-600 hover:bg-neutral-100 transition-colors text-left"
+              >
+                <FiLogOut className="w-3.5 h-3.5" />
+                Sign Out
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
@@ -346,8 +423,9 @@ export default function Header() {
               )}
             </div>
 
-            {/* Mobile Menu Button */}
-            <div className="lg:hidden">
+            {/* Mobile Menu Button + Notification Bell */}
+            <div className="lg:hidden flex items-center gap-1">
+              {user && <NotificationDropdown isAdmin={isAdmin} />}
               <MenuButton
                 isOpen={mobileMenuOpen}
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

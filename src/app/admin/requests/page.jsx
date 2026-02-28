@@ -4,35 +4,22 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { FiArchive, FiCheckCircle, FiInbox, FiTrello, FiExternalLink, FiX, FiEye } from "react-icons/fi";
 import { toast } from "react-hot-toast";
-import DataTable from "@/components/admin/DataTable";
+import DataTable from "@/components/ui/DataTable";
 import RequestTimeline from "@/components/ui/RequestTimeline";
+import { useRequests } from "@/lib/hooks/useRequests";
 
 export default function AdminRequestsPage() {
+    const { requests: initialRequests, loading, error, refreshRequests } = useRequests("/api/admin/requests");
     const [requests, setRequests] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [viewingRequest, setViewingRequest] = useState(null); // Added state for viewing request details
 
     useEffect(() => {
-        fetchRequests();
-    }, []);
-
-    async function fetchRequests() {
-        setLoading(true);
-        try {
-            const res = await fetch("/api/admin/requests");
-            const json = await res.json();
-            if (res.ok) {
-                // Show only active inquiries (exclude archived and completed)
-                setRequests((json.data || []).filter(r => r.status !== 'archived' && r.status !== 'completed'));
-            } else {
-                toast.error("Failed to load requests: " + json.error);
-            }
-        } catch (error) {
-            toast.error("Error fetching requests");
-        } finally {
-            setLoading(false);
+        if (initialRequests) {
+            // Show only active inquiries (exclude archived and completed)
+            setRequests(initialRequests.filter(r => r.status !== 'archived' && r.status !== 'completed'));
         }
-    }
+    }, [initialRequests]);
+
 
     const updateRequestStatus = async (id, status) => {
         try {

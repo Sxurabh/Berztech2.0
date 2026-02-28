@@ -14,9 +14,11 @@ import {
     FiX,
     FiUser,
     FiMessageSquare,
+    FiBell,
 } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import { CornerFrame } from "@/components/ui/CornerFrame";
+import NotificationDropdown from "@/components/ui/NotificationDropdown";
 
 const navItems = [
     { title: "Dashboard", href: "/admin", icon: FiGrid },
@@ -123,6 +125,9 @@ export default function AdminSidebar() {
                         </div>
                         <FiUser className="w-4 h-4 flex-shrink-0" />
                     </button>
+
+                    {/* Notification Bell for admin sidebar */}
+                    <NotificationDropdown isAdmin={true} />
 
                     {/* Compact User Dropdown */}
                     <AnimatePresence>

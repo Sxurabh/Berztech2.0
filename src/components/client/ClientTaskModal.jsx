@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { FiX, FiMessageSquare, FiArrowUp, FiArrowRight, FiArrowDown, FiSend } from "react-icons/fi";
 import { COLUMNS } from "./ClientKanbanBoard";
 import { toast } from "react-hot-toast";
-import { createClient } from "@/lib/supabase/client";
+import { useTaskComments } from "@/lib/hooks/useTaskComments";
 
 const PRIORITY_COLORS = {
     low: "bg-neutral-50 text-neutral-600 border-neutral-200",
@@ -19,58 +19,12 @@ const PRIORITY_ICONS = {
 };
 
 export default function ClientTaskModal({ task, onClose }) {
-    const [comments, setComments] = useState([]);
+    const { comments, sendComment } = useTaskComments(task?.id);
     const [newComment, setNewComment] = useState("");
     const [sending, setSending] = useState(false);
     const [activeTab, setActiveTab] = useState("comments");
     const chatEndRef = useRef(null);
     const chatContainerRef = useRef(null);
-
-    useEffect(() => {
-        fetchComments();
-    }, [task.id]);
-
-    // Realtime subscription for comments
-    useEffect(() => {
-        const supabase = createClient();
-        if (!supabase || !task.id) return;
-
-        const channel = supabase
-            .channel(`comments-client-${task.id}`)
-            .on(
-                'postgres_changes',
-                {
-                    event: 'INSERT',
-                    schema: 'public',
-                    table: 'task_comments',
-                    filter: `task_id=eq.${task.id}`,
-                },
-                (payload) => {
-                    setComments(prev => {
-                        // Avoid duplicates (from optimistic add)
-                        if (prev.some(c => c.id === payload.new.id)) return prev;
-                        return [...prev, payload.new];
-                    });
-                }
-            )
-            .on(
-                'postgres_changes',
-                {
-                    event: 'DELETE',
-                    schema: 'public',
-                    table: 'task_comments',
-                    filter: `task_id=eq.${task.id}`,
-                },
-                (payload) => {
-                    setComments(prev => prev.filter(c => c.id !== payload.old.id));
-                }
-            )
-            .subscribe();
-
-        return () => {
-            supabase.removeChannel(channel);
-        };
-    }, [task.id]);
 
     // Auto-scroll to bottom when comments change
     useEffect(() => {
@@ -79,42 +33,17 @@ export default function ClientTaskModal({ task, onClose }) {
         }
     }, [comments]);
 
-    const fetchComments = async () => {
-        try {
-            const res = await fetch(`/api/tasks/${task.id}/comments`);
-            const json = await res.json();
-            if (res.ok) setComments(json.data);
-            else toast.error(json.error || "Failed to load comments");
-        } catch (error) {
-            toast.error("Error fetching comments");
-        }
-    };
-
     const postComment = async () => {
         if (!newComment.trim() || sending) return;
         setSending(true);
-        try {
-            const res = await fetch(`/api/tasks/${task.id}/comments`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ content: newComment })
-            });
-            const json = await res.json();
-            if (res.ok) {
-                // Optimistic add (Realtime will skip dupes)
-                setComments(prev => {
-                    if (prev.some(c => c.id === json.data.id)) return prev;
-                    return [...prev, json.data];
-                });
-                setNewComment("");
-            } else {
-                toast.error(json.error || "Failed to post comment");
-            }
-        } catch (error) {
-            toast.error("An error occurred");
-        } finally {
-            setSending(false);
+        const content = newComment;
+        setNewComment(""); // Clear instantly
+        const success = await sendComment(content);
+        if (!success) {
+            toast.error("Failed to post comment");
+            setNewComment(content);
         }
+        setSending(false);
     };
 
     const handleKeyDown = (e) => {
