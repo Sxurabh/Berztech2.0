@@ -134,23 +134,23 @@ export default function AdminRequestsPage() {
     return (
         <div>
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-6 sm:mb-8">
                 <div>
-                    <div className="flex items-center gap-2 mb-2">
+                    <div className="flex items-center gap-2 mb-1.5 sm:mb-2">
                         <div className="h-px w-4 bg-neutral-900 border-b border-neutral-200" />
                         <span className="text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 font-medium">
                             Inquiries
                         </span>
                     </div>
-                    <h1 className="font-space-grotesk text-2xl sm:text-3xl font-bold text-neutral-900 tracking-tight">
+                    <h1 className="font-space-grotesk text-xl sm:text-2xl md:text-3xl font-bold text-neutral-900 tracking-tight">
                         Track Requests
                     </h1>
                 </div>
                 <Link
                     href="/admin/board"
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-neutral-200 text-neutral-900 font-jetbrains-mono text-xs uppercase tracking-widest font-medium hover:bg-neutral-50 hover:border-neutral-300 transition-colors rounded-sm shadow-sm"
+                    className="self-start sm:self-auto inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-white border border-neutral-200 text-neutral-900 font-jetbrains-mono text-[10px] sm:text-xs uppercase tracking-widest font-medium hover:bg-neutral-50 hover:border-neutral-300 transition-colors rounded-sm shadow-sm"
                 >
-                    <FiTrello className="w-4 h-4" />
+                    <FiTrello className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
                     Global Board
                 </Link>
             </div>
@@ -211,7 +211,7 @@ export default function AdminRequestsPage() {
                             </button>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto p-6 space-y-8">
+                        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 sm:space-y-8">
                             {/* Contact Info */}
                             <div>
                                 <h3 className="text-[10px] font-jetbrains-mono font-medium text-neutral-500 uppercase tracking-widest mb-3">
@@ -239,7 +239,7 @@ export default function AdminRequestsPage() {
                                     Project Details
                                 </h3>
                                 <div className="space-y-4">
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                         <div>
                                             <div className="text-[10px] font-jetbrains-mono text-neutral-400 mb-1">Services Required</div>
                                             <div className="flex flex-wrap gap-1.5">
@@ -266,16 +266,16 @@ export default function AdminRequestsPage() {
                             </div>
                         </div>
 
-                        <div className="p-5 border-t border-neutral-100 bg-neutral-50/50 flex justify-end gap-3">
+                        <div className="p-4 sm:p-5 border-t border-neutral-100 bg-neutral-50/50 flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
                             <button
                                 onClick={() => setViewingRequest(null)}
-                                className="px-5 py-2 text-[10px] font-jetbrains-mono font-medium uppercase tracking-widest text-neutral-600 border border-neutral-200 hover:border-neutral-300 hover:text-neutral-900 hover:bg-white rounded-sm transition-colors"
+                                className="px-4 sm:px-5 py-2 text-[10px] font-jetbrains-mono font-medium uppercase tracking-widest text-neutral-600 border border-neutral-200 hover:border-neutral-300 hover:text-neutral-900 hover:bg-white rounded-sm transition-colors text-center"
                             >
                                 Close
                             </button>
                             <Link
                                 href={`/admin/board?requestId=${viewingRequest.id}`}
-                                className="px-5 py-2 text-[10px] font-jetbrains-mono font-medium uppercase tracking-widest text-white bg-neutral-900 hover:bg-neutral-800 rounded-sm shadow-sm transition-colors flex items-center gap-2"
+                                className="px-4 sm:px-5 py-2 text-[10px] font-jetbrains-mono font-medium uppercase tracking-widest text-white bg-neutral-900 hover:bg-neutral-800 rounded-sm shadow-sm transition-colors flex items-center justify-center gap-2"
                             >
                                 Open in Board <FiExternalLink className="w-3.5 h-3.5" />
                             </Link>

@@ -206,14 +206,14 @@ export default function AdminDashboard() {
             </motion.div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-3 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 md:gap-4">
                 <StatCard icon={FiBriefcase} label="Projects" value={stats.projects} href="/admin/projects" index={0} />
                 <StatCard icon={FiMessageSquare} label="Testimonials" value={stats.testimonials} href="/admin/testimonials" index={2} />
                 <StatCard icon={FiFileText} label="Posts" value={stats.posts} href="/admin/blog" index={1} />
             </div>
 
             {/* Quick Actions */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 md:gap-4">
                 <QuickActionCard onClick={() => setProjectModal({ open: true, mode: "create", id: null })} title="New Project" subtitle="Add case study" index={0} />
                 <QuickActionCard onClick={() => setTestimonialModal({ open: true, mode: "create", id: null })} title="New Testimonial" subtitle="Add client review" index={1} />
                 <QuickActionCard onClick={() => setBlogModal({ open: true, mode: "create", id: null })} title="New Blog Post" subtitle="Write article" index={2} />
@@ -434,7 +434,7 @@ export default function AdminDashboard() {
                                     {requests.map((request) => (
                                         <div
                                             key={request.id}
-                                            className="flex flex-col gap-3 py-3 px-4 border border-neutral-100 bg-neutral-50 hover:bg-neutral-100 transition-colors rounded-sm group relative"
+                                            className="flex flex-col gap-2.5 sm:gap-3 py-3 px-3 sm:px-4 border border-neutral-100 bg-neutral-50 hover:bg-neutral-100 transition-colors rounded-sm group relative"
                                         >
                                             <div className="pr-12">
                                                 <div className="text-sm font-space-grotesk font-bold text-neutral-900 truncate">

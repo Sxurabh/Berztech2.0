@@ -209,13 +209,13 @@ export default function TaskModal({ task, requestId, onClose, onUpdate, onDelete
             <div className="w-full max-w-2xl bg-white border border-neutral-200 shadow-2xl rounded-sm flex flex-col max-h-[90vh] overflow-hidden">
 
                 {/* Header */}
-                <div className="flex items-center justify-between p-5 border-b border-neutral-100 bg-neutral-50/50">
-                    <h2 className="text-xl font-space-grotesk font-medium text-neutral-900 tracking-tight">
+                <div className="flex items-center justify-between p-4 sm:p-5 border-b border-neutral-100 bg-neutral-50/50">
+                    <h2 className="text-lg sm:text-xl font-space-grotesk font-medium text-neutral-900 tracking-tight">
                         {isNew ? "New Task" : "Edit Task"}
                     </h2>
                     <button
                         onClick={onClose}
-                        className="p-2 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 transition-colors"
+                        className="p-2 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 transition-colors rounded-sm"
                     >
                         <FiX className="w-5 h-5" />
                     </button>
@@ -223,19 +223,19 @@ export default function TaskModal({ task, requestId, onClose, onUpdate, onDelete
 
                 {/* Tabs */}
                 {!isNew && (
-                    <div className="flex border-b border-neutral-100 font-jetbrains-mono text-xs uppercase tracking-widest font-medium">
+                    <div className="flex border-b border-neutral-100 font-jetbrains-mono text-[10px] sm:text-xs uppercase tracking-widest font-medium">
                         <button
                             onClick={() => setActiveTab("details")}
-                            className={`flex-1 py-3 text-center transition-colors relative ${activeTab === "details" ? "text-neutral-900" : "text-neutral-400 hover:text-neutral-600 hover:bg-neutral-50"}`}
+                            className={`flex-1 py-2.5 sm:py-3 text-center transition-colors relative ${activeTab === "details" ? "text-neutral-900" : "text-neutral-400 hover:text-neutral-600 hover:bg-neutral-50"}`}
                         >
                             Details
                             {activeTab === "details" && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-neutral-900" />}
                         </button>
                         <button
                             onClick={() => setActiveTab("comments")}
-                            className={`flex flex-1 items-center justify-center gap-2 py-3 transition-colors relative ${activeTab === "comments" ? "text-neutral-900" : "text-neutral-400 hover:text-neutral-600 hover:bg-neutral-50"}`}
+                            className={`flex flex-1 items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 transition-colors relative ${activeTab === "comments" ? "text-neutral-900" : "text-neutral-400 hover:text-neutral-600 hover:bg-neutral-50"}`}
                         >
-                            <FiMessageSquare className="w-4 h-4" />
+                            <FiMessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             Comments ({task?.task_comments?.[0]?.count || comments.length})
                             {activeTab === "comments" && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-neutral-900" />}
                         </button>
