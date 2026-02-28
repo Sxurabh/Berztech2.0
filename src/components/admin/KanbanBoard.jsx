@@ -33,14 +33,14 @@ export default function KanbanBoard({ tasks, onTaskClick, onTaskMove, onNewTask,
 
     return (
         <DragDropContext onDragEnd={handleDragEnd}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 pb-8 h-full items-stretch auto-rows-[minmax(0,1fr)]">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-6 pb-4 md:pb-8 md:h-full md:items-stretch md:auto-rows-[minmax(0,1fr)]">
                 {COLUMNS.map(column => {
                     const columnTasks = getTasksByStatus(column.id);
 
                     return (
-                        <div key={column.id} className="flex flex-col bg-neutral-50/50 border border-neutral-100 h-full max-h-full rounded-sm min-h-0">
-                            <div className={`p-4 border-b border-neutral-100 flex items-center justify-between bg-white rounded-t-sm`}>
-                                <h3 className="font-space-grotesk font-medium text-neutral-900 tracking-tight">
+                        <div key={column.id} className="flex flex-col bg-neutral-50/50 border border-neutral-100 md:h-full md:max-h-full rounded-sm md:min-h-0">
+                            <div className="p-3 sm:p-4 border-b border-neutral-100 flex items-center justify-between bg-white rounded-t-sm">
+                                <h3 className="font-space-grotesk font-medium text-neutral-900 tracking-tight text-sm sm:text-base">
                                     {column.title}
                                 </h3>
                                 <span className="text-[10px] font-jetbrains-mono bg-neutral-100 text-neutral-600 px-2 py-0.5 rounded-sm font-medium">
@@ -53,7 +53,7 @@ export default function KanbanBoard({ tasks, onTaskClick, onTaskMove, onNewTask,
                                     <div
                                         {...provided.droppableProps}
                                         ref={provided.innerRef}
-                                        className={`p-3 flex-1 overflow-y-auto space-y-3 transition-colors ${snapshot.isDraggingOver ? "bg-neutral-100/50" : ""}`}
+                                        className={`p-2.5 sm:p-3 flex-1 overflow-y-auto space-y-2 sm:space-y-3 max-h-[240px] md:max-h-none transition-colors ${snapshot.isDraggingOver ? "bg-neutral-100/50" : ""}`}
                                     >
                                         {columnTasks.map((task, index) => (
                                             <KanbanCard
@@ -66,7 +66,11 @@ export default function KanbanBoard({ tasks, onTaskClick, onTaskMove, onNewTask,
                                             />
                                         ))}
                                         {provided.placeholder}
-
+                                        {columnTasks.length === 0 && (
+                                            <div className="text-center p-3 sm:p-4 text-[10px] sm:text-xs font-jetbrains-mono text-neutral-400">
+                                                No tasks here.
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </Droppable>

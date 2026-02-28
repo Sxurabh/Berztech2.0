@@ -28,7 +28,7 @@ export default function AdminLayout({ children }) {
 
             {/* Main Content Wrapper - Centered without sidebar */}
             <main className="min-h-screen flex flex-col transition-all duration-300">
-                <div className="flex-grow py-8">
+                <div className="flex-grow py-4 sm:py-6 md:py-8">
                     {/* Content Container */}
                     <div className={`
                         mx-auto w-full
