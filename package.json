@@ -7,6 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "vitest",
+    "test:ci": "vitest run --coverage",
+    "test:unit": "vitest run tests/unit tests/components",
+    "test:integration": "vitest run tests/integration",
+    "test:coverage": "vitest run --coverage --reporter=html",
     "test:e2e": "playwright test"
   },
   "dependencies": {
@@ -32,7 +37,23 @@
   "devDependencies": {
     "@next/eslint-plugin-next": "^16.1.6",
     "@playwright/test": "^1.58.2",
+    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/react": "^14.2.1",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/node": "^20.11.0",
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
+    "@vitejs/plugin-react": "^4.2.1",
     "eslint": "^10.0.1",
-    "eslint-config-next": "^16.1.6"
+    "eslint-config-next": "^16.1.6",
+    "jsdom": "^24.0.0",
+    "msw": "^2.1.5",
+    "vite": "^5.0.12",
+    "vitest": "^1.2.2"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
   }
 }
