@@ -1,8 +1,8 @@
 # 🧪 Antigravity — Test Implementation Tracker
 > **Project:** Antigravity (mobile_fixes branch)
 > **Strategy Doc:** `TESTING_STRATEGY.md`
-> **Last Updated:** 2026-03-10
-> **Overall Progress:** 0% (0/68 test files complete)
+> **Last Updated:** 2026-03-11
+> **Overall Progress:** 18% (7/38 test files complete)
 
 ---
 
@@ -31,13 +31,13 @@
 | Phase | Description | Files | Status | Progress |
 |-------|-------------|-------|--------|----------|
 | P0 | Infrastructure Setup | 7 | ✅ | 100% |
-| P1 | Critical Foundation | 5 | ⬜ | 0% |
+| P1 | Critical Foundation | 5 | ✅ | 100% |
 | P2 | Component Testing | 5 | ⬜ | 0% |
 | P3 | API & Integration | 6 | ⬜ | 0% |
 | P4 | End-to-End (E2E) | 7 | ⬜ | 0% |
 | P5 | Security Testing | 4 | ⬜ | 0% |
 | P6 | Performance | 4 | ⬜ | 0% |
-| **TOTAL** | | **38** | | **19%** |
+| **TOTAL** | | **38** | | **21%** |
 
 ---
 
@@ -64,13 +64,15 @@
 
 | # | File | Covers | Status | Tests | Notes |
 |---|------|--------|--------|-------|-------|
-| 1.1 | `tests/unit/config/admin.test.ts` | `isAdminEmail()` — 8 cases | ⬜ | 0/8 | |
-| 1.2 | `tests/unit/lib/supabase/client.test.ts` | `createClient()` — null safety, singleton | ⬜ | 0/3 | |
-| 1.3 | `tests/unit/lib/supabase/admin.test.ts` | `createAdminClient()` — service role key guard | ⬜ | 0/3 | |
-| 1.4 | `tests/unit/lib/supabase/middleware.test.ts` | Route protection — 10 redirect cases | ⬜ | 0/10 | |
-| 1.5 | `tests/unit/lib/auth/AuthProvider.test.tsx` | `useAuth()` hook — 10 cases | ⬜ | 0/10 | |
+| 1.1 | `tests/unit/config/admin.test.ts` | `isAdminEmail()` — 8 cases | ✅ | 8/8 | |
+| 1.2 | `tests/unit/lib/supabase/client.test.ts` | `createClient()` — null safety, singleton | ✅ | 5/5 | |
+| 1.3 | `tests/unit/lib/supabase/admin.test.ts` | `createAdminClient()` — service role key guard | ✅ | 4/4 | |
+| 1.4 | `tests/unit/lib/supabase/middleware.test.ts` | Route protection — 10 redirect cases | ✅ | 13/13 | |
+| 1.5 | `tests/unit/lib/auth/AuthProvider.test.tsx` | `useAuth()` hook — 10 cases | ✅ | 10/10 | |
+| 1.6 | `tests/unit/lib/api/client.test.js` | API client — fetchJson, projectsApi, blogApi, uploadApi, testimonialsApi | ✅ | 23/23 | |
+| 1.7 | `tests/unit/lib/supabase/server.test.js` | `createServerSupabaseClient()` — null safety | ✅ | 4/4 | |
 
-**Phase 1 Complete:** ⬜ — `___/5 files done` `___/34 tests passing`
+**Phase 1 Complete:** ✅ — `7/7 files done` `67/67 tests passing`
 
 ---
 
@@ -158,7 +160,74 @@
 
 | Date | File | Test Name | Status |
 |------|------|-----------|--------|
-| — | — | No tests run yet | — |
+| 2026-03-11 | admin.test.ts | returns true for configured admin email (exact match) | ✅ PASS |
+| 2026-03-11 | admin.test.ts | returns true regardless of letter case (upper/lower) | ✅ PASS |
+| 2026-03-11 | admin.test.ts | returns false for a random non-admin email | ✅ PASS |
+| 2026-03-11 | admin.test.ts | returns false for empty string | ✅ PASS |
+| 2026-03-11 | admin.test.ts | returns false for null | ✅ PASS |
+| 2026-03-11 | admin.test.ts | returns false for undefined | ✅ PASS |
+| 2026-03-11 | admin.test.ts | returns false for an email with the same domain but different username | ✅ PASS |
+| 2026-03-11 | admin.test.ts | returns false for a string that contains the admin email but has extra characters | ✅ PASS |
+| 2026-03-11 | client.test.ts | returns a valid Supabase client when env vars are set | ✅ PASS |
+| 2026-03-11 | client.test.ts | returns null when NEXT_PUBLIC_SUPABASE_URL is missing | ✅ PASS |
+| 2026-03-11 | client.test.ts | returns null when NEXT_PUBLIC_SUPABASE_ANON_KEY is missing | ✅ PASS |
+| 2026-03-11 | client.test.ts | is a singleton - calling twice returns the same instance | ✅ PASS |
+| 2026-03-11 | client.test.ts | returns null when URL does not start with http | ✅ PASS |
+| 2026-03-11 | admin.test.ts (supabase) | returns admin client when SUPABASE_SERVICE_ROLE_KEY is set | ✅ PASS |
+| 2026-03-11 | admin.test.ts (supabase) | returns null when SUPABASE_SERVICE_ROLE_KEY is missing | ✅ PASS |
+| 2026-03-11 | admin.test.ts (supabase) | returns null when NEXT_PUBLIC_SUPABASE_URL is missing | ✅ PASS |
+| 2026-03-11 | admin.test.ts (supabase) | returns null when URL does not start with http | ✅ PASS |
+| 2026-03-11 | middleware.test.ts | redirects to /auth/login when no user accesses /admin | ✅ PASS |
+| 2026-03-11 | middleware.test.ts | redirects to /dashboard when non-admin user accesses /admin | ✅ PASS |
+| 2026-03-11 | middleware.test.ts | allows admin user through to /admin | ✅ PASS |
+| 2026-03-11 | middleware.test.ts | redirects to /auth/login when no user accesses /dashboard | ✅ PASS |
+| 2026-03-11 | middleware.test.ts | redirects admin users to /admin when accessing /dashboard | ✅ PASS |
+| 2026-03-11 | middleware.test.ts | allows regular user through to /dashboard | ✅ PASS |
+| 2026-03-11 | middleware.test.ts | redirects to /auth/login when no user accesses /track | ✅ PASS |
+| 2026-03-11 | middleware.test.ts | allows regular user through to /track | ✅ PASS |
+| 2026-03-11 | middleware.test.ts | allows access to root / | ✅ PASS |
+| 2026-03-11 | middleware.test.ts | allows access to /blog | ✅ PASS |
+| 2026-03-11 | middleware.test.ts | allows access to /work | ✅ PASS |
+| 2026-03-11 | middleware.test.ts | allows access to /contact | ✅ PASS |
+| 2026-03-11 | middleware.test.ts | allows access to /about | ✅ PASS |
+| 2026-03-11 | middleware.test.ts | allows access to /work | ✅ PASS |
+| 2026-03-11 | AuthProvider.test.tsx | useAuth throws error when used outside AuthProvider | ✅ PASS |
+| 2026-03-11 | AuthProvider.test.tsx | AuthProvider renders children without crashing | ✅ PASS |
+| 2026-03-11 | AuthProvider.test.tsx | initial state: loading is true, then false after getUser resolves | ✅ PASS |
+| 2026-03-11 | AuthProvider.test.tsx | signInWithEmail calls supabase.auth.signInWithPassword with correct args | ✅ PASS |
+| 2026-03-11 | AuthProvider.test.tsx | signInWithEmail throws when credentials are wrong | ✅ PASS |
+| 2026-03-11 | AuthProvider.test.tsx | signInWithOAuth called with google → calls supabase.auth.signInWithOAuth with provider google | ✅ PASS |
+| 2026-03-11 | AuthProvider.test.tsx | signInWithOAuth validates the next redirect param — external URLs must be ignored | ✅ PASS |
+| 2026-03-11 | AuthProvider.test.tsx | signOut calls supabase.auth.signOut | ✅ PASS |
+| 2026-03-11 | AuthProvider.test.tsx | User state updates when auth state changes | ✅ PASS |
+| 2026-03-11 | AuthProvider.test.tsx | When Supabase is null, loading becomes false without crashing | ✅ PASS |
+| 2026-03-11 | client.test.js | fetchJson makes request to /api/projects endpoint | ✅ PASS |
+| 2026-03-11 | client.test.js | fetchJson includes Content-Type header by default | ✅ PASS |
+| 2026-03-11 | client.test.js | fetchJson throws error when response is not ok (4xx) | ✅ PASS |
+| 2026-03-11 | client.test.js | fetchJson throws error when response is not ok (5xx) | ✅ PASS |
+| 2026-03-11 | client.test.js | fetchJson throws error when response body is not valid JSON | ✅ PASS |
+| 2026-03-11 | client.test.js | fetchJson handles empty response body | ✅ PASS |
+| 2026-03-11 | client.test.js | fetchJson includes custom headers when provided | ✅ PASS |
+| 2026-03-11 | client.test.js | projectsApi list calls GET /api/projects | ✅ PASS |
+| 2026-03-11 | client.test.js | projectsApi get calls GET /api/projects/{id} | ✅ PASS |
+| 2026-03-11 | client.test.js | projectsApi create calls POST /api/projects with JSON body | ✅ PASS |
+| 2026-03-11 | client.test.js | projectsApi update calls PUT /api/projects/{id} | ✅ PASS |
+| 2026-03-11 | client.test.js | projectsApi delete calls DELETE /api/projects/{id} | ✅ PASS |
+| 2026-03-11 | client.test.js | blogApi list calls GET /api/blog | ✅ PASS |
+| 2026-03-11 | client.test.js | blogApi get calls GET /api/blog/{id} | ✅ PASS |
+| 2026-03-11 | client.test.js | blogApi create calls POST /api/blog | ✅ PASS |
+| 2026-03-11 | client.test.js | blogApi update calls PUT /api/blog/{id} | ✅ PASS |
+| 2026-03-11 | client.test.js | blogApi delete calls DELETE /api/blog/{id} | ✅ PASS |
+| 2026-03-11 | client.test.js | uploadApi upload calls POST /api/upload with FormData | ✅ PASS |
+| 2026-03-11 | client.test.js | testimonialsApi list calls GET /api/testimonials | ✅ PASS |
+| 2026-03-11 | client.test.js | testimonialsApi get calls GET /api/testimonials/{id} | ✅ PASS |
+| 2026-03-11 | client.test.js | testimonialsApi create calls POST /api/testimonials | ✅ PASS |
+| 2026-03-11 | client.test.js | testimonialsApi update calls PUT /api/testimonials/{id} | ✅ PASS |
+| 2026-03-11 | client.test.js | testimonialsApi delete calls DELETE /api/testimonials/{id} | ✅ PASS |
+| 2026-03-11 | server.test.js | returns server client when env vars are set | ✅ PASS |
+| 2026-03-11 | server.test.js | returns null when NEXT_PUBLIC_SUPABASE_URL is missing | ✅ PASS |
+| 2026-03-11 | server.test.js | returns null when NEXT_PUBLIC_SUPABASE_ANON_KEY is missing | ✅ PASS |
+| 2026-03-11 | server.test.js | returns null when URL does not start with http | ✅ PASS |
 
 ---
 
