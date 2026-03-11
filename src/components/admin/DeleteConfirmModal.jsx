@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 
-export default function DeleteConfirmModal({ isOpen, onClose, onConfirm, itemName, loading }) {
+export default function DeleteConfirmModal({ isOpen, onClose, onConfirm, itemName, loading, bulkDelete = false }) {
     if (!isOpen) return null;
 
     return (
@@ -27,10 +27,10 @@ export default function DeleteConfirmModal({ isOpen, onClose, onConfirm, itemNam
                         bracketClassName="w-3 h-3 border-neutral-300"
                     >
                         <h3 className="font-space-grotesk text-lg font-medium text-neutral-900 mb-2">
-                            Delete {itemName || "Item"}?
+                            {bulkDelete ? `Delete All ${itemName || "Items"}?` : `Delete ${itemName || "Item"}?`}
                         </h3>
                         <p className="text-sm text-neutral-600 mb-6">
-                            This action cannot be undone. The {itemName?.toLowerCase() || "item"} will be permanently removed.
+                            This action cannot be undone. {bulkDelete ? `All selected ${itemName?.toLowerCase() || "items"} will be permanently removed.` : `The ${itemName?.toLowerCase() || "item"} will be permanently removed.`}
                         </p>
                         <div className="flex items-center justify-end gap-3">
                             <button

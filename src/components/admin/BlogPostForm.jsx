@@ -23,6 +23,7 @@ export default function BlogPostForm({ mode = "create", embedded, onClose, onSuc
 
     const [form, setForm] = useState({
         title: "",
+        slug: "",
         excerpt: "",
         content: "",
         category: "Engineering",
@@ -55,7 +56,20 @@ export default function BlogPostForm({ mode = "create", embedded, onClose, onSuc
         }
     }
 
-    const updateField = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
+    const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
+
+    const updateField = (key, value) => {
+        setForm((prev) => {
+            const newForm = { ...prev, [key]: value };
+            if (key === "title" && !slugManuallyEdited) {
+                newForm.slug = value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+            }
+            if (key === "slug") {
+                setSlugManuallyEdited(true);
+            }
+            return newForm;
+        });
+    };
 
     // Calculate read time from content
     const calcReadTime = (text) => {
@@ -153,6 +167,12 @@ export default function BlogPostForm({ mode = "create", embedded, onClose, onSuc
                                     onChange={(e) => updateField("title", e.target.value)}
                                     placeholder="Your blog post title..."
                                     required
+                                />
+                                <Input
+                                    label="Slug"
+                                    value={form.slug}
+                                    onChange={(e) => updateField("slug", e.target.value)}
+                                    placeholder="auto-generated-slug"
                                 />
                                 <Textarea
                                     label="Excerpt"

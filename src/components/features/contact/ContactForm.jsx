@@ -254,6 +254,7 @@ export default function ContactForm() {
             onChange={(e) => setFormData({ ...formData, message: e.target.value })}
             onFocus={() => setFocusedField('message')}
             onBlur={() => setFocusedField(null)}
+            maxLength={1000}
             className="w-full bg-white/50 backdrop-blur-sm border border-neutral-200 p-4 font-space-grotesk text-sm text-neutral-900 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all resize-none placeholder:text-neutral-300"
             placeholder="Tell us about your goals, timeline, and requirements..."
           />

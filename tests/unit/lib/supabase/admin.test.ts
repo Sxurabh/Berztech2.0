@@ -1,3 +1,6 @@
+/**
+ * @vitest-environment node
+ */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 vi.mock('@supabase/supabase-js', () => ({
@@ -56,5 +59,21 @@ describe('createAdminClient', () => {
     const adminClient = createAdminClient();
 
     expect(adminClient).toBeNull();
+  });
+
+  it('verifies the admin client is never imported or available in the browser context', async () => {
+    // Simulate browser environment
+    vi.stubGlobal('window', {});
+
+    try {
+      // This dynamic import should fail because of the top-level window check in admin.js
+      await import(`@/lib/supabase/admin?t=${Date.now()}`);
+      // If it doesn't throw, the test fails
+      expect(true).toBe(false);
+    } catch (error) {
+      expect(error.message).toContain('must only be used on the server');
+    }
+
+    vi.unstubAllGlobals();
   });
 });

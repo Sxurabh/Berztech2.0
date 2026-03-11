@@ -16,7 +16,7 @@ export default defineConfig({
         branches: 65,
       },
     },
-    include: ['src/lib/**', 'src/app/api/**', 'src/config/**', 'tests/unit/**', 'tests/components/**', 'tests/integration/**'],
+    include: ['tests/**/*.test.{js,ts,jsx,tsx}'],
     exclude: ['tests/e2e/**', 'tests/load/**'],
   },
   resolve: {
