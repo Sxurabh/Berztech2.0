@@ -92,6 +92,25 @@ vi.mock("framer-motion", () => ({
     },
 }));
 
+vi.mock("@/lib/data/projects", () => ({
+    getProjectById: vi.fn().mockResolvedValue({
+        id: "test-project-id",
+        client_name: "Test Client",
+        title: "Test Project",
+        slug: "test-project",
+        description: "Test description",
+        image_url: "https://example.com/image.jpg",
+        demo_url: "https://example.com/demo",
+        repo_url: "https://github.com/test/repo",
+        featured: true,
+        status: "completed",
+        order_index: 1,
+    }),
+    getProjects: vi.fn().mockResolvedValue([]),
+}));
+
+global.fetch = vi.fn();
+
 describe("ProjectForm", () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -119,6 +138,29 @@ describe("ProjectForm", () => {
 
         it("renders in edit mode when mode='edit'", async () => {
             const ProjectForm = (await import("@/components/admin/ProjectForm")).default;
+            
+            // Mock the API fetch for project data
+            global.fetch = vi.fn().mockResolvedValue({
+                ok: true,
+                json: async () => ({
+                    id: "test-project-id",
+                    client_name: "Test Client",
+                    title: "Test Project",
+                    slug: "test-project",
+                    description: "Test description",
+                    image_url: "https://example.com/image.jpg",
+                    demo_url: "https://example.com/demo",
+                    repo_url: "https://github.com/test/repo",
+                    featured: true,
+                    status: "completed",
+                    order_index: 1,
+                    services: [],
+                    stats: {},
+                    color: "blue",
+                    gallery: [],
+                }),
+            });
+            
             render(<ProjectForm mode="edit" editId="test-project-id" />);
             
             // Wait for loading state to resolve (fetchProject mock)

@@ -16,7 +16,8 @@
     "test:lighthouse": "lhci autorun",
     "test:load:requests": "k6 run tests/load/api-requests.js",
     "test:load:blog": "k6 run tests/load/api-blog.js",
-    "test:security": "vitest run tests/security"
+    "test:security": "vitest run tests/security",
+    "test:security:live": "concurrently \"npm run dev\" \"wait-on http://localhost:3000 && vitest run tests/security\""
   },
   "dependencies": {
     "@dotenvx/dotenvx": "^1.52.0",
@@ -49,12 +50,15 @@
     "@types/react-dom": "^18.2.18",
     "@vitejs/plugin-react": "^4.2.1",
     "@vitest/coverage-v8": "^1.6.1",
+    "@vitest/ui": "^1.6.1",
+    "concurrently": "^9.2.1",
     "eslint": "^10.0.1",
     "eslint-config-next": "^16.1.6",
     "jsdom": "^24.0.0",
     "msw": "^2.1.5",
     "vite": "^5.0.12",
-    "vitest": "^1.2.2"
+    "vitest": "^1.2.2",
+    "wait-on": "^9.0.4"
   },
   "msw": {
     "workerDirectory": [
