@@ -42,3 +42,6 @@ next-env.d.ts
 ./kombai/*
 .kombai/*
 ./opencode.json
+./opencode.json/*
+    ./.opencode.json
+./.opencode.json/*
