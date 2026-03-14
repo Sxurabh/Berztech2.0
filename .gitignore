@@ -38,10 +38,5 @@ next-env.d.ts
 /.agents/*
 .agents/*
 
-# kombai
-./kombai/*
-.kombai/*
-./opencode.json
-./opencode.json/*
-    ./.opencode.json
-./.opencode.json/*
+# opencode
+opencode.json
