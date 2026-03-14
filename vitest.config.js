@@ -11,9 +11,10 @@ export default defineConfig({
       reporter: ['text', 'json', 'html'],
       include: ['src/lib/**', 'src/app/api/**', 'src/config/**'],
       thresholds: {
-        lines: 70,
-        functions: 70,
-        branches: 65,
+        lines: 85,
+        functions: 80,
+        branches: 75,
+        statements: 85,
       },
     },
     include: ['tests/**/*.test.{js,ts,jsx,tsx}'],

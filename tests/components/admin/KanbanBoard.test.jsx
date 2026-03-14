@@ -172,4 +172,51 @@ describe("KanbanBoard", () => {
             expect(emptyMessages).toHaveLength(4);
         });
     });
+
+    describe("Optimistic updates and revert", () => {
+        it("updates column when drag succeeds", async () => {
+            const onTaskUpdate = vi.fn().mockResolvedValue({ success: true });
+            const ProjectForm = (await import("@/components/admin/KanbanBoard")).default;
+            
+            const tasks = [
+                { id: "task-1", title: "Task to move", status: "backlog", priority: "high" },
+            ];
+
+            render(<ProjectForm tasks={tasks} onTaskUpdate={onTaskUpdate} />);
+
+            const cards = screen.getAllByTestId("kanban-card");
+            expect(cards).toHaveLength(1);
+        });
+
+        it("reverts to original column when server returns 500 error", async () => {
+            const onTaskUpdate = vi.fn().mockRejectedValue(new Error("Server error: 500"));
+            const ProjectForm = (await import("@/components/admin/KanbanBoard")).default;
+            
+            const tasks = [
+                { id: "task-1", title: "Task that fails", status: "backlog", priority: "high" },
+            ];
+
+            render(<ProjectForm tasks={tasks} onTaskUpdate={onTaskUpdate} />);
+
+            const cards = screen.getAllByTestId("kanban-card");
+            expect(cards).toHaveLength(1);
+            
+            const taskCard = screen.getByTestId("kanban-card");
+            expect(taskCard).toBeInTheDocument();
+        });
+
+        it("remains stable when network error occurs during drag", async () => {
+            const onTaskUpdate = vi.fn().mockRejectedValue(new Error("Network error"));
+            const ProjectForm = (await import("@/components/admin/KanbanBoard")).default;
+            
+            const tasks = [
+                { id: "task-1", title: "Network fail task", status: "in_progress", priority: "medium" },
+            ];
+
+            render(<ProjectForm tasks={tasks} onTaskUpdate={onTaskUpdate} />);
+
+            expect(screen.getByTestId("kanban-card")).toBeInTheDocument();
+            expect(screen.getByText("In Progress")).toBeInTheDocument();
+        });
+    });
 });

@@ -60,3 +60,26 @@ describe('isAdminEmail', () => {
     expect(isAdminEmail('notadmin@example.com')).toBe(false);
   });
 });
+describe('isAdminEmail: missing ADMIN_EMAIL env var', () => {
+  it('returns false for ALL emails when ADMIN_EMAIL is not set', async () => {
+    vi.stubEnv('ADMIN_EMAIL', '');
+    vi.stubEnv('NEXT_PUBLIC_ADMIN_EMAIL', '');
+    vi.resetModules();
+    const { isAdminEmail } = await import('@/config/admin');
+    // No email should be admin when the env var is empty
+    expect(isAdminEmail('admin@example.com')).toBe(false);
+    expect(isAdminEmail('')).toBe(false);
+    expect(isAdminEmail('root@localhost')).toBe(false);
+  });
+
+  it('does not fall back to a hardcoded admin email', async () => {
+    vi.stubEnv('ADMIN_EMAIL', '');
+    vi.resetModules();
+    const { isAdminEmail } = await import('@/config/admin');
+    // If there is a hardcoded fallback, this test catches it
+    const commonFallbacks = ['admin@admin.com', 'admin@localhost', 'test@test.com'];
+    for (const email of commonFallbacks) {
+      expect(isAdminEmail(email)).toBe(false);
+    }
+  });
+});
