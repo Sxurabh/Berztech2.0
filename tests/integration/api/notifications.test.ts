@@ -197,4 +197,109 @@ describe("Notifications API", () => {
             expect(response.status).toBe(500);
         });
     });
+
+    describe("IDOR Protection", () => {
+        it("9. User A cannot mark User B's notification as read → no rows affected", async () => {
+            // Simulate user-123 trying to mark a notification that belongs to user-456
+            mockAdminClient.from.mockReturnValue(createQueryBuilder({
+                data: null, // No rows updated because user_id filter didn't match
+                error: { message: "No rows found" },
+            }));
+
+            const response = await markRead(createJsonRequest("http://localhost/api/notifications/read", { id: "notif-belongs-to-user-456" }));
+            const json = await response.json();
+
+            expect(response.status).toBe(500);
+            expect(json.error).toBe("No rows found");
+        });
+
+        it("10. Mark already-read notification is idempotent → 200", async () => {
+            // Marking an already-read notification should still return success
+            mockAdminClient.from.mockReturnValue(createQueryBuilder({
+                data: { id: "notif-already-read", is_read: true },
+                error: null,
+            }));
+
+            const response = await markRead(createJsonRequest("http://localhost/api/notifications/read", { id: "notif-already-read" }));
+
+            expect(response.status).toBe(200);
+        });
+    });
+
+    describe("Edge Cases", () => {
+        it("11. GET with 50+ notifications returns all items", async () => {
+            // Create 55 notifications
+            const manyNotifications = Array.from({ length: 55 }, (_, i) => ({
+                id: `notif-${i}`,
+                user_id: "user-123",
+                title: `Notification ${i}`,
+                is_read: i < 30, // First 30 are read, rest are unread
+                created_at: `2026-01-${String(i % 30 + 1).padStart(2, '0')}T10:00:00Z`,
+            }));
+
+            const mockDelete = createQueryBuilder({ error: null });
+            const mockSelect = createQueryBuilder({
+                data: manyNotifications,
+                error: null,
+            });
+
+            mockAdminClient.from
+                .mockReturnValueOnce(mockDelete)
+                .mockReturnValueOnce(mockSelect);
+
+            const response = await getNotifications(createJsonRequest("http://localhost/api/notifications", null, "GET"));
+            const json = await response.json();
+
+            expect(response.status).toBe(200);
+            expect(json.data.length).toBe(55);
+        });
+
+        it("12. Old read notifications are auto-cleaned on GET", async () => {
+            // Old read notification (35 days ago)
+            const oldNotification = {
+                id: "old-notif",
+                user_id: "user-123",
+                is_read: true,
+                created_at: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString(),
+            };
+
+            // Verify delete is called for old notifications
+            let deleteCalled = false;
+            const mockDelete = {
+                delete: vi.fn(() => mockDelete),
+                eq: vi.fn(() => mockDelete),
+                lt: vi.fn((field: string, value: string) => {
+                    if (field === "created_at") deleteCalled = true;
+                    return mockDelete;
+                }),
+                then: (resolve: any) => resolve({ error: null }),
+            };
+
+            const mockSelect = createQueryBuilder({
+                data: [],
+                error: null,
+            });
+
+            mockAdminClient.from
+                .mockReturnValueOnce(mockDelete)
+                .mockReturnValueOnce(mockSelect);
+
+            await getNotifications(createJsonRequest("http://localhost/api/notifications", null, "GET"));
+
+            expect(deleteCalled).toBe(true);
+        });
+
+        it("13. Malformed notification ID → 500", async () => {
+            mockAdminClient.from.mockReturnValue(createQueryBuilder({
+                data: null,
+                error: { message: "Invalid UUID format" },
+            }));
+
+            const response = await markRead(createJsonRequest("http://localhost/api/notifications/read", { id: "not-a-uuid" }));
+            const json = await response.json();
+
+            expect(response.status).toBe(500);
+            expect(json.error).toBe("Invalid UUID format");
+        });
+    });
 });

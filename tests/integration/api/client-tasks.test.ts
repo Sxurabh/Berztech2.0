@@ -148,5 +148,74 @@ describe("Client Tasks API", () => {
 
             expect(response.status).toBe(500);
         });
+
+        it("5. Invalid requestId format is handled gracefully", async () => {
+            const clientUser = { id: "user-123", email: "client@example.com" };
+            mockServerSupabase.auth.getUser.mockResolvedValue({
+                data: { user: clientUser },
+                error: null,
+            });
+
+            const response = await getClientTasks(
+                createGetRequest("http://localhost/api/client/tasks?requestId=invalid-uuid-format!!!")
+            );
+            const json = await response.json();
+
+            // Should still return 200, database will handle the query
+            expect(response.status).toBe(200);
+        });
+
+        it("6. Empty requestId query param is handled", async () => {
+            const clientUser = { id: "user-123", email: "client@example.com" };
+            mockServerSupabase.auth.getUser.mockResolvedValue({
+                data: { user: clientUser },
+                error: null,
+            });
+
+            mockServerSupabase.from.mockImplementation(() => createMockQueryBuilder(mockTasks));
+
+            const response = await getClientTasks(
+                createGetRequest("http://localhost/api/client/tasks?requestId=")
+            );
+            const json = await response.json();
+
+            // Should return tasks (filter may be ignored or treated as null)
+            expect(response.status).toBe(200);
+        });
+
+        it("7. URL-encoded requestId is handled correctly", async () => {
+            const clientUser = { id: "user-123", email: "client@example.com" };
+            mockServerSupabase.auth.getUser.mockResolvedValue({
+                data: { user: clientUser },
+                error: null,
+            });
+
+            mockServerSupabase.from.mockImplementation(() => createMockQueryBuilder(mockTasks));
+
+            const encodedId = encodeURIComponent("req-1");
+            const response = await getClientTasks(
+                createGetRequest(`http://localhost/api/client/tasks?requestId=${encodedId}`)
+            );
+            const json = await response.json();
+
+            expect(response.status).toBe(200);
+        });
+
+        it("8. Multiple query params with requestId", async () => {
+            const clientUser = { id: "user-123", email: "client@example.com" };
+            mockServerSupabase.auth.getUser.mockResolvedValue({
+                data: { user: clientUser },
+                error: null,
+            });
+
+            mockServerSupabase.from.mockImplementation(() => createMockQueryBuilder(mockTasks));
+
+            const response = await getClientTasks(
+                createGetRequest("http://localhost/api/client/tasks?requestId=req-1&sort=created_at")
+            );
+            const json = await response.json();
+
+            expect(response.status).toBe(200);
+        });
     });
 });

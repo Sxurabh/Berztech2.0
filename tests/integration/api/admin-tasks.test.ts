@@ -676,5 +676,75 @@ describe("Admin Tasks API", () => {
             expect(response.status).toBe(400);
             expect(body.error).toBe("Title is required");
         });
+
+        it("handles invalid requestId format in query params", async () => {
+            setupUser("admin@berztech.com", true);
+
+            mockAdminListQuery([]);
+
+            const request = createJsonRequest(
+                "http://localhost:3000/api/admin/tasks?requestId=invalid!!!format"
+            );
+
+            const response = await getTasks(request);
+            const body = await response.json();
+
+            // Should return 200, database handles the query
+            expect(response.status).toBe(200);
+        });
+
+        it("handles empty requestId query param", async () => {
+            setupUser("admin@berztech.com", true);
+
+            const allTasks = [
+                { id: "task-1", title: "Task 1", status: "backlog" },
+                { id: "task-2", title: "Task 2", status: "inprogress" },
+            ];
+
+            mockAdminListQuery(allTasks);
+
+            const request = createJsonRequest(
+                "http://localhost:3000/api/admin/tasks?requestId="
+            );
+
+            const response = await getTasks(request);
+            const body = await response.json();
+
+            // Should return all tasks when requestId is empty
+            expect(response.status).toBe(200);
+        });
+
+        it("handles URL-encoded requestId", async () => {
+            setupUser("admin@berztech.com", true);
+
+            const filteredTasks = [
+                { id: "task-1", title: "Request Task", request_id: "req-special" },
+            ];
+
+            mockAdminListQuery(filteredTasks);
+
+            const encodedId = encodeURIComponent("req-special-123");
+            const request = createJsonRequest(
+                `http://localhost:3000/api/admin/tasks?requestId=${encodedId}`
+            );
+
+            const response = await getTasks(request);
+
+            expect(response.status).toBe(200);
+        });
+
+        it("handles multiple query parameters", async () => {
+            setupUser("admin@berztech.com", true);
+
+            mockAdminListQuery([]);
+
+            const request = createJsonRequest(
+                "http://localhost:3000/api/admin/tasks?requestId=req-1&status=backlog&sort=order_index"
+            );
+
+            const response = await getTasks(request);
+
+            expect(response.status).toBe(200);
+        });
     });
 });
