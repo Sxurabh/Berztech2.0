@@ -1,46 +1,25 @@
 # AGENTS.md — Berztech Development Guide
 
-Guidelines for AI agents operating in this repository.
+Guidelines for AI agents in this repository.
 
 ---
 
 ## 1. Commands
 
-### Development
 ```bash
-npm run dev          # Start dev server at http://localhost:3000
+npm run dev          # Dev server at http://localhost:3000
 npm run build        # Production build
-npm run start        # Start production server
-```
+npm run start        # Production server
+npm run lint         # ESLint
+npm test             # All Vitest tests
+npm run test:ci      # Tests with coverage
+npm run test:unit    # Unit + component tests
+npm run test:e2e     # Playwright E2E tests
 
-### Linting
-```bash
-npm run lint         # Run ESLint (next lint)
-```
-
-### Testing
-```bash
-npm test             # Run all Vitest tests (unit + integration)
-npm run test:ci      # Run tests with coverage
-npm run test:unit    # Unit + component tests only
-npm run test:integration  # Integration tests only
-npm run test:coverage     # Generate HTML coverage report
-npm run test:e2e     # Run Playwright E2E tests
-```
-
-### Single Test Execution
-```bash
-# Vitest (single file)
+# Single test
 npx vitest run tests/unit/config/admin.test.ts
-
-# Vitest (single test by name)
-npx vitest run tests/unit/config/admin.test.ts -t "returns true for configured admin email"
-
-# Playwright (single file)
+npx vitest run tests/unit/config/admin.test.ts -t "test name"
 npx playwright test tests/e2e/auth.spec.ts
-
-# Playwright (single test)
-npx playwright test tests/e2e/auth.spec.ts -t "Navigate to /dashboard"
 ```
 
 ---
@@ -49,34 +28,23 @@ npx playwright test tests/e2e/auth.spec.ts -t "Navigate to /dashboard"
 
 ```
 src/
-├── app/              # Next.js App Router
-│   ├── api/          # API routes (route.js)
-│   ├── auth/         # Auth pages
-│   ├── dashboard/    # Client dashboard
-│   ├── admin/        # Admin panel
-│   └── page.jsx      # Homepage
-├── components/
-│   ├── ui/           # Reusable UI (Button, Modal, DataTable)
-│   ├── admin/        # Admin-specific components
-│   ├── features/     # Feature components (blog, contact, work)
-│   └── sections/     # Page sections (Hero, StatsBar)
-├── lib/
-│   ├── supabase/     # client.js, server.js, admin.js, middleware.js
-│   ├── auth/         # AuthProvider.jsx
-│   ├── api/          # API client utilities
-│   └── hooks/        # Custom React hooks
-├── config/           # Configuration (admin.js, colors.js)
+├── app/              # Next.js App Router (api/, auth/, dashboard/, admin/)
+├── components/       # ui/, admin/, features/, sections/
+├── lib/              # supabase/, auth/, api/, hooks/
+├── config/           # admin.js, colors.js
 └── data/             # Static data
+
+tests/
+├── unit/, components/, integration/, e2e/, mocks/, security/
 ```
 
 ---
 
 ## 3. Code Style
 
-### Languages
 - **Production:** JavaScript (`.js`/`.jsx`)
 - **Tests:** TypeScript (`.ts`/`.tsx`) preferred
-- **Path alias:** Use `@/` for imports from `src/`
+- **Path alias:** Use `@/` for `src/`
 
 ### Component Pattern
 ```javascript
@@ -86,73 +54,125 @@ import clsx from "clsx";
 
 export default function ComponentName({ prop1, prop2 = "default" }) {
   const [state, setState] = useState(null);
-  return <div className={clsx("base-class", prop1 && "conditional")} />;
+  return <div className={clsx("base", prop1 && "conditional")} />;
 }
 ```
 
-### Imports
-- **External:** `import { something } from "package"`
-- **Internal:** `import { something } from "@/lib/supabase/client"`
-- **Relative:** `import Component from "./Component"` (co-located files only)
+### Imports (ordered)
+1. React/Next (`react`, `next/*`)
+2. External (`@supabase/*`, `clsx`, `framer-motion`)
+3. Internal (`@/lib/*`, `@/components/*`)
+4. Relative (`./`, `../`)
 
 ### Naming
-- Components: `PascalCase` (e.g., `Button.jsx`, `BlogPostForm.jsx`)
-- Utilities: `camelCase` (e.g., `client.js`, `middleware.js`)
-- Tests: `*.test.ts` or `*.test.js`
+- Components: `PascalCase` (e.g., `Button.jsx`)
+- Utilities: `camelCase` (e.g., `client.js`)
+- Hooks: `use*Name` (e.g., `useAuth`)
+
+### Tailwind CSS
+- Use `clsx` for conditional styling
+- Custom colors from `@/config/colors.js` (e.g., `text-primary`)
+- Example: `className={clsx("px-4 py-2", isActive && "bg-blue-500")}`
+
+### Error Handling
+- Wrap async ops in try/catch
+- Log: `console.error("Action error:", error)`
+- Return user-friendly messages
+- Use Zod for validation with details
 
 ---
 
 ## 4. API Routes
 
-### Pattern
 ```javascript
-export async function Handler(request) {
+import { NextResponse } from "next/server";
+import { supabase } from "@/lib/supabase/server";
+import { isAdminEmail } from "@/config/admin";
+
+export async function GET(request) {
   try {
-    // Business logic
-    return NextResponse.json({ data: result }, { status: 200 });
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error || !user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const result = await businessLogic();
+    return NextResponse.json({ data: result });
   } catch (error) {
     console.error("Handler error:", error);
+    return NextResponse.json({ error: "Message" }, { status: 500 });
+  }
+}
+```
+
+### Zod Validation
+```javascript
+import { z } from "zod";
+
+const CreateSchema = z.object({
+  title: z.string().min(1).max(200),
+  content: z.string().min(1),
+  status: z.enum(["draft", "published"]).default("draft"),
+});
+
+export async function POST(request) {
+  const body = await request.json();
+  const validation = CreateSchema.safeParse(body);
+  if (!validation.success) {
     return NextResponse.json(
-      { error: "User-friendly message" },
-      { status: 500 }
+      { error: "Validation failed", details: validation.error.format() },
+      { status: 400 }
     );
   }
 }
 ```
 
-### Validation
-- Use **Zod** for request body validation
-- Return structured errors: `{ error: "message", details: ... }`
-
 ### Auth Guards
+- Protected: `supabase.auth.getUser()` → 401 if failed
+- Admin: `isAdminEmail(user.email)` → 403 if false
+
+---
+
+## 5. React Query
+
 ```javascript
-const { data: { user }, error: authError } = await supabase.auth.getUser();
-if (authError || !user) {
-  return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
+export function usePosts() {
+  return useQuery({
+    queryKey: ["posts"],
+    queryFn: async () => {
+      const res = await fetch("/api/posts");
+      if (!res.ok) throw new Error("Failed");
+      return res.json();
+    },
+  });
 }
 
-const { isAdminEmail } = require("@/config/admin");
-if (!isAdminEmail(user.email)) {
-  return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+export function useCreatePost() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (data) => {
+      const res = await fetch("/api/posts", { method: "POST", body: JSON.stringify(data) });
+      if (!res.ok) throw new Error("Failed");
+      return res.json();
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["posts"] }),
+  });
 }
 ```
 
 ---
 
-## 5. Testing
+## 6. Testing
 
 ### Vitest
 ```typescript
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-describe('FeatureName', () => {
-  beforeEach(() => {
-    vi.stubEnv('VAR_NAME', 'test-value');
-  });
-
-  it('does something specific', async () => {
-    const result = await functionUnderTest();
-    expect(result).toBe(expected);
+describe('Feature', () => {
+  beforeEach(() => { vi.stubEnv('VAR', 'value'); });
+  it('works', async () => {
+    expect(await fn()).toBe(expected);
   });
 });
 ```
@@ -161,7 +181,7 @@ describe('FeatureName', () => {
 ```typescript
 import { test, expect } from '@playwright/test';
 
-test('user flow', async ({ page }) => {
+test('flow', async ({ page }) => {
   await page.goto('/page');
   await page.getByRole('button', { name: 'Submit' }).click();
   await expect(page).toHaveURL('/expected');
@@ -169,47 +189,27 @@ test('user flow', async ({ page }) => {
 ```
 
 ### MSW
-- Mock Supabase in `tests/mocks/handlers.ts`
-- Use `server.use()` to override per test
+- Mock in `tests/mocks/handlers.ts`
+- Use `server.use()` to override
 
 ---
 
-## 6. Configuration
+## 7. Config
 
-### Environment Variables
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=xxx
-SUPABASE_SERVICE_ROLE_KEY=xxx        # Server-only!
-ADMIN_EMAIL=admin@yourdomain.com
+SUPABASE_SERVICE_ROLE_KEY=xxx  # Server-only!
+ADMIN_EMAIL=admin@domain.com
 ```
 
-### Admin Check
-- Function: `isAdminEmail(email)` in `src/config/admin.js`
-- Compares lowercase email against `ADMIN_EMAIL` env var
-
----
-
-## 7. Common Tasks
-
-### Add API Route
-1. Create `src/app/api/resource/route.js`
-2. Implement GET/POST/PATCH/DELETE handlers
-3. Add auth guards using Supabase
-4. Add Zod validation schema
-5. Write tests in `tests/integration/api/resource.test.ts`
-
-### Add Component
-1. Create in appropriate `src/components/` folder
-2. Use `"use client"` if it uses hooks
-3. Export as default
-4. Write tests in `tests/components/`
+Admin check: `isAdminEmail(email)` in `src/config/admin.js`
 
 ---
 
 ## 8. Constraints
 
-- **Never commit secrets** — use `.env.local`, never commit `.env`
-- **Server-only code** — never import `admin.js` in client components
-- **Coverage thresholds** — 70% line/function, 65% branch
-- **Test isolation** — each test independent; mock external calls
+- Never commit secrets — use `.env.local`
+- Never import `admin.js` in client components
+- Coverage: 70% line/function, 65% branch
+- Test isolation: mock external calls

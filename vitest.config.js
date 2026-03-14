@@ -9,12 +9,12 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      include: ['src/lib/**', 'src/app/api/**', 'src/config/**'],
+      include: ['src/lib/**', 'src/lib/data/**', 'src/app/api/**', 'src/config/**'],
       thresholds: {
-        lines: 85,
-        functions: 80,
-        branches: 75,
-        statements: 85,
+        lines: 90,
+        functions: 90,
+        branches: 85,
+        statements: 90,
       },
     },
     include: ['tests/**/*.test.{js,ts,jsx,tsx}'],

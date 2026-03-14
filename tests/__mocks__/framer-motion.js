@@ -6,11 +6,10 @@ const motion = {
   tr: ({ children, ...props }) => React.createElement('tr', props, children),
   button: ({ children, ...props }) => React.createElement('button', props, children),
   form: ({ children, ...props }) => React.createElement('form', props, children),
+  article: ({ children, ...props }) => React.createElement('article', props, children),
 };
 
 const AnimatePresence = ({ children }) => children;
-
-const motion.span = motion.span;
 
 module.exports = {
   motion,
