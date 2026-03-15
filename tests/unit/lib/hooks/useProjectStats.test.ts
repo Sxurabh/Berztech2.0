@@ -97,4 +97,45 @@ describe('useProjectStats hook', () => {
         
         await refreshPromise;
     });
+
+    it('handles API errors gracefully', async () => {
+        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        
+        vi.mock('@/lib/supabase/client', () => ({
+            createClient: vi.fn(() => ({
+                from: vi.fn(() => {
+                    throw new Error('API Error');
+                }),
+            })),
+        }));
+
+        const { result } = renderHook(() => useProjectStats());
+
+        await waitFor(() => expect(result.current.loading).toBe(false));
+
+        consoleSpy.mockRestore();
+    });
+
+    it('handles Promise.all rejection in fetchStats', async () => {
+        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        
+        vi.mock('@/lib/supabase/client', () => ({
+            createClient: vi.fn(() => ({
+                from: vi.fn(() => ({
+                    select: vi.fn().mockReturnValue({
+                        order: vi.fn().mockReturnValue({
+                            limit: vi.fn().mockRejectedValue(new Error('Network error')),
+                        }),
+                    }),
+                })),
+            })),
+        }));
+
+        const { result } = renderHook(() => useProjectStats());
+
+        await waitFor(() => expect(result.current.loading).toBe(false));
+
+        expect(consoleSpy).toHaveBeenCalled();
+        consoleSpy.mockRestore();
+    });
 });

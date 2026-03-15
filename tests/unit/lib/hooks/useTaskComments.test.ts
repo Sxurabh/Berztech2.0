@@ -7,14 +7,14 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 
 vi.mock('@/lib/supabase/client', () => {
-    const mockQueryBuilder = {
+    const createMockQueryBuilder = () => ({
         select: vi.fn().mockReturnThis(),
         eq: vi.fn().mockResolvedValue({ data: [], error: null }),
         order: vi.fn().mockResolvedValue({ data: [], error: null }),
-    };
+    });
     return {
         createClient: vi.fn(() => ({
-            from: vi.fn().mockReturnValue(mockQueryBuilder),
+            from: vi.fn(() => createMockQueryBuilder()),
             channel: vi.fn(() => ({
                 on: vi.fn().mockReturnThis(),
                 subscribe: vi.fn(),
@@ -150,27 +150,6 @@ describe('useTaskComments hook', () => {
     });
 
     it('sendComment succeeds and replaces optimistic comment with real data', async () => {
-        vi.mock('@/lib/supabase/client', () => {
-            const mockQueryBuilder = {
-                select: vi.fn().mockReturnThis(),
-                eq: vi.fn().mockResolvedValue({ data: [], error: null }),
-                order: vi.fn().mockResolvedValue({ data: [], error: null }),
-            };
-            return {
-                createClient: vi.fn(() => ({
-                    from: vi.fn().mockReturnValue(mockQueryBuilder),
-                    channel: vi.fn(() => ({
-                        on: vi.fn().mockReturnThis(),
-                        subscribe: vi.fn(),
-                    })),
-                    removeChannel: vi.fn(),
-                    auth: {
-                        getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'user-1' } }, error: null }),
-                    },
-                })),
-            };
-        });
-        
         const { useTaskComments } = await import('@/lib/hooks/useTaskComments');
         const { result } = renderHook(() => useTaskComments('task-1'));
         
@@ -243,63 +222,6 @@ describe('useTaskComments hook', () => {
     });
 
     it('sendComment returns false when user is not authenticated', async () => {
-        vi.mock('@/lib/supabase/client', () => {
-            const mockQueryBuilder = {
-                select: vi.fn().mockReturnThis(),
-                eq: vi.fn().mockResolvedValue({ data: [], error: null }),
-                order: vi.fn().mockResolvedValue({ data: [], error: null }),
-            };
-            return {
-                createClient: vi.fn(() => ({
-                    from: vi.fn().mockReturnValue(mockQueryBuilder),
-                    channel: vi.fn(() => ({
-                        on: vi.fn().mockReturnThis(),
-                        subscribe: vi.fn(),
-                    })),
-                    removeChannel: vi.fn(),
-                    auth: {
-                        getUser: vi.fn().mockResolvedValue({ data: { user: null }, error: null }),
-                    },
-                })),
-            };
-        });
-        
-        const { useTaskComments } = await import('@/lib/hooks/useTaskComments');
-        const { result } = renderHook(() => useTaskComments('task-1'));
-        
-        await waitFor(() => {
-            expect(result.current.loading).toBe(false);
-        });
-        
-        const sendResult = await act(async () => {
-            return await result.current.sendComment('Test comment');
-        });
-        
-        expect(sendResult).toBe(false);
-    });
-
-    it('sendComment returns false when user is not authenticated', async () => {
-        vi.mock('@/lib/supabase/client', () => {
-            const mockQueryBuilder = {
-                select: vi.fn().mockReturnThis(),
-                eq: vi.fn().mockResolvedValue({ data: [], error: null }),
-                order: vi.fn().mockResolvedValue({ data: [], error: null }),
-            };
-            return {
-                createClient: vi.fn(() => ({
-                    from: vi.fn().mockReturnValue(mockQueryBuilder),
-                    channel: vi.fn(() => ({
-                        on: vi.fn().mockReturnThis(),
-                        subscribe: vi.fn(),
-                    })),
-                    removeChannel: vi.fn(),
-                    auth: {
-                        getUser: vi.fn().mockResolvedValue({ data: { user: null }, error: null }),
-                    },
-                })),
-            };
-        });
-        
         const { useTaskComments } = await import('@/lib/hooks/useTaskComments');
         const { result } = renderHook(() => useTaskComments('task-1'));
         

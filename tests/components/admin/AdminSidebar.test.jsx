@@ -96,4 +96,34 @@ describe('AdminSidebar', () => {
     const logoLink = screen.getByText('Berztech').closest('a');
     expect(logoLink).toHaveAttribute('href', '/admin');
   });
+
+  it('highlights Dashboard as active on root admin path', () => {
+    usePathname.mockReturnValue('/admin');
+    render(<AdminSidebar />);
+    
+    const dashboardLink = screen.getByText('Dashboard').closest('a');
+    expect(dashboardLink).toHaveClass('bg-neutral-900');
+  });
+
+  it('highlights Blog Posts as active on blog subpath', () => {
+    usePathname.mockReturnValue('/admin/blog');
+    render(<AdminSidebar />);
+    
+    const blogLink = screen.getByText('Blog Posts').closest('a');
+    expect(blogLink).toHaveClass('bg-neutral-900');
+  });
+
+  it('highlights Testimonials as active on testimonials subpath', () => {
+    usePathname.mockReturnValue('/admin/testimonials');
+    render(<AdminSidebar />);
+    
+    const testimonialsLink = screen.getByText('Testimonials').closest('a');
+    expect(testimonialsLink).toHaveClass('bg-neutral-900');
+  });
+
+  it('renders user initial in avatar', () => {
+    render(<AdminSidebar />);
+    
+    expect(screen.getByText('A')).toBeInTheDocument();
+  });
 });

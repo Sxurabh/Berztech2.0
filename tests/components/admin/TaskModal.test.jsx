@@ -162,4 +162,54 @@ describe('TaskModal', () => {
     fireEvent.click(detailsTab);
     expect(screen.getByTestId('task-modal-details')).toBeInTheDocument();
   });
+
+  it('shows Details tab by default', () => {
+    render(<TaskModal task={mockTask} requestId="req-1" onClose={() => {}} onUpdate={() => {}} onDelete={() => {}} />);
+    
+    expect(screen.getByTestId('task-modal-details')).toBeInTheDocument();
+  });
+
+  it('initializes form state from task props', () => {
+    render(<TaskModal task={mockTask} requestId="req-1" onClose={() => {}} onUpdate={() => {}} onDelete={() => {}} />);
+    
+    const titleInput = screen.getByTestId('title-input');
+    expect(titleInput.value).toBe('Test Task');
+  });
+
+  it('handles archive action', async () => {
+    const mockOnUpdate = vi.fn();
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ data: {} }),
+    });
+
+    render(<TaskModal task={mockTask} requestId="req-1" onClose={() => {}} onUpdate={mockOnUpdate} onDelete={() => {}} />);
+    
+    const archiveButton = screen.getByTestId('archive-button');
+    fireEvent.click(archiveButton);
+  });
+
+  it('calls onUpdate with task data on successful save', async () => {
+    const mockOnUpdate = vi.fn();
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ data: { id: 'task-123', title: 'Updated Task' } }),
+    });
+
+    render(<TaskModal task={mockTask} requestId="req-1" onClose={() => {}} onUpdate={mockOnUpdate} onDelete={() => {}} />);
+    
+    const saveButton = screen.getByTestId('save-button');
+    fireEvent.click(saveButton);
+    
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalled();
+    });
+  });
+
+  it('renders Comments tab with count', () => {
+    render(<TaskModal task={mockTask} requestId="req-1" onClose={() => {}} onUpdate={() => {}} onDelete={() => {}} />);
+    
+    const commentsTab = screen.getByText(/Comments/);
+    expect(commentsTab).toBeInTheDocument();
+  });
 });

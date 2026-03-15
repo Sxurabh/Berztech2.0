@@ -368,3 +368,25 @@ describe('middleware cookie set/remove branches', () => {
     expect(response).toBeDefined();
   });
 });
+
+describe('middleware skips when not configured', () => {
+    beforeEach(() => {
+        vi.resetModules();
+        vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', '');
+        vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY', '');
+    });
+
+    it('returns early when SUPABASE_URL is missing', async () => {
+        const { updateSession } = await import('@/lib/supabase/middleware');
+        const req = {
+            nextUrl: { pathname: '/admin' },
+            url: 'http://localhost:3000/admin',
+            headers: new Headers(),
+            cookies: { get: vi.fn() },
+        };
+        
+        const response = await updateSession(req);
+        
+        expect(response.status).toBe(200);
+    });
+});

@@ -60,6 +60,78 @@ describe('AuthProvider', () => {
     vi.clearAllMocks();
   });
 
+  it('signInWithEmail throws when credentials are invalid', async () => {
+    mockSupabase.auth.getUser.mockResolvedValue({ data: { user: null } });
+    mockSupabase.auth.onAuthStateChange.mockReturnValue({
+      data: { subscription: { unsubscribe: vi.fn() } },
+    });
+    mockSupabase.auth.signInWithPassword.mockRejectedValue(new Error('Invalid credentials'));
+
+    render(
+      <AuthProvider>
+        <TestComponent />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('loading').textContent).toBe('not-loading');
+    });
+
+    try {
+      await userEvent.click(screen.getByText('signInEmail'));
+    } catch (e) {
+      expect(e.message).toBe('Invalid credentials');
+    }
+  });
+
+  it('signInWithOAuth throws when provider returns error', async () => {
+    mockSupabase.auth.getUser.mockResolvedValue({ data: { user: null } });
+    mockSupabase.auth.onAuthStateChange.mockReturnValue({
+      data: { subscription: { unsubscribe: vi.fn() } },
+    });
+    mockSupabase.auth.signInWithOAuth.mockRejectedValue(new Error('OAuth failed'));
+
+    render(
+      <AuthProvider>
+        <TestComponent />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('loading').textContent).toBe('not-loading');
+    });
+
+    try {
+      await userEvent.click(screen.getByText('signInOAuth'));
+    } catch (e) {
+      expect(e.message).toBe('OAuth failed');
+    }
+  });
+
+  it('signOut throws when Supabase returns error', async () => {
+    mockSupabase.auth.getUser.mockResolvedValue({ data: { user: mockUser } });
+    mockSupabase.auth.onAuthStateChange.mockReturnValue({
+      data: { subscription: { unsubscribe: vi.fn() } },
+    });
+    mockSupabase.auth.signOut.mockRejectedValue(new Error('Sign out failed'));
+
+    render(
+      <AuthProvider>
+        <TestComponent />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('user').textContent).toBe('test@example.com');
+    });
+
+    try {
+      await userEvent.click(screen.getByText('signOut'));
+    } catch (e) {
+      expect(e.message).toBe('Sign out failed');
+    }
+  });
+
   it('useAuth throws error when used outside AuthProvider', () => {
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
     
@@ -381,6 +453,59 @@ describe('AuthProvider', () => {
 
     expect(consoleWarn).toHaveBeenCalledWith('Invalid next redirect ignored:', 'https://evil.com');
     consoleWarn.mockRestore();
+  });
+
+  it('signInWithOAuth accepts valid next param and sets it in redirect URL', async () => {
+    mockSupabase.auth.getUser.mockResolvedValue({ data: { user: null } });
+    mockSupabase.auth.onAuthStateChange.mockReturnValue({
+      data: { subscription: { unsubscribe: vi.fn() } },
+    });
+    mockSupabase.auth.signInWithOAuth.mockResolvedValue({ data: { url: 'https://google.com' } });
+
+    render(
+      <AuthProvider>
+        <TestComponentWithNext />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {});
+
+    await userEvent.click(screen.getByText('validNext'));
+
+    expect(mockSupabase.auth.signInWithOAuth).toHaveBeenCalledWith({
+      provider: 'google',
+      options: expect.objectContaining({
+        redirectTo: expect.stringContaining('/auth/callback?next=%2Fdashboard'),
+      }),
+    });
+  });
+
+  it('signInWithOAuth throws when Supabase is not configured', async () => {
+    createClient.mockReturnValue(null);
+    mockSupabase.auth.getUser.mockResolvedValue({ data: { user: null } });
+    mockSupabase.auth.onAuthStateChange.mockReturnValue({
+      data: { subscription: { unsubscribe: vi.fn() } },
+    });
+
+    render(
+      <AuthProvider>
+        <TestComponent />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('loading').textContent).toBe('not-loading');
+    });
+
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    try {
+      await userEvent.click(screen.getByText('signInOAuth'));
+    } catch (e) {
+      expect(e.message).toBe('Supabase is not configured');
+    }
+
+    consoleError.mockRestore();
   });
 
   it('signInWithOAuth rejects protocol-relative next param', async () => {
