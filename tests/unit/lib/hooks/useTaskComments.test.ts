@@ -133,4 +133,184 @@ describe('useTaskComments hook', () => {
         
         expect(sendResult).toBe(false);
     });
+
+    it('sendComment returns false when content is only whitespace', async () => {
+        const { useTaskComments } = await import('@/lib/hooks/useTaskComments');
+        const { result } = renderHook(() => useTaskComments('task-1'));
+        
+        await waitFor(() => {
+            expect(result.current.loading).toBe(false);
+        });
+        
+        const sendResult = await act(async () => {
+            return await result.current.sendComment('   ');
+        });
+        
+        expect(sendResult).toBe(false);
+    });
+
+    it('sendComment succeeds and replaces optimistic comment with real data', async () => {
+        vi.mock('@/lib/supabase/client', () => {
+            const mockQueryBuilder = {
+                select: vi.fn().mockReturnThis(),
+                eq: vi.fn().mockResolvedValue({ data: [], error: null }),
+                order: vi.fn().mockResolvedValue({ data: [], error: null }),
+            };
+            return {
+                createClient: vi.fn(() => ({
+                    from: vi.fn().mockReturnValue(mockQueryBuilder),
+                    channel: vi.fn(() => ({
+                        on: vi.fn().mockReturnThis(),
+                        subscribe: vi.fn(),
+                    })),
+                    removeChannel: vi.fn(),
+                    auth: {
+                        getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'user-1' } }, error: null }),
+                    },
+                })),
+            };
+        });
+        
+        const { useTaskComments } = await import('@/lib/hooks/useTaskComments');
+        const { result } = renderHook(() => useTaskComments('task-1'));
+        
+        await waitFor(() => {
+            expect(result.current.loading).toBe(false);
+        });
+        
+        const mockApiResponse = {
+            data: {
+                id: 'real-comment-id',
+                task_id: 'task-1',
+                user_id: 'user-1',
+                content: 'Test comment',
+                created_at: new Date().toISOString(),
+            }
+        };
+        
+        global.fetch = vi.fn()
+            .mockResolvedValueOnce({
+                ok: true,
+                json: () => Promise.resolve(mockApiResponse),
+            });
+        
+        const sendResult = await act(async () => {
+            return await result.current.sendComment('Test comment');
+        });
+        
+        expect(sendResult).toBeDefined();
+    });
+
+    it('sendComment rolls back on API error (non-ok response)', async () => {
+        const { useTaskComments } = await import('@/lib/hooks/useTaskComments');
+        const { result } = renderHook(() => useTaskComments('task-1'));
+        
+        await waitFor(() => {
+            expect(result.current.loading).toBe(false);
+        });
+        
+        global.fetch = vi.fn()
+            .mockResolvedValueOnce({
+                ok: false,
+                status: 400,
+            });
+        
+        const initialCommentsLength = result.current.comments.length;
+        
+        const sendResult = await act(async () => {
+            return await result.current.sendComment('Test comment');
+        });
+        
+        expect(sendResult).toBe(false);
+    });
+
+    it('sendComment rolls back on network error', async () => {
+        const { useTaskComments } = await import('@/lib/hooks/useTaskComments');
+        const { result } = renderHook(() => useTaskComments('task-1'));
+        
+        await waitFor(() => {
+            expect(result.current.loading).toBe(false);
+        });
+        
+        global.fetch = vi.fn()
+            .mockRejectedValueOnce(new Error('Network error'));
+        
+        const sendResult = await act(async () => {
+            return await result.current.sendComment('Test comment');
+        });
+        
+        expect(sendResult).toBe(false);
+    });
+
+    it('sendComment returns false when user is not authenticated', async () => {
+        vi.mock('@/lib/supabase/client', () => {
+            const mockQueryBuilder = {
+                select: vi.fn().mockReturnThis(),
+                eq: vi.fn().mockResolvedValue({ data: [], error: null }),
+                order: vi.fn().mockResolvedValue({ data: [], error: null }),
+            };
+            return {
+                createClient: vi.fn(() => ({
+                    from: vi.fn().mockReturnValue(mockQueryBuilder),
+                    channel: vi.fn(() => ({
+                        on: vi.fn().mockReturnThis(),
+                        subscribe: vi.fn(),
+                    })),
+                    removeChannel: vi.fn(),
+                    auth: {
+                        getUser: vi.fn().mockResolvedValue({ data: { user: null }, error: null }),
+                    },
+                })),
+            };
+        });
+        
+        const { useTaskComments } = await import('@/lib/hooks/useTaskComments');
+        const { result } = renderHook(() => useTaskComments('task-1'));
+        
+        await waitFor(() => {
+            expect(result.current.loading).toBe(false);
+        });
+        
+        const sendResult = await act(async () => {
+            return await result.current.sendComment('Test comment');
+        });
+        
+        expect(sendResult).toBe(false);
+    });
+
+    it('sendComment returns false when user is not authenticated', async () => {
+        vi.mock('@/lib/supabase/client', () => {
+            const mockQueryBuilder = {
+                select: vi.fn().mockReturnThis(),
+                eq: vi.fn().mockResolvedValue({ data: [], error: null }),
+                order: vi.fn().mockResolvedValue({ data: [], error: null }),
+            };
+            return {
+                createClient: vi.fn(() => ({
+                    from: vi.fn().mockReturnValue(mockQueryBuilder),
+                    channel: vi.fn(() => ({
+                        on: vi.fn().mockReturnThis(),
+                        subscribe: vi.fn(),
+                    })),
+                    removeChannel: vi.fn(),
+                    auth: {
+                        getUser: vi.fn().mockResolvedValue({ data: { user: null }, error: null }),
+                    },
+                })),
+            };
+        });
+        
+        const { useTaskComments } = await import('@/lib/hooks/useTaskComments');
+        const { result } = renderHook(() => useTaskComments('task-1'));
+        
+        await waitFor(() => {
+            expect(result.current.loading).toBe(false);
+        });
+        
+        const sendResult = await act(async () => {
+            return await result.current.sendComment('Test comment');
+        });
+        
+        expect(sendResult).toBe(false);
+    });
 });

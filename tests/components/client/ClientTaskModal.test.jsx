@@ -102,4 +102,34 @@ describe('ClientTaskModal', () => {
 
     expect(screen.getByText(/Created/)).toBeInTheDocument();
   });
+
+  it('renders empty description when not provided', async () => {
+    const taskWithoutDesc = { ...mockTask, description: null };
+    render(<ClientTaskModal task={taskWithoutDesc} onClose={() => {}} />);
+
+    const overviewTab = screen.getByText(/Overview/);
+    await userEvent.click(overviewTab);
+
+    expect(screen.getByText(/No description provided/)).toBeInTheDocument();
+  });
+
+  it('renders with different priority levels', async () => {
+    const lowPriorityTask = { ...mockTask, priority: 'low' };
+    render(<ClientTaskModal task={lowPriorityTask} onClose={() => {}} />);
+
+    const overviewTab = screen.getByText(/Overview/);
+    await userEvent.click(overviewTab);
+
+    expect(screen.getByText(/low/i)).toBeInTheDocument();
+  });
+
+  it('renders with different status values', async () => {
+    const completedTask = { ...mockTask, status: 'completed' };
+    render(<ClientTaskModal task={completedTask} onClose={() => {}} />);
+
+    const overviewTab = screen.getByText(/Overview/);
+    await userEvent.click(overviewTab);
+
+    expect(screen.getByText('Completed')).toBeInTheDocument();
+  });
 });

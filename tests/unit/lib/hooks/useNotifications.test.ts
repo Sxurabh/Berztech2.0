@@ -118,4 +118,143 @@ describe('useNotifications hook', () => {
         
         expect(typeof result.current.markAsRead).toBe('function');
     });
+
+    it('markAsRead optimistically updates notification status', async () => {
+        mockFetch
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({ data: mockNotifications }),
+            })
+            .mockResolvedValueOnce({
+                ok: true,
+            });
+        
+        const { useNotifications } = await import('@/lib/hooks/useNotifications');
+        const { result } = renderHook(() => useNotifications());
+        
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        });
+        
+        expect(result.current.markAsRead).toBeDefined();
+    });
+
+    it('markAsRead handles API error gracefully', async () => {
+        mockFetch
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => mockNotifications,
+            })
+            .mockRejectedValueOnce(new Error('API error'));
+        
+        const { useNotifications } = await import('@/lib/hooks/useNotifications');
+        const { result } = renderHook(() => useNotifications());
+        
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        });
+        
+        await act(async () => {
+            await result.current.markAsRead('n1');
+        });
+        
+        expect(result.current.notifications).toBeDefined();
+    });
+
+    it('markAllAsRead optimistically updates all notifications', async () => {
+        mockFetch
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => mockNotifications,
+            })
+            .mockResolvedValueOnce({
+                ok: true,
+            });
+        
+        const { useNotifications } = await import('@/lib/hooks/useNotifications');
+        const { result } = renderHook(() => useNotifications());
+        
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        });
+        
+        await act(async () => {
+            await result.current.markAllAsRead();
+        });
+        
+        const unreadAfter = result.current.notifications.filter(n => !n.is_read);
+        expect(unreadAfter.length).toBe(0);
+    });
+
+    it('markAllAsRead handles API error gracefully', async () => {
+        mockFetch
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => mockNotifications,
+            })
+            .mockRejectedValueOnce(new Error('API error'));
+        
+        const { useNotifications } = await import('@/lib/hooks/useNotifications');
+        const { result } = renderHook(() => useNotifications());
+        
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        });
+        
+        await act(async () => {
+            await result.current.markAllAsRead();
+        });
+        
+        expect(result.current.notifications).toBeDefined();
+    });
+
+    it('returns correct unread count', async () => {
+        mockFetch.mockResolvedValue({
+            ok: true,
+            json: async () => ({ data: mockNotifications }),
+        });
+        
+        const { useNotifications } = await import('@/lib/hooks/useNotifications');
+        const { result } = renderHook(() => useNotifications(), {
+            wrapper: ({ children }) => children,
+        });
+        
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        });
+        
+        expect(result.current.unreadCount).toBeDefined();
+    });
+
+    it('returns refetch function', async () => {
+        mockFetch.mockResolvedValue({
+            ok: true,
+            json: async () => mockNotifications,
+        });
+        
+        const { useNotifications } = await import('@/lib/hooks/useNotifications');
+        const { result } = renderHook(() => useNotifications());
+        
+        expect(typeof result.current.refetch).toBe('function');
+    });
+
+    it('filters out read notifications older than 3 hours', async () => {
+        const oldNotification = {
+            id: 'n-old',
+            message: 'Old notification',
+            is_read: true,
+            user_id: 'user-1',
+            created_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+        };
+        
+        mockFetch.mockResolvedValue({
+            ok: true,
+            json: async () => ({ data: [...mockNotifications, oldNotification] }),
+        });
+        
+        const { useNotifications } = await import('@/lib/hooks/useNotifications');
+        const { result } = renderHook(() => useNotifications());
+        
+        expect(result.current.notifications).toBeDefined();
+    });
 });

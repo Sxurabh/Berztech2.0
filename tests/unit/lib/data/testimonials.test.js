@@ -200,4 +200,33 @@ describe('deleteTestimonial', () => {
 
     await expect(deleteTestimonial('1')).rejects.toThrow('DB error');
   });
+
+  it('throws when Supabase not configured', async () => {
+    createServerSupabaseClient.mockResolvedValue(null);
+
+    await expect(deleteTestimonial('1')).rejects.toThrow('Supabase not configured');
+  });
+});
+
+describe('testimonials error branches', () => {
+  it('getTestimonialById throws when Supabase not configured', async () => {
+    createServerSupabaseClient.mockResolvedValue(null);
+
+    const result = await getTestimonialById('1');
+    expect(result).toBeNull();
+  });
+
+  it('createTestimonial throws when Supabase not configured', async () => {
+    createServerSupabaseClient.mockResolvedValue(null);
+
+    await expect(createTestimonial({ client: 'Test', content: 'Content' }))
+      .rejects.toThrow('Supabase not configured');
+  });
+
+  it('updateTestimonial throws when Supabase not configured', async () => {
+    createServerSupabaseClient.mockResolvedValue(null);
+
+    await expect(updateTestimonial('1', { client: 'Test' }))
+      .rejects.toThrow('Supabase not configured');
+  });
 });

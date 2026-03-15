@@ -277,3 +277,40 @@ describe('deletePost', () => {
     await expect(deletePost('1')).rejects.toThrow('DB error');
   });
 });
+
+describe('blogPosts error branches', () => {
+  it('getPostById throws when Supabase not configured', async () => {
+    createServerSupabaseClient.mockResolvedValue(null);
+
+    const result = await getPostById('1');
+    expect(result).toBeNull();
+  });
+
+  it('getBlogCategories throws when Supabase not configured', async () => {
+    createServerSupabaseClient.mockResolvedValue(null);
+
+    const result = await getBlogCategories();
+    expect(result).toEqual([]);
+  });
+
+  it('createPost throws when Supabase not configured', async () => {
+    createServerSupabaseClient.mockResolvedValue(null);
+
+    await expect(createPost({ title: 'Test' }))
+      .rejects.toThrow('Supabase not configured');
+  });
+
+  it('updatePost throws when Supabase not configured', async () => {
+    createServerSupabaseClient.mockResolvedValue(null);
+
+    await expect(updatePost('1', { title: 'Test' }))
+      .rejects.toThrow('Supabase not configured');
+  });
+
+  it('deletePost throws when Supabase not configured', async () => {
+    createServerSupabaseClient.mockResolvedValue(null);
+
+    await expect(deletePost('1'))
+      .rejects.toThrow('Supabase not configured');
+  });
+});

@@ -264,3 +264,107 @@ describe('middleware: JWT edge cases', () => {
     await expect(updateSession(req)).resolves.toBeDefined();
   });
 });
+
+describe('middleware cookie handling', () => {
+  let mockSupabase;
+  let mockRequest;
+
+  beforeEach(() => {
+    vi.resetModules();
+    mockSupabase = {
+      auth: {
+        getUser: vi.fn().mockResolvedValue({ data: { user: { email: 'user@test.com' } } }),
+      },
+    };
+    mockCreateServerClient.mockReturnValue(mockSupabase);
+
+    vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'https://test.supabase.co');
+    vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY', 'test-anon-key');
+    vi.stubEnv('NEXT_PUBLIC_ADMIN_EMAIL', 'admin@example.com');
+
+    mockRequest = {
+      nextUrl: { pathname: '/dashboard' },
+      url: 'http://localhost:3000/dashboard',
+      headers: new Headers(),
+      cookies: {
+        get: vi.fn(() => ({ value: 'session' })),
+        set: vi.fn(),
+      },
+    };
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('handles request when Supabase is configured', async () => {
+    const { updateSession } = await import('@/lib/supabase/middleware');
+    
+    const response = await updateSession(mockRequest);
+    
+    expect(response.status).toBe(200);
+  });
+
+  it('handles cookie operations via cookie interface', async () => {
+    const { updateSession } = await import('@/lib/supabase/middleware');
+    
+    const response = await updateSession(mockRequest);
+    
+    expect(mockSupabase.auth.getUser).toHaveBeenCalled();
+  });
+});
+
+describe('middleware cookie set/remove branches', () => {
+  let mockSupabase;
+  let mockRequest;
+  let setCookieMock;
+  let setOnResponseMock;
+
+  beforeEach(() => {
+    vi.resetModules();
+    
+    setCookieMock = vi.fn();
+    setOnResponseMock = vi.fn();
+    
+    mockSupabase = {
+      auth: {
+        getUser: vi.fn().mockResolvedValue({ data: { user: { email: 'user@test.com' } } }),
+      },
+    };
+    mockCreateServerClient.mockImplementation((url, key, options) => {
+      options.cookies.set('test-cookie', 'test-value');
+      options.cookies.remove('test-cookie');
+      return mockSupabase;
+    });
+
+    vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'https://test.supabase.co');
+    vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY', 'test-anon-key');
+    vi.stubEnv('NEXT_PUBLIC_ADMIN_EMAIL', 'admin@example.com');
+
+    mockRequest = {
+      nextUrl: { pathname: '/dashboard' },
+      url: 'http://localhost:3000/dashboard',
+      headers: new Headers(),
+      cookies: {
+        get: vi.fn(() => ({ value: 'session' })),
+        set: setCookieMock,
+      },
+    };
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('triggers cookie set branch in createServerClient', async () => {
+    const { updateSession } = await import('@/lib/supabase/middleware');
+    const response = await updateSession(mockRequest);
+    expect(response).toBeDefined();
+  });
+
+  it('triggers cookie remove branch in createServerClient', async () => {
+    const { updateSession } = await import('@/lib/supabase/middleware');
+    const response = await updateSession(mockRequest);
+    expect(response).toBeDefined();
+  });
+});

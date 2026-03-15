@@ -38,6 +38,18 @@ function TestComponent() {
   );
 }
 
+function TestComponentWithNext() {
+  const { signInWithOAuth } = useAuth();
+  
+  return (
+    <div>
+      <button onClick={() => signInWithOAuth('google', { next: '/dashboard' }).catch(() => {})}>validNext</button>
+      <button onClick={() => signInWithOAuth('google', { next: 'https://evil.com' }).catch(() => {})}>invalidNext</button>
+      <button onClick={() => signInWithOAuth('google', { next: '//evil.com' }).catch(() => {})}>protocolRelative</button>
+    </div>
+  );
+}
+
 describe('AuthProvider', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -263,5 +275,134 @@ describe('AuthProvider', () => {
 
     expect(screen.getByTestId('loading').textContent).toBe('not-loading');
     expect(screen.getByTestId('user').textContent).toBe('no-user');
+  });
+
+  it('getUser error is caught and handled gracefully', async () => {
+    mockSupabase.auth.getUser.mockRejectedValue(new Error('Network error'));
+    mockSupabase.auth.onAuthStateChange.mockReturnValue({
+      data: { subscription: { unsubscribe: vi.fn() } },
+    });
+
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    render(
+      <AuthProvider>
+        <TestComponent />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('loading').textContent).toBe('not-loading');
+    });
+
+    expect(consoleError).toHaveBeenCalledWith('Auth initialization error:', expect.any(Error));
+    expect(screen.getByTestId('user').textContent).toBe('no-user');
+    consoleError.mockRestore();
+  });
+
+  it('onAuthStateChange callback updates user when auth state changes', async () => {
+    mockSupabase.auth.getUser.mockResolvedValue({ data: { user: null } });
+    
+    let authCallback;
+    mockSupabase.auth.onAuthStateChange.mockImplementation((callback) => {
+      authCallback = callback;
+      return { data: { subscription: { unsubscribe: vi.fn() } } };
+    });
+
+    render(
+      <AuthProvider>
+        <TestComponent />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('loading').textContent).toBe('not-loading');
+    });
+
+    act(() => {
+      authCallback('SIGNED_IN', { user: mockUser });
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('user').textContent).toBe('test@example.com');
+    });
+  });
+
+  it('signInWithOAuth rejects invalid next param (open redirect prevention)', async () => {
+    mockSupabase.auth.getUser.mockResolvedValue({ data: { user: null } });
+    mockSupabase.auth.onAuthStateChange.mockReturnValue({
+      data: { subscription: { unsubscribe: vi.fn() } },
+    });
+    mockSupabase.auth.signInWithOAuth.mockResolvedValue({ data: { url: 'https://google.com' } });
+
+    const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    render(
+      <AuthProvider>
+        <TestComponent />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('loading').textContent).toBe('not-loading');
+    });
+
+    await userEvent.click(screen.getByText('signInOAuth'));
+
+    expect(mockSupabase.auth.signInWithOAuth).toHaveBeenCalledWith({
+      provider: 'google',
+      options: expect.objectContaining({
+        redirectTo: expect.stringContaining('/auth/callback'),
+      }),
+    });
+
+    expect(consoleWarn).not.toHaveBeenCalled();
+    consoleWarn.mockRestore();
+  });
+
+  it('signInWithOAuth rejects invalid next param with external URL', async () => {
+    mockSupabase.auth.getUser.mockResolvedValue({ data: { user: null } });
+    mockSupabase.auth.onAuthStateChange.mockReturnValue({
+      data: { subscription: { unsubscribe: vi.fn() } },
+    });
+    mockSupabase.auth.signInWithOAuth.mockResolvedValue({ data: { url: 'https://google.com' } });
+
+    const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    render(
+      <AuthProvider>
+        <TestComponentWithNext />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {});
+
+    await userEvent.click(screen.getByText('invalidNext'));
+
+    expect(consoleWarn).toHaveBeenCalledWith('Invalid next redirect ignored:', 'https://evil.com');
+    consoleWarn.mockRestore();
+  });
+
+  it('signInWithOAuth rejects protocol-relative next param', async () => {
+    mockSupabase.auth.getUser.mockResolvedValue({ data: { user: null } });
+    mockSupabase.auth.onAuthStateChange.mockReturnValue({
+      data: { subscription: { unsubscribe: vi.fn() } },
+    });
+    mockSupabase.auth.signInWithOAuth.mockResolvedValue({ data: { url: 'https://google.com' } });
+
+    const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    render(
+      <AuthProvider>
+        <TestComponentWithNext />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {});
+
+    await userEvent.click(screen.getByText('protocolRelative'));
+
+    expect(consoleWarn).toHaveBeenCalledWith('Invalid next redirect ignored:', '//evil.com');
+    consoleWarn.mockRestore();
   });
 });

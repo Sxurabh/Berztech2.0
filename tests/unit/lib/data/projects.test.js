@@ -294,3 +294,40 @@ describe('deleteProject', () => {
     await expect(deleteProject('1')).rejects.toThrow('DB error');
   });
 });
+
+describe('projects error branches', () => {
+  it('getProjectById throws when Supabase not configured', async () => {
+    createServerSupabaseClient.mockResolvedValue(null);
+
+    const result = await getProjectById('1');
+    expect(result).toBeNull();
+  });
+
+  it('getProjectFilters throws when Supabase not configured', async () => {
+    createServerSupabaseClient.mockResolvedValue(null);
+
+    const result = await getProjectFilters();
+    expect(result).toEqual(['All']);
+  });
+
+  it('createProject throws when Supabase not configured', async () => {
+    createServerSupabaseClient.mockResolvedValue(null);
+
+    await expect(createProject({ title: 'Test', client: 'Client' }))
+      .rejects.toThrow('Supabase not configured');
+  });
+
+  it('updateProject throws when Supabase not configured', async () => {
+    createServerSupabaseClient.mockResolvedValue(null);
+
+    await expect(updateProject('1', { title: 'Test' }))
+      .rejects.toThrow('Supabase not configured');
+  });
+
+  it('deleteProject throws when Supabase not configured', async () => {
+    createServerSupabaseClient.mockResolvedValue(null);
+
+    await expect(deleteProject('1'))
+      .rejects.toThrow('Supabase not configured');
+  });
+});

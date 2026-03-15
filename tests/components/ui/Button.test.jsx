@@ -81,5 +81,57 @@ describe('Button Component', () => {
         const cornerFrame = container.querySelector('[data-testid="corner-frame"]');
         expect(cornerFrame.className).toContain('bg-red-600');
     });
+
+    it('renders as Link when href is provided', async () => {
+        const Button = (await import('@/components/ui/Button')).default;
+        
+        render(<Button href="/dashboard">Go to Dashboard</Button>);
+        
+        expect(screen.getByRole('link')).toBeInTheDocument();
+        expect(screen.getByRole('link')).toHaveAttribute('href', '/dashboard');
+    });
+
+    it('renders as button when href is provided but disabled', async () => {
+        const Button = (await import('@/components/ui/Button')).default;
+        
+        render(<Button href="/dashboard" disabled>Go to Dashboard</Button>);
+        
+        expect(screen.getByRole('button')).toBeInTheDocument();
+        expect(screen.getByRole('button')).toBeDisabled();
+    });
+
+    it('applies fullWidth class when fullWidth is true', async () => {
+        const Button = (await import('@/components/ui/Button')).default;
+        
+        const { container } = render(<Button fullWidth={true}>Full Width</Button>);
+        
+        // fullWidth applies "w-full sm:w-auto" - check the wrapper div
+        const wrapper = container.querySelector('.inline-block');
+        expect(wrapper).toHaveClass('w-full');
+    });
+
+    it('renders arrow when showArrow is true', async () => {
+        const Button = (await import('@/components/ui/Button')).default;
+        
+        render(<Button showArrow={true}>With Arrow</Button>);
+        
+        expect(screen.getByText('→')).toBeInTheDocument();
+    });
+
+    it('renders button with type submit', async () => {
+        const Button = (await import('@/components/ui/Button')).default;
+        
+        render(<Button type="submit">Submit</Button>);
+        
+        expect(screen.getByRole('button')).toHaveAttribute('type', 'submit');
+    });
+
+    it('renders button with type reset', async () => {
+        const Button = (await import('@/components/ui/Button')).default;
+        
+        render(<Button type="reset">Reset</Button>);
+        
+        expect(screen.getByRole('button')).toHaveAttribute('type', 'reset');
+    });
 });
 

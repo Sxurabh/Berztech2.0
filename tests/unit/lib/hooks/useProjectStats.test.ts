@@ -1,14 +1,36 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook, waitFor, act } from '@testing-library/react';
 import { useProjectStats } from '@/lib/hooks/useProjectStats';
+
+const mockData = {
+    projects: [
+        { id: 'p1', client: 'Client A', title: 'Project 1', created_at: '2024-01-01' }
+    ],
+    posts: [
+        { id: 'b1', title: 'Blog 1', published: true, created_at: '2024-01-01' }
+    ],
+    testimonials: [
+        { id: 't1', client: 'John', company: 'Acme', content: 'Great!', created_at: '2024-01-01' }
+    ]
+};
+
+const createQueryBuilder = (table) => {
+    const data = mockData[table] || [];
+    const mockResult = { data, count: data.length, error: null };
+    return {
+        select: vi.fn().mockReturnValue({
+            order: vi.fn().mockReturnValue({
+                limit: vi.fn().mockResolvedValue(mockResult),
+                ...mockResult,
+            }),
+            ...mockResult,
+        }),
+    };
+};
 
 vi.mock('@/lib/supabase/client', () => ({
     createClient: vi.fn(() => ({
-        from: vi.fn().mockReturnValue({
-            select: vi.fn().mockResolvedValue({ data: [], count: 0, error: null }),
-            order: vi.fn().mockReturnThis(),
-            limit: vi.fn().mockResolvedValue({ data: [], count: 0, error: null }),
-        }),
+        from: vi.fn((table) => createQueryBuilder(table)),
     })),
 }));
 
@@ -63,5 +85,16 @@ describe('useProjectStats hook', () => {
         await waitFor(() => expect(result.current.loading).toBe(false));
         
         expect(Array.isArray(result.current.recentTestimonials)).toBe(true);
+    });
+
+    it('refreshStats function returns a promise', async () => {
+        const { result } = renderHook(() => useProjectStats());
+
+        await waitFor(() => expect(result.current.loading).toBe(false));
+        
+        const refreshPromise = result.current.refreshStats();
+        expect(refreshPromise).toBeInstanceOf(Promise);
+        
+        await refreshPromise;
     });
 });
