@@ -1,10 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiX } from "react-icons/fi";
 
 export default function Modal({ isOpen, onClose, title, children }) {
+    const dialogRef = useRef(null);
+    const previousActiveElement = useRef(null);
+
     useEffect(() => {
         const handleEscape = (e) => {
             if (e.key === "Escape") onClose();
@@ -13,11 +16,26 @@ export default function Modal({ isOpen, onClose, title, children }) {
         if (isOpen) {
             document.body.style.overflow = "hidden";
             document.addEventListener("keydown", handleEscape);
+            
+            previousActiveElement.current = document.activeElement;
+            
+            setTimeout(() => {
+                const focusableElement = dialogRef.current?.querySelector(
+                    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                );
+                if (focusableElement) {
+                    focusableElement.focus();
+                }
+            }, 100);
         }
 
         return () => {
             document.body.style.overflow = "unset";
             document.removeEventListener("keydown", handleEscape);
+            
+            if (previousActiveElement.current) {
+                previousActiveElement.current.focus();
+            }
         };
     }, [isOpen, onClose]);
 
@@ -40,6 +58,7 @@ export default function Modal({ isOpen, onClose, title, children }) {
                     aria-hidden="true"
                 />
                 <motion.div
+                    ref={dialogRef}
                     initial={{ opacity: 0, scale: 0.96, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.96, y: 20 }}
@@ -51,7 +70,7 @@ export default function Modal({ isOpen, onClose, title, children }) {
                         <button
                             onClick={onClose}
                             className="p-1.5 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 transition-colors rounded-sm focus:outline-none focus:ring-2 focus:ring-neutral-900"
-                            aria-label="Close"
+                            aria-label="Close modal"
                         >
                             <FiX className="w-4 h-4" />
                         </button>

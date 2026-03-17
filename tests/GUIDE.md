@@ -55,8 +55,73 @@ npm run test:ci                 # All tests + coverage (use before pushing)
 npm run test:coverage           # Open HTML coverage report
 npm run test:e2e                # Playwright E2E (need app running)
 npm run test:e2e:mobile         # Mobile viewport E2E tests
+npm run test:visual             # Visual regression tests
+npm run test:visual:update      # Update visual baselines
 npx vitest run tests/unit/config/admin.test.ts   # Single file
 ```
+
+---
+
+## 📸 Visual Regression Testing
+
+Visual regression tests capture screenshots and compare them against baselines to detect unintended UI changes.
+
+### Commands
+
+```bash
+npm run test:visual             # Run visual regression tests (compares against baselines)
+npm run test:visual:update     # Update baseline screenshots (run after intentional UI changes)
+```
+
+### Test Location
+
+- Visual tests: `tests/e2e/visual/`
+- Snapshots: `tests/e2e/visual/__snapshots__/`
+
+### Adding Visual Tests
+
+1. Create a new `.spec.ts` file in `tests/e2e/visual/`
+2. Use Playwright's `toHaveScreenshot()` matcher:
+
+```typescript
+import { test, expect } from '@playwright/test';
+
+test('page matches baseline', async ({ page }) => {
+  await page.goto('/page');
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(500); // Wait for animations
+  
+  await expect(page).toHaveScreenshot('page-name.png', {
+    maxDiffPixels: 50,
+    threshold: 0.3,
+  });
+});
+```
+
+### Threshold Guidelines
+
+| Page Type | Threshold | Rationale |
+|-----------|-----------|-----------|
+| Static (About, Contact) | 0.2 | Minimal dynamic content |
+| Forms | 0.3 | Simple animations only |
+| Dashboard | 0.4 | Data tables, counters |
+| Homepage | 0.5 | Mouse-tracking, parallax |
+| Animated sections | 0.3 | Framer Motion animations |
+
+### Updating Baselines
+
+After intentional UI changes:
+1. Run `npm run test:visual:update`
+2. Review new screenshots in `tests/e2e/visual/__snapshots__/`
+3. Commit the updated baselines
+
+### CI Behavior
+
+Visual tests run on PRs when:
+- PR title contains: `visual`, `ui`, `component`, `design`, `css`, `style`
+- Branch name starts with: `visual-`, `ui-`, `design-`
+
+Visual tests are skipped on regular PRs to avoid false positives.
 
 ---
 

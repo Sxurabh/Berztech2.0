@@ -14,6 +14,15 @@ export default defineConfig({
     use: {
         baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
         trace: 'on-first-retry',
+        screenshot: 'only-on-failure',
+        video: 'on-first-retry',
+    },
+    expect: {
+        toHaveScreenshot: {
+            maxDiffPixels: 50,
+            threshold: 0.3,
+            animations: 'disabled',
+        },
     },
     projects: [
         {
@@ -24,7 +33,23 @@ export default defineConfig({
             name: 'chromium',
             use: { ...devices['Desktop Chrome'] },
             dependencies: ['client setup'],
-        }
+        },
+        {
+            name: 'chromium-mobile',
+            use: {
+                ...devices['iPhone 12'],
+                baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
+            },
+            dependencies: ['client setup'],
+        },
+        {
+            name: 'chromium-tablet',
+            use: {
+                viewport: { width: 768, height: 1024 },
+                baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
+            },
+            dependencies: ['client setup'],
+        },
     ],
     webServer: {
         command: 'npm run dev',

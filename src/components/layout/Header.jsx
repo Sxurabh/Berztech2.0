@@ -323,12 +323,13 @@ function AuthButton({ mobile = false }) {
 // Desktop Navigation with underline animation
 function DesktopNav({ pathname }) {
   return (
-    <nav className="hidden lg:flex items-center gap-1">
+    <nav aria-label="Main navigation" className="hidden lg:flex items-center gap-1">
       {navItems.map((item, index) => (
         <React.Fragment key={item.href}>
           <Link
             href={item.href}
             className="group relative px-4 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2 rounded-sm"
+            aria-current={pathname === item.href ? "page" : undefined}
             aria-label={item.title}
           >
 
