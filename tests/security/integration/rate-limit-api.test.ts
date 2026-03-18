@@ -245,7 +245,7 @@ describe('Security: Rate Limiting - Live API', () => {
           body: { 
             name: `Concurrent ${i}`, 
             email: `concurrent${i}@test.com` 
-          })
+          },
         })
       );
       

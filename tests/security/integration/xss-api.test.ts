@@ -388,3 +388,4 @@ describe('Security: XSS Prevention - Live API', () => {
       });
     });
   });
+});
