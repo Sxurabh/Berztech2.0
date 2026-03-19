@@ -14,9 +14,9 @@ Standard feature implementation workflow
 
 ## Common Files
 
-- `tests/__mocks__/components/ui/*`
-- `tests/components/client/*`
-- `tests/components/features/admin/*`
+- `tests/security/*`
+- `tests/e2e/a11y/*`
+- `tests/e2e/*`
 - `**/*.test.*`
 - `**/api/**`
 
