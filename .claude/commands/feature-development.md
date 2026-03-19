@@ -14,11 +14,7 @@ Standard feature implementation workflow
 
 ## Common Files
 
-- `tests/security/*`
-- `tests/e2e/a11y/*`
-- `tests/e2e/*`
 - `**/*.test.*`
-- `**/api/**`
 
 ## Suggested Sequence
 
