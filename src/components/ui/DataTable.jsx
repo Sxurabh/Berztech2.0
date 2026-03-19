@@ -14,6 +14,7 @@ export default function DataTable({
     emptyIcon,
     gridView = false,
     renderGridItem = null,
+    ariaLabel = "Data table",
 }) {
     const [search, setSearch] = useState("");
     const [sortKey, setSortKey] = useState(null);
@@ -60,10 +61,12 @@ export default function DataTable({
                 <div className="relative mb-6">
                     <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
                     <input
-                        type="text"
+                        type="search"
+                        role="searchbox"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         placeholder="Search..."
+                        aria-label={`Search by ${searchKey}`}
                         className="w-full pl-10 pr-4 py-3 bg-white border border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:border-neutral-400 focus:ring-1 focus:ring-neutral-400 font-jetbrains-mono text-sm transition-all rounded-sm shadow-sm"
                     />
                 </div>
@@ -147,12 +150,15 @@ export default function DataTable({
                         bracketClassName="w-2.5 h-2.5 border-neutral-400"
                     >
                         <div className="overflow-x-auto max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent">
-                            <table className="w-full relative">
+                            <table className="w-full relative" aria-label={ariaLabel}>
+                                <caption className="sr-only">{ariaLabel}</caption>
                                 <thead className="sticky top-0 z-10 bg-neutral-50/95 backdrop-blur-sm border-b border-neutral-200 shadow-sm">
                                     <tr>
                                         {columns.map((col) => (
                                             <th
                                                 key={col.key}
+                                                scope="col"
+                                                aria-sort={col.sortable ? (sortKey === col.key ? (sortDir === "asc" ? "ascending" : "descending") : "none") : undefined}
                                                 onClick={() => col.sortable && toggleSort(col.key)}
                                                 className={`
                                                     px-5 py-3.5 text-left text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 font-medium whitespace-nowrap
@@ -163,13 +169,18 @@ export default function DataTable({
                                                 <div className="flex items-center gap-1.5">
                                                     {col.label}
                                                     {col.sortable && sortKey === col.key && (
+                                                        <span className="sr-only">
+                                                            {sortDir === "asc" ? "(ascending)" : "(descending)"}
+                                                        </span>
+                                                    )}
+                                                    {col.sortable && (
                                                         sortDir === "asc" ? <FiChevronUp className="w-3 h-3 text-neutral-400" /> : <FiChevronDown className="w-3 h-3 text-neutral-400" />
                                                     )}
                                                 </div>
                                             </th>
                                         ))}
                                         {actions && (
-                                            <th className="px-5 py-3.5 text-right text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 font-medium">
+                                            <th scope="col" className="px-5 py-3.5 text-right text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 font-medium">
                                                 Actions
                                             </th>
                                         )}

@@ -198,7 +198,7 @@ export default function ContactForm() {
                 type="button"
                 onClick={() => handleServiceToggle(service)}
                 className={`
-                  px-3 py-2 text-xs font-jetbrains-mono border transition-all duration-200 backdrop-blur-sm
+                  px-3 py-2 min-h-[44px] flex items-center justify-center text-xs font-jetbrains-mono border transition-all duration-200 backdrop-blur-sm
                   ${formData.services.includes(service)
                     ? 'bg-neutral-900 text-white border-neutral-900'
                     : 'bg-white/50 text-neutral-500 border-neutral-200 hover:border-neutral-400 hover:bg-white'
@@ -223,7 +223,7 @@ export default function ContactForm() {
                 type="button"
                 onClick={() => setFormData({ ...formData, budget })}
                 className={`
-                  px-2 py-2 text-xs font-jetbrains-mono border transition-all duration-200 text-center backdrop-blur-sm
+                  px-2 py-2 min-h-[44px] flex items-center justify-center text-xs font-jetbrains-mono border transition-all duration-200 text-center backdrop-blur-sm
                   ${formData.budget === budget
                     ? 'bg-neutral-900 text-white border-neutral-900'
                     : 'bg-white/50 text-neutral-500 border-neutral-200 hover:border-neutral-400 hover:bg-white'
@@ -254,6 +254,7 @@ export default function ContactForm() {
             onChange={(e) => setFormData({ ...formData, message: e.target.value })}
             onFocus={() => setFocusedField('message')}
             onBlur={() => setFocusedField(null)}
+            maxLength={1000}
             className="w-full bg-white/50 backdrop-blur-sm border border-neutral-200 p-4 font-space-grotesk text-sm text-neutral-900 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all resize-none placeholder:text-neutral-300"
             placeholder="Tell us about your goals, timeline, and requirements..."
           />

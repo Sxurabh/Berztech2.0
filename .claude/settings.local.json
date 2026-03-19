@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx vitest:*)",
+      "Bash(cd \"I:/AntiGravity/Berztech2.0\" && npm test 2>&1)",
+      "Bash(npm run:*)"
+    ]
+  }
+}

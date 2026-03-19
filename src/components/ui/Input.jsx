@@ -1,15 +1,22 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useId } from "react";
 
-const Input = forwardRef(({ label, className = "", error, ...props }, ref) => {
+const Input = forwardRef(({ label, className = "", error, id, ...props }, ref) => {
+    const generatedId = useId();
+    const inputId = id || generatedId;
+    const errorId = error ? `${inputId}-error` : undefined;
+
     return (
         <div className={className}>
             {label && (
-                <label className="block text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 mb-2">
+                <label htmlFor={inputId} className="block text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 mb-2">
                     {label}
                 </label>
             )}
             <input
                 ref={ref}
+                id={inputId}
+                aria-invalid={error ? "true" : undefined}
+                aria-describedby={errorId}
                 className={`
                     w-full bg-neutral-50 border p-2.5 text-sm 
                     focus:outline-none focus:border-neutral-900 transition-colors 
@@ -19,7 +26,7 @@ const Input = forwardRef(({ label, className = "", error, ...props }, ref) => {
                 {...props}
             />
             {error && (
-                <p className="mt-1 text-xs text-red-500 font-space-grotesk">{error}</p>
+                <p id={errorId} className="mt-1 text-xs text-red-500 font-space-grotesk" role="alert">{error}</p>
             )}
         </div>
     );

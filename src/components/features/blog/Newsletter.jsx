@@ -61,7 +61,7 @@ export default function Newsletter() {
             </p>
           </div>
 
-          <form className="relative flex gap-2" onSubmit={handleNewsletterSubmit}>
+          <form className="relative flex gap-2" onSubmit={handleNewsletterSubmit} role="form" aria-label="Newsletter subscription">
             <label htmlFor="blog-newsletter-email" className="sr-only">Email address</label>
             <input
               id="blog-newsletter-email"

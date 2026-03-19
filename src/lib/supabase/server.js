@@ -1,6 +1,26 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
+export function wrapCookieSet(cookieStore) {
+    return function (name, value, options) {
+        try {
+            cookieStore.set({ name, value, ...options });
+        } catch (error) {
+            console.warn("Supabase cookie set error:", error.message);
+        }
+    };
+}
+
+export function wrapCookieRemove(cookieStore) {
+    return function (name, options) {
+        try {
+            cookieStore.set({ name, value: "", ...options });
+        } catch (error) {
+            console.warn("Supabase cookie remove error:", error.message);
+        }
+    };
+}
+
 export async function createServerSupabaseClient() {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -15,22 +35,8 @@ export async function createServerSupabaseClient() {
             get(name) {
                 return cookieStore.get(name)?.value;
             },
-            set(name, value, options) {
-                try {
-                    cookieStore.set({ name, value, ...options });
-                } catch (error) {
-                    // Handle cookie set errors in Server Components
-                    console.warn("Supabase cookie set error:", error.message);
-                }
-            },
-            remove(name, options) {
-                try {
-                    cookieStore.set({ name, value: "", ...options });
-                } catch (error) {
-                    // Handle cookie remove errors in Server Components
-                    console.warn("Supabase cookie remove error:", error.message);
-                }
-            },
+            set: wrapCookieSet(cookieStore),
+            remove: wrapCookieRemove(cookieStore),
         },
     });
 }

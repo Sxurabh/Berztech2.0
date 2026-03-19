@@ -1,15 +1,22 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useId } from "react";
 
-const Select = forwardRef(({ label, options = [], className = "", error, ...props }, ref) => {
+const Select = forwardRef(({ label, options = [], className = "", error, id, ...props }, ref) => {
+    const generatedId = useId();
+    const selectId = id || generatedId;
+    const errorId = error ? `${selectId}-error` : undefined;
+
     return (
         <div className={className}>
             {label && (
-                <label className="block text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 mb-2">
+                <label htmlFor={selectId} className="block text-[10px] font-jetbrains-mono uppercase tracking-widest text-neutral-500 mb-2">
                     {label}
                 </label>
             )}
             <select
                 ref={ref}
+                id={selectId}
+                aria-invalid={error ? "true" : undefined}
+                aria-describedby={errorId}
                 className={`
                     w-full bg-neutral-50 border p-2.5 text-sm 
                     focus:outline-none focus:border-neutral-900 transition-colors 
@@ -25,7 +32,7 @@ const Select = forwardRef(({ label, options = [], className = "", error, ...prop
                 ))}
             </select>
             {error && (
-                <p className="mt-1 text-xs text-red-500 font-space-grotesk">{error}</p>
+                <p id={errorId} className="mt-1 text-xs text-red-500 font-space-grotesk" role="alert">{error}</p>
             )}
         </div>
     );
