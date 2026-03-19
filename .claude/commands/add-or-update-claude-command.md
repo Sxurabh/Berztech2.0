@@ -10,11 +10,11 @@ Use this workflow when working on **add-or-update-claude-command** in `Berztech2
 
 ## Goal
 
-Adds or updates a Claude command documentation file to define or modify a command's behavior.
+Adds or updates a Claude command by creating or modifying a markdown file describing the command.
 
 ## Common Files
 
-- `.claude/commands/*.md`
+- `.claude/commands/add-or-update-claude-command.md`
 
 ## Suggested Sequence
 
@@ -25,8 +25,7 @@ Adds or updates a Claude command documentation file to define or modify a comman
 
 ## Typical Commit Signals
 
-- Create or update a markdown file in .claude/commands/ with the command's name.
-- Commit the new or updated file.
+- Create or update a markdown file in .claude/commands/ named add-or-update-claude-command.md
 
 ## Notes
 
