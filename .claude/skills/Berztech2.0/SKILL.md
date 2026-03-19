@@ -29,7 +29,7 @@ Activate this skill when:
 
 ## Commit Conventions
 
-Follow these commit message conventions based on 186 analyzed commits.
+Follow these commit message conventions based on 197 analyzed commits.
 
 ### Commit Style: Mixed Style
 
@@ -39,7 +39,7 @@ Follow these commit message conventions based on 186 analyzed commits.
 
 ### Message Guidelines
 
-- Average message length: ~50 characters
+- Average message length: ~51 characters
 - Keep first line concise and descriptive
 - Use imperative mood ("Add feature" not "Added feature")
 
@@ -47,7 +47,7 @@ Follow these commit message conventions based on 186 analyzed commits.
 *Commit message example*
 
 ```text
-feat: add Berztech2.0 ECC bundle (.claude/commands/sync-skill-documentation.md)
+feat: add Berztech2.0 ECC bundle (.claude/commands/add-or-update-skill-documentation.md)
 ```
 
 *Commit message example*
@@ -227,61 +227,95 @@ Standard feature implementation workflow
 
 **Example commit sequence**:
 ```
+feat: add Berztech2.0 ECC bundle (.codex/agents/explorer.toml)
 feat: add Berztech2.0 ECC bundle (.codex/agents/reviewer.toml)
 feat: add Berztech2.0 ECC bundle (.codex/agents/docs-researcher.toml)
-feat: add Berztech2.0 ECC bundle (.claude/homunculus/instincts/inherited/Berztech2.0-instincts.yaml)
 ```
 
 ### Add Or Update Claude Command
 
-Adds or updates a Claude command documentation file to define or modify a command's behavior.
+Adds or updates a Claude command by creating or modifying a markdown file describing the command.
 
-**Frequency**: ~4 times per month
+**Frequency**: ~3 times per month
 
 **Steps**:
-1. Create or update a markdown file in .claude/commands/ with the command's name.
-2. Commit the new or updated file.
+1. Create or update a markdown file in .claude/commands/ named add-or-update-claude-command.md
 
 **Files typically involved**:
-- `.claude/commands/*.md`
+- `.claude/commands/add-or-update-claude-command.md`
 
 **Example commit sequence**:
 ```
-Create or update a markdown file in .claude/commands/ with the command's name.
-Commit the new or updated file.
+Create or update a markdown file in .claude/commands/ named add-or-update-claude-command.md
 ```
 
-### Add Or Update Skill Documentation
+### Feature Development Command
 
-Adds or updates skill documentation for Berztech2.0 in both Claude and Agents directories.
+Documents or implements a feature development workflow by creating or updating a markdown file describing the process.
 
-**Frequency**: ~4 times per month
+**Frequency**: ~6 times per month
 
 **Steps**:
-1. Create or update .agents/skills/Berztech2.0/SKILL.md.
-2. Create or update .claude/skills/Berztech2.0/SKILL.md.
-3. Commit the changes.
+1. Create or update a markdown file in .claude/commands/ named feature-development.md
 
 **Files typically involved**:
+- `.claude/commands/feature-development.md`
+
+**Example commit sequence**:
+```
+Create or update a markdown file in .claude/commands/ named feature-development.md
+```
+
+### Add Or Update Test Suite Command
+
+Adds or updates documentation for test suite commands.
+
+**Frequency**: ~2 times per month
+
+**Steps**:
+1. Create or update a markdown file in .claude/commands/ named add-or-update-test-suite.md
+
+**Files typically involved**:
+- `.claude/commands/add-or-update-test-suite.md`
+
+**Example commit sequence**:
+```
+Create or update a markdown file in .claude/commands/ named add-or-update-test-suite.md
+```
+
+### Sync Skill Documentation
+
+Synchronizes or updates skill documentation files for Berztech2.0.
+
+**Frequency**: ~3 times per month
+
+**Steps**:
+1. Create or update a markdown file in .claude/commands/ named add-or-update-skill-documentation.md
+2. Create or update a markdown file in .agents/skills/Berztech2.0/SKILL.md
+3. Create or update a markdown file in .claude/skills/Berztech2.0/SKILL.md
+
+**Files typically involved**:
+- `.claude/commands/add-or-update-skill-documentation.md`
 - `.agents/skills/Berztech2.0/SKILL.md`
 - `.claude/skills/Berztech2.0/SKILL.md`
 
 **Example commit sequence**:
 ```
-Create or update .agents/skills/Berztech2.0/SKILL.md.
-Create or update .claude/skills/Berztech2.0/SKILL.md.
-Commit the changes.
+Create or update a markdown file in .claude/commands/ named add-or-update-skill-documentation.md
+Create or update a markdown file in .agents/skills/Berztech2.0/SKILL.md
+Create or update a markdown file in .claude/skills/Berztech2.0/SKILL.md
 ```
 
-### Add Or Update Codex Agent
+### Add Codex Agent Bundle
 
-Adds or updates Codex agent configuration files for roles such as docs-researcher, reviewer, or explorer.
+Adds or updates the set of Codex agent configuration files.
 
-**Frequency**: ~4 times per month
+**Frequency**: ~6 times per month
 
 **Steps**:
-1. Create or update the relevant .codex/agents/*.toml file.
-2. Commit the file.
+1. Create or update .codex/agents/docs-researcher.toml
+2. Create or update .codex/agents/reviewer.toml
+3. Create or update .codex/agents/explorer.toml
 
 **Files typically involved**:
 - `.codex/agents/docs-researcher.toml`
@@ -290,46 +324,46 @@ Adds or updates Codex agent configuration files for roles such as docs-researche
 
 **Example commit sequence**:
 ```
-Create or update the relevant .codex/agents/*.toml file.
-Commit the file.
+Create or update .codex/agents/docs-researcher.toml
+Create or update .codex/agents/reviewer.toml
+Create or update .codex/agents/explorer.toml
 ```
 
-### Add Or Update Ecc Tools
+### Add Or Update Identity And Tools
 
-Adds or updates the ECC tools configuration for Claude.
+Adds or updates identity and ECC tools configuration for Claude.
 
 **Frequency**: ~4 times per month
 
 **Steps**:
-1. Create or update .claude/ecc-tools.json.
-2. Commit the file.
+1. Create or update .claude/identity.json
+2. Create or update .claude/ecc-tools.json
 
 **Files typically involved**:
+- `.claude/identity.json`
 - `.claude/ecc-tools.json`
 
 **Example commit sequence**:
 ```
-Create or update .claude/ecc-tools.json.
-Commit the file.
+Create or update .claude/identity.json
+Create or update .claude/ecc-tools.json
 ```
 
-### Add Or Update Identity
+### Add Or Update Berztech2 0 Skill Agent
 
-Adds or updates the identity configuration for Claude.
+Adds or updates the Berztech2.0 skill agent YAML configuration.
 
 **Frequency**: ~4 times per month
 
 **Steps**:
-1. Create or update .claude/identity.json.
-2. Commit the file.
+1. Create or update .agents/skills/Berztech2.0/agents/openai.yaml
 
 **Files typically involved**:
-- `.claude/identity.json`
+- `.agents/skills/Berztech2.0/agents/openai.yaml`
 
 **Example commit sequence**:
 ```
-Create or update .claude/identity.json.
-Commit the file.
+Create or update .agents/skills/Berztech2.0/agents/openai.yaml
 ```
 
 
