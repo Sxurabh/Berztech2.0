@@ -16,7 +16,7 @@ Standard feature implementation workflow
 
 - `src/components/admin/*`
 - `src/components/client/*`
-- `src/components/ui/*`
+- `src/components/features/admin/*`
 - `**/*.test.*`
 - `**/api/**`
 
