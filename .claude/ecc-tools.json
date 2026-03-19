@@ -2,7 +2,7 @@
   "version": "1.3",
   "schemaVersion": "1.0",
   "generatedBy": "ecc-tools",
-  "generatedAt": "2026-03-19T11:11:22.820Z",
+  "generatedAt": "2026-03-19T11:12:16.657Z",
   "repo": "https://github.com/Sxurabh/Berztech2.0",
   "profiles": {
     "requested": "full",
@@ -119,9 +119,9 @@
     ".codex/agents/reviewer.toml",
     ".codex/agents/docs-researcher.toml",
     ".claude/homunculus/instincts/inherited/Berztech2.0-instincts.yaml",
-    ".claude/commands/database-migration.md",
     ".claude/commands/feature-development.md",
-    ".claude/commands/add-or-update-test-suite.md"
+    ".claude/commands/add-or-update-test-suite.md",
+    ".claude/commands/add-feature-development-command.md"
   ],
   "packageFiles": {
     "runtime-core": [
@@ -137,9 +137,9 @@
       ".claude/homunculus/instincts/inherited/Berztech2.0-instincts.yaml"
     ],
     "workflow-pack": [
-      ".claude/commands/database-migration.md",
       ".claude/commands/feature-development.md",
-      ".claude/commands/add-or-update-test-suite.md"
+      ".claude/commands/add-or-update-test-suite.md",
+      ".claude/commands/add-feature-development-command.md"
     ]
   },
   "moduleFiles": {
@@ -156,9 +156,9 @@
       ".claude/homunculus/instincts/inherited/Berztech2.0-instincts.yaml"
     ],
     "workflow-pack": [
-      ".claude/commands/database-migration.md",
       ".claude/commands/feature-development.md",
-      ".claude/commands/add-or-update-test-suite.md"
+      ".claude/commands/add-or-update-test-suite.md",
+      ".claude/commands/add-feature-development-command.md"
     ]
   },
   "files": [
@@ -214,11 +214,6 @@
     },
     {
       "moduleId": "workflow-pack",
-      "path": ".claude/commands/database-migration.md",
-      "description": "Workflow command scaffold for database-migration."
-    },
-    {
-      "moduleId": "workflow-pack",
       "path": ".claude/commands/feature-development.md",
       "description": "Workflow command scaffold for feature-development."
     },
@@ -226,13 +221,14 @@
       "moduleId": "workflow-pack",
       "path": ".claude/commands/add-or-update-test-suite.md",
       "description": "Workflow command scaffold for add-or-update-test-suite."
+    },
+    {
+      "moduleId": "workflow-pack",
+      "path": ".claude/commands/add-feature-development-command.md",
+      "description": "Workflow command scaffold for add-feature-development-command."
     }
   ],
   "workflows": [
-    {
-      "command": "database-migration",
-      "path": ".claude/commands/database-migration.md"
-    },
     {
       "command": "feature-development",
       "path": ".claude/commands/feature-development.md"
@@ -240,6 +236,10 @@
     {
       "command": "add-or-update-test-suite",
       "path": ".claude/commands/add-or-update-test-suite.md"
+    },
+    {
+      "command": "add-feature-development-command",
+      "path": ".claude/commands/add-feature-development-command.md"
     }
   ],
   "adapters": {
@@ -247,9 +247,9 @@
       "skillPath": ".claude/skills/Berztech2.0/SKILL.md",
       "identityPath": ".claude/identity.json",
       "commandPaths": [
-        ".claude/commands/database-migration.md",
         ".claude/commands/feature-development.md",
-        ".claude/commands/add-or-update-test-suite.md"
+        ".claude/commands/add-or-update-test-suite.md",
+        ".claude/commands/add-feature-development-command.md"
       ]
     },
     "codex": {
