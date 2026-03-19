@@ -10,16 +10,16 @@ Use this workflow when working on **add-or-update-test-suite** in `Berztech2.0`.
 
 ## Goal
 
-Adds or updates a comprehensive test suite, including unit, integration, E2E, security, and load tests, often with CI configuration and test setup/mocks.
+Adds or updates a comprehensive suite of tests (unit, integration, E2E, security, accessibility, visual, etc.) for new or existing features/components.
 
 ## Common Files
 
-- `vitest.config.js`
-- `playwright.config.js`
-- `.github/workflows/test.yml`
-- `tests/setup.ts`
-- `tests/TEST-TRACKER.md`
-- `tests/GUIDE.md`
+- `tests/components/**/*.test.*`
+- `tests/unit/**/*.test.*`
+- `tests/integration/**/*.test.*`
+- `tests/e2e/**/*.spec.*`
+- `tests/security/**/*.test.*`
+- `tests/property/**/*.test.*`
 
 ## Suggested Sequence
 
@@ -30,11 +30,10 @@ Adds or updates a comprehensive test suite, including unit, integration, E2E, se
 
 ## Typical Commit Signals
 
-- Add or update test configuration files (e.g., vitest.config.js, playwright.config.js, .github/workflows/test.yml)
-- Add or update test setup files and mocks (e.g., tests/setup.ts, tests/mocks/...)
-- Add or update test tracker/guide/strategy docs (e.g., tests/TEST-TRACKER.md, tests/GUIDE.md, tests/TESTING_STRATEGY.md)
-- Add or update various test files (unit, integration, E2E, security, load, property, contract) under tests/
-- Update package.json and package-lock.json for dependencies
+- Add or update test files under tests/components/, tests/unit/, tests/integration/, tests/e2e/, tests/security/, tests/property/, tests/contract/, tests/load/
+- Update or create test configuration files (e.g., vitest.config.js, playwright.config.js, stryker.conf.js)
+- Update or create test documentation/tracker files (e.g., tests/TEST-TRACKER.md, tests/GUIDE.md)
+- Optionally update .gitignore or test setup files
 
 ## Notes
 
