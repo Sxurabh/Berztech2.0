@@ -115,9 +115,24 @@ test.describe('Mobile Navigation', () => {
 
 test.describe('Navigation State', () => {
     test('Active navigation link is visually indicated', async ({ page }) => {
-        await page.goto('/work');
+        const viewport = page.viewportSize();
         
-        const workLink = page.locator('header').getByRole('link', { name: 'Work', exact: true });
+        await page.goto('/work');
+        await page.waitForLoadState('domcontentloaded');
+        
+        let workLink;
+        
+        if (viewport && viewport.width < 1024) {
+            const menuButton = page.getByRole('button', { name: /Menu|Close/i }).first();
+            if (await menuButton.count() > 0) {
+                await menuButton.click();
+                await page.waitForTimeout(500);
+            }
+            workLink = page.locator('nav').getByRole('link', { name: 'Work', exact: true });
+        } else {
+            workLink = page.locator('header').getByRole('link', { name: 'Work', exact: true });
+        }
+        
         await expect(workLink).toBeVisible();
     });
 

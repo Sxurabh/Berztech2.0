@@ -62,7 +62,19 @@ test.describe('Blog Newsletter', () => {
 test.describe('Blog Navigation', () => {
     test('Can navigate to blog from home', async ({ page }) => {
         await page.goto('/');
-        const blogLink = page.locator('header').getByRole('link', { name: 'Blog', exact: true });
+        
+        const viewportWidth = page.viewportSize().width;
+        let blogLink = page.locator('header').getByRole('link', { name: 'Blog', exact: true });
+        
+        if (viewportWidth && viewportWidth < 1024) {
+            const menuButton = page.getByRole('button', { name: /Menu|Close/i }).first();
+            if (await menuButton.count() > 0) {
+                await menuButton.click();
+                await page.waitForTimeout(300);
+                blogLink = page.locator('nav').getByRole('link', { name: 'Blog', exact: true });
+            }
+        }
+        
         await blogLink.click();
         await expect(page).toHaveURL(/.*\/blog/);
     });

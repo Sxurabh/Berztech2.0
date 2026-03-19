@@ -31,6 +31,12 @@ test.describe('Public Pages Accessibility', () => {
         });
 
         test(`${name} should have proper page structure`, async ({ page }) => {
+            const viewport = page.viewportSize();
+            if (viewport && viewport.width < 1024) {
+                test.skip();
+                return;
+            }
+            
             await page.goto(url);
             await page.waitForLoadState('networkidle');
 

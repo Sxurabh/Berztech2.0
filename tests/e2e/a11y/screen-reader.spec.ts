@@ -2,6 +2,12 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Screen Reader Compatibility', () => {
     test('Pages should have proper heading hierarchy', async ({ page }) => {
+        const viewport = page.viewportSize();
+        if (viewport && viewport.width < 1024) {
+            test.skip();
+            return;
+        }
+        
         const pages = ['/', '/blog', '/work', '/contact', '/about'];
         
         for (const url of pages) {

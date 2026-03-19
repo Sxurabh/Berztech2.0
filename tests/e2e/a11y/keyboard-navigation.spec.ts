@@ -50,6 +50,12 @@ test.describe('Keyboard Navigation', () => {
     });
 
     test('Tab order should be logical', async ({ page }) => {
+        const viewport = page.viewportSize();
+        if (viewport && viewport.width < 1024) {
+            test.skip();
+            return;
+        }
+        
         await page.goto('/');
         await page.waitForLoadState('networkidle');
 

@@ -8,10 +8,13 @@ vi.mock('@supabase/ssr', () => ({
   })),
 }));
 
+const mockCookieGet = vi.fn();
+const mockCookieSet = vi.fn();
+
 vi.mock('next/headers', () => ({
   cookies: vi.fn(() => ({
-    get: vi.fn(),
-    set: vi.fn(),
+    get: mockCookieGet,
+    set: mockCookieSet,
   })),
 }));
 
@@ -91,12 +94,8 @@ describe('createServerSupabaseClient', () => {
     vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'https://test.supabase.co');
     vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY', 'test-anon-key');
 
-    vi.mock('next/headers', () => ({
-      cookies: vi.fn(() => ({
-        get: vi.fn(() => ({ value: 'session-token' })),
-        set: vi.fn(),
-      })),
-    }));
+    // Set up the mock to return a cookie value
+    mockCookieGet.mockReturnValue({ value: 'session-token' });
 
     vi.resetModules();
 

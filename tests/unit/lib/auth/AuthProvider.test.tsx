@@ -32,8 +32,8 @@ function TestComponent() {
       <span data-testid="loading">{loading ? 'loading' : 'not-loading'}</span>
       <span data-testid="user">{user?.email || 'no-user'}</span>
       <button onClick={() => signInWithEmail('test@test.com', 'password').catch(() => {})}>signInEmail</button>
-      <button onClick={() => signInWithOAuth('google')}>signInOAuth</button>
-      <button onClick={() => signOut()}>signOut</button>
+      <button onClick={() => signInWithOAuth('google').catch(() => {})}>signInOAuth</button>
+      <button onClick={() => signOut().catch(() => {})}>signOut</button>
     </div>
   );
 }

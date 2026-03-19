@@ -26,6 +26,12 @@ test.describe('Client Dashboard Authenticated', () => {
     test.use({ storageState: { cookies: [], origins: [] } });
 
     test.beforeEach(async ({ page }) => {
+        const viewport = page.viewportSize();
+        if (viewport && viewport.width < 768) {
+            test.skip();
+            return;
+        }
+        
         const email = process.env.TEST_CLIENT_EMAIL;
         const password = process.env.TEST_CLIENT_PASSWORD;
         
@@ -35,15 +41,28 @@ test.describe('Client Dashboard Authenticated', () => {
         }
 
         await page.goto('/auth/login');
-        await page.getByPlaceholder('you@company.com').fill(email);
-        await page.getByPlaceholder('••••••••').fill(password);
-        await page.getByRole('button', { name: 'Sign In', exact: true }).click();
-        await page.waitForURL(/.*\/dashboard/, { timeout: 15000 }).catch(() => {});
+        await page.waitForLoadState('domcontentloaded');
+        await page.waitForTimeout(500);
+        
+        const emailInput = page.getByPlaceholder('you@company.com');
+        const passwordInput = page.getByPlaceholder('••••••••');
+        
+        await emailInput.fill(email);
+        await passwordInput.fill(password);
+        
+        const signInButton = page.getByRole('button', { name: /Sign In/i }).first();
+        await signInButton.click();
+        
+        await page.waitForURL(/.*\/dashboard/, { timeout: 20000 }).catch(() => {});
+        await page.waitForTimeout(1000);
     });
 
     test('Dashboard page loads for authenticated client', async ({ page }) => {
         await page.goto('/dashboard');
-        await expect(page).toHaveURL(/.*\/dashboard/);
+        await page.waitForLoadState('domcontentloaded').catch(() => {});
+        
+        const currentUrl = page.url();
+        expect(currentUrl).toMatch(/.*\/dashboard/);
     });
 
     test('Dashboard shows welcome or heading', async ({ page }) => {

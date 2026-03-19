@@ -83,19 +83,37 @@ test.describe('Contact Form Input', () => {
     test('Can fill out all form fields', async ({ page }) => {
         await page.goto('/contact');
         
-        await page.getByPlaceholder('John Doe').fill('Test User');
-        await page.getByPlaceholder('john@company.com').fill('test@company.com');
-        await page.locator('textarea').fill('This is a test message.');
+        await page.waitForLoadState('domcontentloaded');
+        await page.waitForTimeout(500);
         
-        await expect(page.getByPlaceholder('John Doe')).toHaveValue('Test User');
-        await expect(page.getByPlaceholder('john@company.com')).toHaveValue('test@company.com');
+        const nameInput = page.getByPlaceholder('John Doe');
+        const emailInput = page.getByPlaceholder('john@company.com');
+        const messageInput = page.locator('textarea');
+        
+        await nameInput.fill('Test User');
+        await emailInput.fill('test@company.com');
+        await messageInput.fill('This is a test message.');
+        
+        await expect(nameInput).toHaveValue('Test User');
+        await expect(emailInput).toHaveValue('test@company.com');
+        await expect(messageInput).toHaveValue('This is a test message.');
     });
 
     test('Form accepts valid email format', async ({ page }) => {
         await page.goto('/contact');
+        await page.waitForLoadState('domcontentloaded');
         
-        const emailInput = page.getByPlaceholder('john@company.com');
+        const viewport = page.viewportSize();
+        if (viewport && viewport.width < 1024) {
+            await page.evaluate(() => window.scrollTo(0, 0));
+            await page.waitForTimeout(500);
+        }
+        
+        const emailInput = page.locator('#email');
+        await emailInput.scrollIntoViewIfNeeded();
         await emailInput.fill('valid@email.com');
+        
+        await page.waitForTimeout(300);
         
         const isValid = await emailInput.evaluate((el) => el.validity.valid);
         expect(isValid).toBeTruthy();
