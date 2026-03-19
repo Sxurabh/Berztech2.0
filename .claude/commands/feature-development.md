@@ -14,9 +14,9 @@ Standard feature implementation workflow
 
 ## Common Files
 
-- `src/components/admin/*`
-- `src/components/client/*`
-- `src/components/features/admin/*`
+- `tests/__mocks__/components/ui/*`
+- `tests/components/client/*`
+- `tests/components/features/admin/*`
 - `**/*.test.*`
 - `**/api/**`
 
