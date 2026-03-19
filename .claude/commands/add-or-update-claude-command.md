@@ -10,15 +10,11 @@ Use this workflow when working on **add-or-update-claude-command** in `Berztech2
 
 ## Goal
 
-Adds or updates a workflow command for Claude agent, typically to automate or document a process such as feature development, test suite management, database migration, or TDD.
+Adds or updates a Claude command documentation file to define or modify a command's behavior.
 
 ## Common Files
 
-- `.claude/commands/add-feature-development-command.md`
-- `.claude/commands/add-or-update-test-suite.md`
-- `.claude/commands/feature-development.md`
-- `.claude/commands/database-migration.md`
-- `.claude/commands/test-driven-development.md`
+- `.claude/commands/*.md`
 
 ## Suggested Sequence
 
@@ -29,8 +25,8 @@ Adds or updates a workflow command for Claude agent, typically to automate or do
 
 ## Typical Commit Signals
 
-- Create or update a markdown file in .claude/commands/ with the workflow details
-- Commit the change with a message referencing the command and workflow
+- Create or update a markdown file in .claude/commands/ with the command's name.
+- Commit the new or updated file.
 
 ## Notes
 
