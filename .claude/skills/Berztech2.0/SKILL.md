@@ -1,6 +1,6 @@
 ---
 name: berztech2-0-conventions
-description: Development conventions and patterns for Berztech2.0. JavaScript Next.js project with freeform commits.
+description: Development conventions and patterns for Berztech2.0. JavaScript Next.js project with mixed commits.
 ---
 
 # Berztech2 0 Conventions
@@ -29,18 +29,17 @@ Activate this skill when:
 
 ## Commit Conventions
 
-Follow these commit message conventions based on 128 analyzed commits.
+Follow these commit message conventions based on 142 analyzed commits.
 
-### Commit Style: Free-form Messages
+### Commit Style: Mixed Style
 
 ### Prefixes Used
 
 - `feat`
-- `test`
 
 ### Message Guidelines
 
-- Average message length: ~42 characters
+- Average message length: ~44 characters
 - Keep first line concise and descriptive
 - Use imperative mood ("Add feature" not "Added feature")
 
@@ -48,7 +47,7 @@ Follow these commit message conventions based on 128 analyzed commits.
 *Commit message example*
 
 ```text
-feat: Add comprehensive E2E, accessibility, visual, and unit tests across various application areas.
+feat: add Berztech2.0 ECC bundle (.claude/commands/test-driven-development.md)
 ```
 
 *Commit message example*
@@ -78,19 +77,19 @@ refactor: enhance Header and RootLayout components; improve menu animation and l
 *Commit message example*
 
 ```text
-Remove opencode.json from tracking
+feat: add Berztech2.0 ECC bundle (.claude/commands/feature-development.md)
 ```
 
 *Commit message example*
 
 ```text
-Added cases
+feat: add Berztech2.0 ECC bundle (.claude/commands/database-migration.md)
 ```
 
 *Commit message example*
 
 ```text
-Added Phase 1 tests
+feat: add Berztech2.0 ECC bundle (.codex/agents/docs-researcher.toml)
 ```
 
 ## Architecture
@@ -216,25 +215,28 @@ These workflows were detected from analyzing commit patterns.
 
 Database schema changes with migration files
 
-**Frequency**: ~3 times per month
+**Frequency**: ~2 times per month
 
 **Steps**:
 1. Create migration file
 2. Update schema definitions
 3. Generate/update types
 
+**Files typically involved**:
+- `migrations/*`
+
 **Example commit sequence**:
 ```
-Major
-Security bugs
-feat: Implement comprehensive admin panel, public blog and work pages, API routes, and core UI components.
+MInor update
+sql updated
+minor
 ```
 
 ### Feature Development
 
 Standard feature implementation workflow
 
-**Frequency**: ~10 times per month
+**Frequency**: ~17 times per month
 
 **Steps**:
 1. Add feature implementation
@@ -242,24 +244,24 @@ Standard feature implementation workflow
 3. Update documentation
 
 **Files typically involved**:
-- `src/components/features/blog/*`
-- `src/components/features/contact/*`
-- `src/components/features/work/*`
+- `src/components/admin/*`
+- `src/components/client/*`
+- `src/components/ui/*`
 - `**/*.test.*`
 - `**/api/**`
 
 **Example commit sequence**:
 ```
-feat: add initial website structure and content, including layout components, sections, features, and assets.
-Major
-Security bugs
+feat: Implement comprehensive admin and client task/project management with new pages, components, and API routes, alongside a design system.
+feat: Implement client-side task tracking with Kanban board, task cards, and a detailed task modal featuring real-time comments.
+Mobile Optimization
 ```
 
 ### Test Driven Development
 
 Test-first development workflow (TDD)
 
-**Frequency**: ~4 times per month
+**Frequency**: ~3 times per month
 
 **Steps**:
 1. Write failing test
@@ -277,126 +279,135 @@ test: add tests for user validation
 feat: implement user validation
 ```
 
-### Add Or Update Component With Tests
+### Add Or Update Comprehensive Test Suite
 
-Adds or updates one or more React components (often in src/components), and simultaneously creates or updates corresponding unit/component test files (in tests/components or tests/unit).
+Adds or updates a comprehensive suite of tests (unit, integration, E2E, security, accessibility, visual) and related configuration, often alongside new components or features.
 
-**Frequency**: ~4 times per month
+**Frequency**: ~3 times per month
 
 **Steps**:
-1. Create or update a component file in src/components/...
-2. Create or update a corresponding test file in tests/components/... or tests/unit/...
-3. Optionally update shared hooks or utilities if needed
-4. Commit both the implementation and test(s) together
+1. Add or update multiple test files under tests/ (unit, integration, e2e, security, visual, etc.)
+2. Update or add test configuration files (e.g., vitest.config.js, playwright.config.js)
+3. Update or add test setup/mocks (e.g., tests/setup.ts, tests/__mocks__/*)
+4. Update test documentation/tracker (e.g., tests/TEST-TRACKER.md, tests/GUIDE.md)
+5. Optionally add or update related source files/components
+
+**Files typically involved**:
+- `tests/**/*.test.*`
+- `tests/e2e/**/*.spec.*`
+- `tests/TEST-TRACKER.md`
+- `tests/GUIDE.md`
+- `tests/setup.ts`
+- `tests/__mocks__/*`
+- `vitest.config.js`
+- `playwright.config.js`
+- `playwright-report/index.html`
+- `.github/workflows/test.yml`
+
+**Example commit sequence**:
+```
+Add or update multiple test files under tests/ (unit, integration, e2e, security, visual, etc.)
+Update or add test configuration files (e.g., vitest.config.js, playwright.config.js)
+Update or add test setup/mocks (e.g., tests/setup.ts, tests/__mocks__/*)
+Update test documentation/tracker (e.g., tests/TEST-TRACKER.md, tests/GUIDE.md)
+Optionally add or update related source files/components
+```
+
+### Add Or Update Ui Component With Tests
+
+Adds new UI components (or updates existing ones) together with corresponding unit/component tests.
+
+**Frequency**: ~2 times per month
+
+**Steps**:
+1. Add or update component file(s) in src/components/**/
+2. Add or update corresponding test file(s) in tests/components/**/
+3. Update test configuration if needed (e.g., vitest.config.js)
+4. Optionally update mocks or factories
 
 **Files typically involved**:
 - `src/components/**/*.jsx`
 - `tests/components/**/*.test.jsx`
-- `tests/unit/**/*.test.{js,ts,tsx}`
+- `vitest.config.js`
 
 **Example commit sequence**:
 ```
-Create or update a component file in src/components/...
-Create or update a corresponding test file in tests/components/... or tests/unit/...
-Optionally update shared hooks or utilities if needed
-Commit both the implementation and test(s) together
+Add or update component file(s) in src/components/**/
+Add or update corresponding test file(s) in tests/components/**/
+Update test configuration if needed (e.g., vitest.config.js)
+Optionally update mocks or factories
 ```
 
-### Add Or Expand Api Route With Tests
+### Add Or Update Api Endpoint With Tests
 
-Adds or updates API route files (usually in src/app/api/...), and creates or updates integration tests for those endpoints.
+Adds or updates API route files and their corresponding integration or security tests.
 
 **Frequency**: ~2 times per month
 
 **Steps**:
-1. Create or update an API route file in src/app/api/...
-2. Create or update a corresponding integration test in tests/integration/api/...
-3. Optionally update related data files or factories
-4. Commit both the route and test(s) together
+1. Add or update API route file(s) in src/app/api/**/
+2. Add or update integration/security test file(s) in tests/integration/api/**/*.test.* or tests/security/**/*.test.*
+3. Update test tracker or documentation if needed
 
 **Files typically involved**:
 - `src/app/api/**/*.js`
-- `tests/integration/api/**/*.test.{js,ts}`
+- `src/app/api/**/*.ts`
+- `tests/integration/api/**/*.test.*`
+- `tests/security/**/*.test.*`
+- `tests/TEST-TRACKER.md`
 
 **Example commit sequence**:
 ```
-Create or update an API route file in src/app/api/...
-Create or update a corresponding integration test in tests/integration/api/...
-Optionally update related data files or factories
-Commit both the route and test(s) together
+Add or update API route file(s) in src/app/api/**/
+Add or update integration/security test file(s) in tests/integration/api/**/*.test.* or tests/security/**/*.test.*
+Update test tracker or documentation if needed
 ```
 
-### Comprehensive Test Suite Expansion
+### Add Or Update Supabase Or Database Logic With Tests
 
-Adds or updates a large set of tests across multiple categories (unit, integration, E2E, security, accessibility, visual), sometimes with supporting config or documentation updates.
+Adds or updates Supabase/database logic files and their associated unit or integration tests.
 
 **Frequency**: ~2 times per month
 
 **Steps**:
-1. Add or update multiple test files in tests/unit, tests/components, tests/integration, tests/e2e, tests/security, etc.
-2. Update or add test configuration files (e.g., vitest.config.js, playwright.config.js)
-3. Optionally update test documentation or trackers (e.g., tests/TEST-TRACKER.md)
-4. Commit all related files together
+1. Add or update Supabase/database logic file(s) in src/lib/supabase/**/
+2. Add or update corresponding test file(s) in tests/unit/lib/supabase/**/*.test.*
+3. Update test configuration if needed
 
 **Files typically involved**:
-- `tests/**/*.{test,spec}.{js,ts,tsx,jsx}`
+- `src/lib/supabase/**/*.js`
+- `src/lib/supabase/**/*.ts`
+- `tests/unit/lib/supabase/**/*.test.*`
+- `vitest.config.js`
+
+**Example commit sequence**:
+```
+Add or update Supabase/database logic file(s) in src/lib/supabase/**/
+Add or update corresponding test file(s) in tests/unit/lib/supabase/**/*.test.*
+Update test configuration if needed
+```
+
+### Add Or Update Test Documentation And Tracker
+
+Updates or adds test documentation and tracking files to reflect new or changed test coverage.
+
+**Frequency**: ~2 times per month
+
+**Steps**:
+1. Update or add tests/TEST-TRACKER.md
+2. Update or add tests/GUIDE.md, tests/PROMPTS.md, or similar documentation files
+3. Optionally update .gitignore or related config
+
+**Files typically involved**:
 - `tests/TEST-TRACKER.md`
 - `tests/GUIDE.md`
-- `vitest.config.js`
-- `playwright.config.js`
+- `tests/PROMPTS.md`
 
 **Example commit sequence**:
 ```
-Add or update multiple test files in tests/unit, tests/components, tests/integration, tests/e2e, tests/security, etc.
-Update or add test configuration files (e.g., vitest.config.js, playwright.config.js)
-Optionally update test documentation or trackers (e.g., tests/TEST-TRACKER.md)
-Commit all related files together
-```
-
-### Security Test Addition
-
-Adds new security-focused tests (e.g., XSS, SQL injection, auth, rate limiting) in tests/security, often grouped together in a commit.
-
-**Frequency**: ~2 times per month
-
-**Steps**:
-1. Create new test files in tests/security/...
-2. Optionally update tests/TEST-TRACKER.md or related documentation
-3. Commit security tests together
-
-**Files typically involved**:
-- `tests/security/**/*.test.{js,ts}`
-- `tests/TEST-TRACKER.md`
-
-**Example commit sequence**:
-```
-Create new test files in tests/security/...
-Optionally update tests/TEST-TRACKER.md or related documentation
-Commit security tests together
-```
-
-### Add Feature Hook With Tests
-
-Implements a new React hook (in src/lib/hooks) for a feature (e.g., notifications, project stats, comments), and adds corresponding unit tests.
-
-**Frequency**: ~2 times per month
-
-**Steps**:
-1. Create or update a hook in src/lib/hooks/...
-2. Create or update a corresponding test file in tests/unit/lib/hooks/...
-3. Optionally update related components to use the new hook
-4. Commit hook and test(s) together
-
-**Files typically involved**:
-- `src/lib/hooks/**/*.js`
-- `tests/unit/lib/hooks/**/*.test.{js,ts,tsx}`
-
-**Example commit sequence**:
-```
-Create or update a hook in src/lib/hooks/...
-Create or update a corresponding test file in tests/unit/lib/hooks/...
-Optionally update related components to use the new hook
-Commit hook and test(s) together
+Update or add tests/TEST-TRACKER.md
+Update or add tests/GUIDE.md, tests/PROMPTS.md, or similar documentation files
+Optionally update .gitignore or related config
 ```
 
 
