@@ -14,9 +14,9 @@ Standard feature implementation workflow
 
 ## Common Files
 
-- `src/components/features/blog/*`
-- `src/components/features/contact/*`
-- `src/components/features/work/*`
+- `src/components/admin/*`
+- `src/components/client/*`
+- `src/components/ui/*`
 - `**/*.test.*`
 - `**/api/**`
 
