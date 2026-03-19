@@ -29,7 +29,7 @@ Activate this skill when:
 
 ## Commit Conventions
 
-Follow these commit message conventions based on 175 analyzed commits.
+Follow these commit message conventions based on 186 analyzed commits.
 
 ### Commit Style: Mixed Style
 
@@ -39,7 +39,7 @@ Follow these commit message conventions based on 175 analyzed commits.
 
 ### Message Guidelines
 
-- Average message length: ~49 characters
+- Average message length: ~50 characters
 - Keep first line concise and descriptive
 - Use imperative mood ("Add feature" not "Added feature")
 
@@ -47,7 +47,7 @@ Follow these commit message conventions based on 175 analyzed commits.
 *Commit message example*
 
 ```text
-feat: add Berztech2.0 ECC bundle (.claude/commands/add-feature-development-command.md)
+feat: add Berztech2.0 ECC bundle (.claude/commands/sync-skill-documentation.md)
 ```
 
 *Commit message example*
@@ -77,7 +77,7 @@ refactor: enhance Header and RootLayout components; improve menu animation and l
 *Commit message example*
 
 ```text
-feat: add Berztech2.0 ECC bundle (.claude/commands/add-or-update-test-suite.md)
+feat: add Berztech2.0 ECC bundle (.claude/commands/add-or-update-claude-command.md)
 ```
 
 *Commit message example*
@@ -215,7 +215,7 @@ These workflows were detected from analyzing commit patterns.
 
 Standard feature implementation workflow
 
-**Frequency**: ~29 times per month
+**Frequency**: ~30 times per month
 
 **Steps**:
 1. Add feature implementation
@@ -223,52 +223,44 @@ Standard feature implementation workflow
 3. Update documentation
 
 **Files typically involved**:
-- `tests/security/*`
-- `tests/e2e/a11y/*`
-- `tests/e2e/*`
 - `**/*.test.*`
-- `**/api/**`
 
 **Example commit sequence**:
 ```
-test: Add a comprehensive suite of security integration tests and a secrets audit, alongside a test tracker and .gitignore update.
-nm
-feat: Add comprehensive E2E, accessibility, visual, and unit tests across various application areas.
+feat: add Berztech2.0 ECC bundle (.codex/agents/reviewer.toml)
+feat: add Berztech2.0 ECC bundle (.codex/agents/docs-researcher.toml)
+feat: add Berztech2.0 ECC bundle (.claude/homunculus/instincts/inherited/Berztech2.0-instincts.yaml)
 ```
 
 ### Add Or Update Claude Command
 
-Adds or updates a workflow command for Claude agent, typically to automate or document a process such as feature development, test suite management, database migration, or TDD.
+Adds or updates a Claude command documentation file to define or modify a command's behavior.
 
 **Frequency**: ~4 times per month
 
 **Steps**:
-1. Create or update a markdown file in .claude/commands/ with the workflow details
-2. Commit the change with a message referencing the command and workflow
+1. Create or update a markdown file in .claude/commands/ with the command's name.
+2. Commit the new or updated file.
 
 **Files typically involved**:
-- `.claude/commands/add-feature-development-command.md`
-- `.claude/commands/add-or-update-test-suite.md`
-- `.claude/commands/feature-development.md`
-- `.claude/commands/database-migration.md`
-- `.claude/commands/test-driven-development.md`
+- `.claude/commands/*.md`
 
 **Example commit sequence**:
 ```
-Create or update a markdown file in .claude/commands/ with the workflow details
-Commit the change with a message referencing the command and workflow
+Create or update a markdown file in .claude/commands/ with the command's name.
+Commit the new or updated file.
 ```
 
-### Sync Skill Documentation
+### Add Or Update Skill Documentation
 
-Adds or updates SKILL.md documentation for a Berztech2.0 skill in both .agents and .claude directories.
+Adds or updates skill documentation for Berztech2.0 in both Claude and Agents directories.
 
 **Frequency**: ~4 times per month
 
 **Steps**:
-1. Create or update .agents/skills/Berztech2.0/SKILL.md
-2. Create or update .claude/skills/Berztech2.0/SKILL.md
-3. Commit both files together
+1. Create or update .agents/skills/Berztech2.0/SKILL.md.
+2. Create or update .claude/skills/Berztech2.0/SKILL.md.
+3. Commit the changes.
 
 **Files typically involved**:
 - `.agents/skills/Berztech2.0/SKILL.md`
@@ -276,22 +268,20 @@ Adds or updates SKILL.md documentation for a Berztech2.0 skill in both .agents a
 
 **Example commit sequence**:
 ```
-Create or update .agents/skills/Berztech2.0/SKILL.md
-Create or update .claude/skills/Berztech2.0/SKILL.md
-Commit both files together
+Create or update .agents/skills/Berztech2.0/SKILL.md.
+Create or update .claude/skills/Berztech2.0/SKILL.md.
+Commit the changes.
 ```
 
-### Update Codex Agents
+### Add Or Update Codex Agent
 
-Adds or updates agent configuration files for docs-researcher, reviewer, and explorer in the .codex/agents directory.
+Adds or updates Codex agent configuration files for roles such as docs-researcher, reviewer, or explorer.
 
 **Frequency**: ~4 times per month
 
 **Steps**:
-1. Create or update .codex/agents/docs-researcher.toml
-2. Create or update .codex/agents/reviewer.toml
-3. Create or update .codex/agents/explorer.toml
-4. Commit the changes
+1. Create or update the relevant .codex/agents/*.toml file.
+2. Commit the file.
 
 **Files typically involved**:
 - `.codex/agents/docs-researcher.toml`
@@ -300,39 +290,46 @@ Adds or updates agent configuration files for docs-researcher, reviewer, and exp
 
 **Example commit sequence**:
 ```
-Create or update .codex/agents/docs-researcher.toml
-Create or update .codex/agents/reviewer.toml
-Create or update .codex/agents/explorer.toml
-Commit the changes
+Create or update the relevant .codex/agents/*.toml file.
+Commit the file.
 ```
 
-### Comprehensive Test Suite Addition
+### Add Or Update Ecc Tools
 
-Adds a large set of new or updated tests, often spanning E2E, accessibility, security, and unit tests, and may include supporting files like test trackers or configuration.
+Adds or updates the ECC tools configuration for Claude.
 
-**Frequency**: ~2 times per month
+**Frequency**: ~4 times per month
 
 **Steps**:
-1. Add or update multiple test files across tests/e2e/, tests/security/integration/, tests/unit/, etc.
-2. Add or update supporting files such as test trackers or configuration
-3. Commit all related files together
+1. Create or update .claude/ecc-tools.json.
+2. Commit the file.
 
 **Files typically involved**:
-- `tests/e2e/*.spec.ts`
-- `tests/security/integration/*.test.js`
-- `tests/security/integration/*.test.ts`
-- `tests/unit/**/*.test.tsx`
-- `tests/TEST-TRACKER.md`
-- `.gitignore`
-- `vitest.config.js`
-- `playwright-report/index.html`
-- `test-results/.last-run.json`
+- `.claude/ecc-tools.json`
 
 **Example commit sequence**:
 ```
-Add or update multiple test files across tests/e2e/, tests/security/integration/, tests/unit/, etc.
-Add or update supporting files such as test trackers or configuration
-Commit all related files together
+Create or update .claude/ecc-tools.json.
+Commit the file.
+```
+
+### Add Or Update Identity
+
+Adds or updates the identity configuration for Claude.
+
+**Frequency**: ~4 times per month
+
+**Steps**:
+1. Create or update .claude/identity.json.
+2. Commit the file.
+
+**Files typically involved**:
+- `.claude/identity.json`
+
+**Example commit sequence**:
+```
+Create or update .claude/identity.json.
+Commit the file.
 ```
 
 
