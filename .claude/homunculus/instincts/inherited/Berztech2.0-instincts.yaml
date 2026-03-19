@@ -1,0 +1,402 @@
+# Instincts generated from https://github.com/Sxurabh/Berztech2.0
+# Generated: 2026-03-19T11:10:03.288Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: Berztech2.0-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/Sxurabh/Berztech2.0
+---
+
+# Berztech2.0 Commit Length
+
+## Action
+
+Keep commit messages concise (~42 characters)
+
+## Evidence
+
+- Average commit message length: 42 chars
+- Based on 128 commits
+
+---
+id: Berztech2.0-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/Sxurabh/Berztech2.0
+---
+
+# Berztech2.0 Naming Files
+
+## Action
+
+Use camelCase naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: camelCase
+
+---
+id: Berztech2.0-import-alias
+trigger: "when importing modules"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/Sxurabh/Berztech2.0
+---
+
+# Berztech2.0 Import Alias
+
+## Action
+
+Use path aliases (@/, ~/) instead of relative imports
+
+## Evidence
+
+- Import analysis shows alias pattern
+- Example: import { x } from '@/lib/x'
+
+---
+id: Berztech2.0-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/Sxurabh/Berztech2.0
+---
+
+# Berztech2.0 Export Style
+
+## Action
+
+Prefer default exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: default
+
+---
+id: Berztech2.0-arch-type-based
+trigger: "when adding new code"
+confidence: 0.8
+domain: architecture
+source: repo-analysis
+source_repo: https://github.com/Sxurabh/Berztech2.0
+---
+
+# Berztech2.0 Arch Type Based
+
+## Action
+
+Place code in the appropriate type folder (components/, services/, utils/, etc.)
+
+## Evidence
+
+- Type-based module organization detected
+- Folders: app, assets, components, config, data
+
+---
+id: Berztech2.0-test-separate
+trigger: "when writing tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/Sxurabh/Berztech2.0
+---
+
+# Berztech2.0 Test Separate
+
+## Action
+
+Place tests in the tests/ or __tests__/ directory, mirroring src structure
+
+## Evidence
+
+- Separate test directory pattern detected
+- Tests live in dedicated test folders
+
+---
+id: Berztech2.0-test-framework
+trigger: "when writing tests"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/Sxurabh/Berztech2.0
+---
+
+# Berztech2.0 Test Framework
+
+## Action
+
+Use vitest as the test framework
+
+## Evidence
+
+- Test framework detected: vitest
+- File pattern: *.test.ts
+
+---
+id: Berztech2.0-test-naming
+trigger: "when creating a test file"
+confidence: 0.85
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/Sxurabh/Berztech2.0
+---
+
+# Berztech2.0 Test Naming
+
+## Action
+
+Name test files using the pattern: *.test.ts
+
+## Evidence
+
+- File pattern: *.test.ts
+- Consistent across test files
+
+---
+id: Berztech2.0-test-mocking
+trigger: "when mocking dependencies in tests"
+confidence: 0.75
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/Sxurabh/Berztech2.0
+---
+
+# Berztech2.0 Test Mocking
+
+## Action
+
+Use msw for mocking
+
+## Evidence
+
+- Mocking pattern detected: msw
+- Consistent across test files
+
+---
+id: Berztech2.0-test-types
+trigger: "when planning tests for a feature"
+confidence: 0.7
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/Sxurabh/Berztech2.0
+---
+
+# Berztech2.0 Test Types
+
+## Action
+
+Write unit, integration, e2e tests to match project standards
+
+## Evidence
+
+- Test types detected: unit, integration, e2e
+- Coverage config: yes
+
+---
+id: Berztech2.0-workflow-database-migration
+trigger: "when modifying the database schema or adding tables"
+confidence: 0.65
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Sxurabh/Berztech2.0
+---
+
+# Berztech2.0 Workflow Database Migration
+
+## Action
+
+Follow the database-migration workflow:
+1. Create migration file
+2. Update schema definitions
+3. Generate/update types
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~3x per month
+- Files: 
+
+---
+id: Berztech2.0-workflow-feature-development
+trigger: "when implementing a new feature"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Sxurabh/Berztech2.0
+---
+
+# Berztech2.0 Workflow Feature Development
+
+## Action
+
+Follow the feature-development workflow:
+1. Add feature implementation
+2. Add tests for feature
+3. Update documentation
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~10x per month
+- Files: src/components/features/blog/*, src/components/features/contact/*, src/components/features/work/*
+
+---
+id: Berztech2.0-workflow-test-driven-development
+trigger: "when adding new functionality"
+confidence: 0.7
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Sxurabh/Berztech2.0
+---
+
+# Berztech2.0 Workflow Test Driven Development
+
+## Action
+
+Follow the test-driven-development workflow:
+1. Write failing test
+2. Implement code to pass test
+3. Refactor if needed
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~4x per month
+- Files: **/*.test.*, **/*.spec.*, src/**/*
+
+---
+id: Berztech2.0-workflow-add-or-update-component-with-tests
+trigger: "when doing add or update component with tests"
+confidence: 0.7
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Sxurabh/Berztech2.0
+---
+
+# Berztech2.0 Workflow Add Or Update Component With Tests
+
+## Action
+
+Follow the add-or-update-component-with-tests workflow:
+1. Create or update a component file in src/components/...
+2. Create or update a corresponding test file in tests/components/... or tests/unit/...
+3. Optionally update shared hooks or utilities if needed
+4. Commit both the implementation and test(s) together
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~4x per month
+- Files: src/components/**/*.jsx, tests/components/**/*.test.jsx, tests/unit/**/*.test.{js,ts,tsx}
+
+---
+id: Berztech2.0-workflow-add-or-expand-api-route-with-tests
+trigger: "when doing add or expand api route with tests"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Sxurabh/Berztech2.0
+---
+
+# Berztech2.0 Workflow Add Or Expand Api Route With Tests
+
+## Action
+
+Follow the add-or-expand-api-route-with-tests workflow:
+1. Create or update an API route file in src/app/api/...
+2. Create or update a corresponding integration test in tests/integration/api/...
+3. Optionally update related data files or factories
+4. Commit both the route and test(s) together
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: src/app/api/**/*.js, tests/integration/api/**/*.test.{js,ts}
+
+---
+id: Berztech2.0-workflow-comprehensive-test-suite-expansion
+trigger: "when doing comprehensive test suite expansion"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Sxurabh/Berztech2.0
+---
+
+# Berztech2.0 Workflow Comprehensive Test Suite Expansion
+
+## Action
+
+Follow the comprehensive-test-suite-expansion workflow:
+1. Add or update multiple test files in tests/unit, tests/components, tests/integration, tests/e2e, tests/security, etc.
+2. Update or add test configuration files (e.g., vitest.config.js, playwright.config.js)
+3. Optionally update test documentation or trackers (e.g., tests/TEST-TRACKER.md)
+4. Commit all related files together
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: tests/**/*.{test,spec}.{js,ts,tsx,jsx}, tests/TEST-TRACKER.md, tests/GUIDE.md
+
+---
+id: Berztech2.0-workflow-security-test-addition
+trigger: "when doing security test addition"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Sxurabh/Berztech2.0
+---
+
+# Berztech2.0 Workflow Security Test Addition
+
+## Action
+
+Follow the security-test-addition workflow:
+1. Create new test files in tests/security/...
+2. Optionally update tests/TEST-TRACKER.md or related documentation
+3. Commit security tests together
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: tests/security/**/*.test.{js,ts}, tests/TEST-TRACKER.md
+
+---
+id: Berztech2.0-workflow-add-feature-hook-with-tests
+trigger: "when doing add feature hook with tests"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Sxurabh/Berztech2.0
+---
+
+# Berztech2.0 Workflow Add Feature Hook With Tests
+
+## Action
+
+Follow the add-feature-hook-with-tests workflow:
+1. Create or update a hook in src/lib/hooks/...
+2. Create or update a corresponding test file in tests/unit/lib/hooks/...
+3. Optionally update related components to use the new hook
+4. Commit hook and test(s) together
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: src/lib/hooks/**/*.js, tests/unit/lib/hooks/**/*.test.{js,ts,tsx}
+
