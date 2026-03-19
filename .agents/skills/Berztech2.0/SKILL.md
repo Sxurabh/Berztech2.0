@@ -29,7 +29,7 @@ Activate this skill when:
 
 ## Commit Conventions
 
-Follow these commit message conventions based on 142 analyzed commits.
+Follow these commit message conventions based on 153 analyzed commits.
 
 ### Commit Style: Mixed Style
 
@@ -39,7 +39,7 @@ Follow these commit message conventions based on 142 analyzed commits.
 
 ### Message Guidelines
 
-- Average message length: ~44 characters
+- Average message length: ~46 characters
 - Keep first line concise and descriptive
 - Use imperative mood ("Add feature" not "Added feature")
 
@@ -227,16 +227,16 @@ Database schema changes with migration files
 
 **Example commit sequence**:
 ```
-MInor update
-sql updated
-minor
+chore: clean up root directory and update README
+fix: mobile optimize TaskModal grid and footer actions
+feat: notifications system, real-time chat optimization, mobile notification access
 ```
 
 ### Feature Development
 
 Standard feature implementation workflow
 
-**Frequency**: ~17 times per month
+**Frequency**: ~22 times per month
 
 **Steps**:
 1. Add feature implementation
@@ -246,168 +246,156 @@ Standard feature implementation workflow
 **Files typically involved**:
 - `src/components/admin/*`
 - `src/components/client/*`
-- `src/components/ui/*`
+- `src/components/features/admin/*`
 - `**/*.test.*`
 - `**/api/**`
 
 **Example commit sequence**:
 ```
-feat: Implement comprehensive admin and client task/project management with new pages, components, and API routes, alongside a design system.
-feat: Implement client-side task tracking with Kanban board, task cards, and a detailed task modal featuring real-time comments.
-Mobile Optimization
+feat: notifications system, real-time chat optimization, mobile notification access
+np
+feat: Establish comprehensive testing strategy and foundational infrastructure with Vitest and MSW.
 ```
 
-### Test Driven Development
+### Add Or Update Test Suite
 
-Test-first development workflow (TDD)
+Adds or updates a comprehensive test suite, including unit, integration, E2E, security, and load tests, often with CI configuration and test setup/mocks.
 
 **Frequency**: ~3 times per month
 
 **Steps**:
-1. Write failing test
-2. Implement code to pass test
-3. Refactor if needed
+1. Add or update test configuration files (e.g., vitest.config.js, playwright.config.js, .github/workflows/test.yml)
+2. Add or update test setup files and mocks (e.g., tests/setup.ts, tests/mocks/...)
+3. Add or update test tracker/guide/strategy docs (e.g., tests/TEST-TRACKER.md, tests/GUIDE.md, tests/TESTING_STRATEGY.md)
+4. Add or update various test files (unit, integration, E2E, security, load, property, contract) under tests/
+5. Update package.json and package-lock.json for dependencies
 
 **Files typically involved**:
-- `**/*.test.*`
-- `**/*.spec.*`
-- `src/**/*`
-
-**Example commit sequence**:
-```
-test: add tests for user validation
-feat: implement user validation
-```
-
-### Add Or Update Comprehensive Test Suite
-
-Adds or updates a comprehensive suite of tests (unit, integration, E2E, security, accessibility, visual) and related configuration, often alongside new components or features.
-
-**Frequency**: ~3 times per month
-
-**Steps**:
-1. Add or update multiple test files under tests/ (unit, integration, e2e, security, visual, etc.)
-2. Update or add test configuration files (e.g., vitest.config.js, playwright.config.js)
-3. Update or add test setup/mocks (e.g., tests/setup.ts, tests/__mocks__/*)
-4. Update test documentation/tracker (e.g., tests/TEST-TRACKER.md, tests/GUIDE.md)
-5. Optionally add or update related source files/components
-
-**Files typically involved**:
-- `tests/**/*.test.*`
-- `tests/e2e/**/*.spec.*`
-- `tests/TEST-TRACKER.md`
-- `tests/GUIDE.md`
-- `tests/setup.ts`
-- `tests/__mocks__/*`
 - `vitest.config.js`
 - `playwright.config.js`
-- `playwright-report/index.html`
 - `.github/workflows/test.yml`
+- `tests/setup.ts`
+- `tests/TEST-TRACKER.md`
+- `tests/GUIDE.md`
+- `tests/TESTING_STRATEGY.md`
+- `tests/__mocks__/*`
+- `tests/mocks/*`
+- `tests/components/**/*`
+- `tests/integration/**/*`
+- `tests/e2e/**/*`
+- `tests/security/**/*`
+- `tests/load/**/*`
+- `tests/property/**/*`
+- `tests/contract/**/*`
+- `package.json`
+- `package-lock.json`
 
 **Example commit sequence**:
 ```
-Add or update multiple test files under tests/ (unit, integration, e2e, security, visual, etc.)
-Update or add test configuration files (e.g., vitest.config.js, playwright.config.js)
-Update or add test setup/mocks (e.g., tests/setup.ts, tests/__mocks__/*)
-Update test documentation/tracker (e.g., tests/TEST-TRACKER.md, tests/GUIDE.md)
-Optionally add or update related source files/components
+Add or update test configuration files (e.g., vitest.config.js, playwright.config.js, .github/workflows/test.yml)
+Add or update test setup files and mocks (e.g., tests/setup.ts, tests/mocks/...)
+Add or update test tracker/guide/strategy docs (e.g., tests/TEST-TRACKER.md, tests/GUIDE.md, tests/TESTING_STRATEGY.md)
+Add or update various test files (unit, integration, E2E, security, load, property, contract) under tests/
+Update package.json and package-lock.json for dependencies
 ```
 
 ### Add Or Update Ui Component With Tests
 
-Adds new UI components (or updates existing ones) together with corresponding unit/component tests.
+Adds or updates UI components and immediately provides corresponding unit/component tests for them.
 
 **Frequency**: ~2 times per month
 
 **Steps**:
-1. Add or update component file(s) in src/components/**/
-2. Add or update corresponding test file(s) in tests/components/**/
-3. Update test configuration if needed (e.g., vitest.config.js)
-4. Optionally update mocks or factories
+1. Create or update UI component file(s) in src/components/...
+2. Create or update corresponding test file(s) in tests/components/...
+3. Optionally update test configuration or mocks if needed
+4. Optionally update documentation or test tracker
 
 **Files typically involved**:
 - `src/components/**/*.jsx`
 - `tests/components/**/*.test.jsx`
 - `vitest.config.js`
+- `tests/TEST-TRACKER.md`
 
 **Example commit sequence**:
 ```
-Add or update component file(s) in src/components/**/
-Add or update corresponding test file(s) in tests/components/**/
-Update test configuration if needed (e.g., vitest.config.js)
-Optionally update mocks or factories
+Create or update UI component file(s) in src/components/...
+Create or update corresponding test file(s) in tests/components/...
+Optionally update test configuration or mocks if needed
+Optionally update documentation or test tracker
 ```
 
-### Add Or Update Api Endpoint With Tests
+### Add Or Update Api Endpoint With Integration Tests
 
-Adds or updates API route files and their corresponding integration or security tests.
+Adds or updates API endpoint files and provides integration tests to validate their behavior.
 
 **Frequency**: ~2 times per month
 
 **Steps**:
-1. Add or update API route file(s) in src/app/api/**/
-2. Add or update integration/security test file(s) in tests/integration/api/**/*.test.* or tests/security/**/*.test.*
-3. Update test tracker or documentation if needed
+1. Create or update API route file(s) in src/app/api/...
+2. Create or update corresponding integration test file(s) in tests/integration/api/...
+3. Optionally update test tracker or documentation
 
 **Files typically involved**:
 - `src/app/api/**/*.js`
-- `src/app/api/**/*.ts`
-- `tests/integration/api/**/*.test.*`
-- `tests/security/**/*.test.*`
+- `tests/integration/api/**/*.test.ts`
+- `tests/integration/api/**/*.test.js`
 - `tests/TEST-TRACKER.md`
 
 **Example commit sequence**:
 ```
-Add or update API route file(s) in src/app/api/**/
-Add or update integration/security test file(s) in tests/integration/api/**/*.test.* or tests/security/**/*.test.*
-Update test tracker or documentation if needed
+Create or update API route file(s) in src/app/api/...
+Create or update corresponding integration test file(s) in tests/integration/api/...
+Optionally update test tracker or documentation
 ```
 
-### Add Or Update Supabase Or Database Logic With Tests
+### Add Or Update Security Tests
 
-Adds or updates Supabase/database logic files and their associated unit or integration tests.
+Adds or updates security-related integration tests to validate protection against vulnerabilities (e.g., XSS, CSRF, rate limiting, SQL injection).
 
 **Frequency**: ~2 times per month
 
 **Steps**:
-1. Add or update Supabase/database logic file(s) in src/lib/supabase/**/
-2. Add or update corresponding test file(s) in tests/unit/lib/supabase/**/*.test.*
-3. Update test configuration if needed
+1. Create or update security test files in tests/security/...
+2. Optionally update test tracker or documentation
+3. Optionally update .gitignore or secrets audit files
 
 **Files typically involved**:
-- `src/lib/supabase/**/*.js`
-- `src/lib/supabase/**/*.ts`
-- `tests/unit/lib/supabase/**/*.test.*`
-- `vitest.config.js`
+- `tests/security/**/*.test.ts`
+- `tests/security/**/*.test.js`
+- `tests/TEST-TRACKER.md`
+- `.gitignore`
 
 **Example commit sequence**:
 ```
-Add or update Supabase/database logic file(s) in src/lib/supabase/**/
-Add or update corresponding test file(s) in tests/unit/lib/supabase/**/*.test.*
-Update test configuration if needed
+Create or update security test files in tests/security/...
+Optionally update test tracker or documentation
+Optionally update .gitignore or secrets audit files
 ```
 
-### Add Or Update Test Documentation And Tracker
+### Add Or Update Project Documentation
 
-Updates or adds test documentation and tracking files to reflect new or changed test coverage.
+Adds or updates project documentation, guides, or strategy files, often in conjunction with new features or test suites.
 
 **Frequency**: ~2 times per month
 
 **Steps**:
-1. Update or add tests/TEST-TRACKER.md
-2. Update or add tests/GUIDE.md, tests/PROMPTS.md, or similar documentation files
-3. Optionally update .gitignore or related config
+1. Create or update documentation files (e.g., README.md, DESIGN_SYSTEM.md, tests/GUIDE.md, tests/TESTING_STRATEGY.md, AGENTS.md, CLAUDE.md)
+2. Optionally update test tracker or prompts
 
 **Files typically involved**:
-- `tests/TEST-TRACKER.md`
+- `README.md`
+- `DESIGN_SYSTEM.md`
 - `tests/GUIDE.md`
+- `tests/TESTING_STRATEGY.md`
 - `tests/PROMPTS.md`
+- `AGENTS.md`
+- `CLAUDE.md`
 
 **Example commit sequence**:
 ```
-Update or add tests/TEST-TRACKER.md
-Update or add tests/GUIDE.md, tests/PROMPTS.md, or similar documentation files
-Optionally update .gitignore or related config
+Create or update documentation files (e.g., README.md, DESIGN_SYSTEM.md, tests/GUIDE.md, tests/TESTING_STRATEGY.md, AGENTS.md, CLAUDE.md)
+Optionally update test tracker or prompts
 ```
 
 
