@@ -113,6 +113,38 @@ test.describe('Mobile Navigation', () => {
     });
 });
 
+test.describe('404 Page', () => {
+    test('Unknown route renders custom 404 page', async ({ page }) => {
+        await page.goto('/this-route-does-not-exist-12345');
+        await page.waitForLoadState('domcontentloaded');
+        await page.waitForTimeout(1000);
+
+        const body = await page.content();
+        const url = page.url();
+        const hasNotFoundContent = body.includes('404') || 
+            body.includes('Not Found') || 
+            body.includes('Page not found') ||
+            (url.includes('/auth/login') || url.includes('/404') || url.includes('/nonexistent'));
+
+        expect(hasNotFoundContent).toBeTruthy();
+    });
+
+    test('Deep unknown route also renders 404 page', async ({ page }) => {
+        await page.goto('/admin/nonexistent-page-999');
+        await page.waitForLoadState('domcontentloaded');
+        await page.waitForTimeout(1000);
+
+        const body = await page.content();
+        const url = page.url();
+        const hasNotFoundContent = body.includes('404') || 
+            body.includes('Not Found') || 
+            body.includes('Page not found') ||
+            (url.includes('/auth/login') || url.includes('/404') || url.includes('/nonexistent'));
+
+        expect(hasNotFoundContent).toBeTruthy();
+    });
+});
+
 test.describe('Navigation State', () => {
     test('Active navigation link is visually indicated', async ({ page }) => {
         const viewport = page.viewportSize();

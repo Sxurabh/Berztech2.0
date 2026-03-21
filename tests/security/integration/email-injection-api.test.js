@@ -11,10 +11,11 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { 
   fetchJson, 
   cleanupTestData,
-  EMAIL_INJECTION_PAYLOADS 
+  EMAIL_INJECTION_PAYLOADS,
+  skipIfNoServer
 } from './api-client';
 
-describe('Security: Email Injection Prevention - Live API', () => {
+describe.skipIf(skipIfNoServer)('Security: Email Injection Prevention - Live API', () => {
   beforeAll(async () => {
   }, 10000);
 
@@ -32,10 +33,9 @@ describe('Security: Email Injection Prevention - Live API', () => {
         body: { email: EMAIL_INJECTION_PAYLOADS.NEWLINE_CCF }
       });
       
-      expect([200, 201, 400]).toContain(response.status);
-      if (response.status === 201) {
-        expect(response.data?.success).toBe(true);
-      }
+      // Invalid email format rejected; returns 400
+      expect(response.status).not.toBe(500);
+      expect(response.status).toBe(400);
     });
 
     it('2. Email with CRLF BCC header injection is handled', async () => {
@@ -44,7 +44,8 @@ describe('Security: Email Injection Prevention - Live API', () => {
         body: { email: EMAIL_INJECTION_PAYLOADS.NEWLINE_BCC }
       });
       
-      expect([200, 201, 400]).toContain(response.status);
+      expect(response.status).not.toBe(500);
+      expect(response.status).toBe(400);
     });
 
     it('3. Email with URL encoded newlines is handled', async () => {
@@ -53,7 +54,8 @@ describe('Security: Email Injection Prevention - Live API', () => {
         body: { email: EMAIL_INJECTION_PAYLOADS.URL_ENCODED }
       });
       
-      expect([200, 201, 400]).toContain(response.status);
+      expect(response.status).not.toBe(500);
+      expect(response.status).toBe(400);
     });
   });
 
@@ -68,7 +70,9 @@ describe('Security: Email Injection Prevention - Live API', () => {
         body: { email: EMAIL_INJECTION_PAYLOADS.SQL_INJECTION }
       });
       
-      expect([200, 201, 400]).toContain(response.status);
+      // Invalid email format rejected
+      expect(response.status).not.toBe(500);
+      expect(response.status).toBe(400);
       if (response.status === 201) {
         const email = response.data?.email || '';
         expect(email).not.toMatch(/DROP|DELETE|INSERT/i);
@@ -81,7 +85,8 @@ describe('Security: Email Injection Prevention - Live API', () => {
         body: { email: "test' UNION SELECT * FROM users--@test.com" }
       });
       
-      expect([200, 201, 400]).toContain(response.status);
+      expect(response.status).not.toBe(500);
+      expect(response.status).toBe(400);
     });
 
     it('6. Email with OR 1=1 attempt is handled', async () => {
@@ -90,7 +95,8 @@ describe('Security: Email Injection Prevention - Live API', () => {
         body: { email: "' OR '1'='1'@test.com" }
       });
       
-      expect([200, 201, 400]).toContain(response.status);
+      expect(response.status).not.toBe(500);
+      expect(response.status).toBe(400);
     });
   });
 
@@ -105,7 +111,8 @@ describe('Security: Email Injection Prevention - Live API', () => {
         body: { email: EMAIL_INJECTION_PAYLOADS.MULTIPLE_AT }
       });
       
-      expect([200, 201, 400, 500]).toContain(response.status);
+      expect(response.status).not.toBe(500);
+      expect(response.status).toBe(400);
     });
 
     it('8. Empty local part is rejected', async () => {
@@ -114,7 +121,7 @@ describe('Security: Email Injection Prevention - Live API', () => {
         body: { email: EMAIL_INJECTION_PAYLOADS.EMPTY_LOCAL }
       });
       
-      expect([400]).toContain(response.status);
+      expect(response.status).toBe(400);
     });
 
     it('9. Email without TLD is rejected', async () => {
@@ -123,7 +130,7 @@ describe('Security: Email Injection Prevention - Live API', () => {
         body: { email: EMAIL_INJECTION_PAYLOADS.NO_TLD }
       });
       
-      expect([400]).toContain(response.status);
+      expect(response.status).toBe(400);
     });
 
     it('10. Email with double dots is handled', async () => {
@@ -132,6 +139,8 @@ describe('Security: Email Injection Prevention - Live API', () => {
         body: { email: EMAIL_INJECTION_PAYLOADS.DOUBLE_DOT }
       });
       
+      // Depends on Zod behavior: double dots may pass or fail
+      expect(response.status).not.toBe(500);
       expect([200, 201, 400]).toContain(response.status);
     });
   });
@@ -148,6 +157,7 @@ describe('Security: Email Injection Prevention - Live API', () => {
         body: { email: longEmail }
       });
       
+      expect(response.status).not.toBe(500);
       expect([200, 201, 400]).toContain(response.status);
     });
 
@@ -157,6 +167,7 @@ describe('Security: Email Injection Prevention - Live API', () => {
         body: { email: 'test+filter@example.com' }
       });
       
+      // Valid email with +filter; should succeed
       expect([200, 201]).toContain(response.status);
     });
 
@@ -166,6 +177,8 @@ describe('Security: Email Injection Prevention - Live API', () => {
         body: { email: '"test"@example.com' }
       });
       
+      // Quoted emails may pass Zod or fail depending on implementation
+      expect(response.status).not.toBe(500);
       expect([200, 201, 400]).toContain(response.status);
     });
 
@@ -175,6 +188,7 @@ describe('Security: Email Injection Prevention - Live API', () => {
         body: { email: 'test@[192.168.1.1]' }
       });
       
+      expect(response.status).not.toBe(500);
       expect([200, 201, 400]).toContain(response.status);
     });
 
@@ -184,7 +198,9 @@ describe('Security: Email Injection Prevention - Live API', () => {
         body: { email: 'test@x' + String.fromCharCode(0) + 'example.com' }
       });
       
-      expect([200, 201, 400, 500]).toContain(response.status);
+      // Null byte in email should be rejected
+      expect(response.status).not.toBe(500);
+      expect([400, 500]).toContain(response.status);
     });
   });
 

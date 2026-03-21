@@ -12,10 +12,11 @@ import {
   fetchJson, 
   getClientToken, 
   getAdminToken,
-  cleanupTestData 
+  cleanupTestData,
+  skipIfNoServer
 } from './api-client';
 
-describe('Security: Pagination DoS Prevention - Live API', () => {
+describe.skipIf(skipIfNoServer)('Security: Pagination DoS Prevention - Live API', () => {
   let clientToken;
   let adminToken;
 
@@ -32,10 +33,6 @@ describe('Security: Pagination DoS Prevention - Live API', () => {
     try {
       await cleanupTestData(adminToken);
     } catch (e) {}
-  }, 10000);
-
-  afterAll(async () => {
-    await cleanupTestData(adminToken);
   });
 
   // =========================================================================
@@ -43,43 +40,49 @@ describe('Security: Pagination DoS Prevention - Live API', () => {
   // =========================================================================
 
   describe('Limit Parameter Validation', () => {
-    it('1. Excessive limit is capped', async () => {
+    it('1. Excessive limit is capped or returns empty', async () => {
       const response = await fetchJson('/api/blog?limit=99999', {
         token: clientToken
       });
       
+      // Server caps limit or returns empty result; should not crash
+      expect(response.status).not.toBe(500);
       expect([200, 400]).toContain(response.status);
     });
 
-    it('2. Limit of 0 is handled', async () => {
+    it('2. Limit of 0 is handled gracefully', async () => {
       const response = await fetchJson('/api/blog?limit=0', {
         token: clientToken
       });
       
+      expect(response.status).not.toBe(500);
       expect([200, 400]).toContain(response.status);
     });
 
-    it('3. Negative limit is handled', async () => {
+    it('3. Negative limit is handled gracefully', async () => {
       const response = await fetchJson('/api/blog?limit=-1', {
         token: clientToken
       });
       
+      expect(response.status).not.toBe(500);
       expect([200, 400]).toContain(response.status);
     });
 
-    it('4. Non-numeric limit is handled', async () => {
+    it('4. Non-numeric limit is handled gracefully', async () => {
       const response = await fetchJson('/api/blog?limit=abc', {
         token: clientToken
       });
       
+      expect(response.status).not.toBe(500);
       expect([200, 400]).toContain(response.status);
     });
 
-    it('5. Float limit is handled', async () => {
+    it('5. Float limit is handled gracefully', async () => {
       const response = await fetchJson('/api/blog?limit=10.5', {
         token: clientToken
       });
       
+      expect(response.status).not.toBe(500);
       expect([200, 400]).toContain(response.status);
     });
   });
@@ -89,27 +92,30 @@ describe('Security: Pagination DoS Prevention - Live API', () => {
   // =========================================================================
 
   describe('Page Parameter Validation', () => {
-    it('6. Negative page is handled', async () => {
+    it('6. Negative page is handled gracefully', async () => {
       const response = await fetchJson('/api/blog?page=-1', {
         token: clientToken
       });
       
+      expect(response.status).not.toBe(500);
       expect([200, 400]).toContain(response.status);
     });
 
-    it('7. Very large page number is handled', async () => {
+    it('7. Very large page number is handled gracefully', async () => {
       const response = await fetchJson('/api/blog?page=999999999', {
         token: clientToken
       });
       
+      expect(response.status).not.toBe(500);
       expect([200, 400]).toContain(response.status);
     });
 
-    it('8. Non-numeric page is handled', async () => {
+    it('8. Non-numeric page is handled gracefully', async () => {
       const response = await fetchJson('/api/blog?page=abc', {
         token: clientToken
       });
       
+      expect(response.status).not.toBe(500);
       expect([200, 400]).toContain(response.status);
     });
   });
@@ -119,27 +125,30 @@ describe('Security: Pagination DoS Prevention - Live API', () => {
   // =========================================================================
 
   describe('Offset Parameter Validation', () => {
-    it('9. Negative offset is handled', async () => {
+    it('9. Negative offset is handled gracefully', async () => {
       const response = await fetchJson('/api/blog?offset=-1', {
         token: clientToken
       });
       
+      expect(response.status).not.toBe(500);
       expect([200, 400]).toContain(response.status);
     });
 
-    it('10. Very large offset is handled', async () => {
+    it('10. Very large offset is handled gracefully', async () => {
       const response = await fetchJson('/api/blog?offset=999999999', {
         token: clientToken
       });
       
+      expect(response.status).not.toBe(500);
       expect([200, 400]).toContain(response.status);
     });
 
-    it('11. Non-numeric offset is handled', async () => {
+    it('11. Non-numeric offset is handled gracefully', async () => {
       const response = await fetchJson('/api/blog?offset=abc', {
         token: clientToken
       });
       
+      expect(response.status).not.toBe(500);
       expect([200, 400]).toContain(response.status);
     });
   });
@@ -159,22 +168,25 @@ describe('Security: Pagination DoS Prevention - Live API', () => {
       const elapsed = Date.now() - start;
       
       expect(elapsed).toBeLessThan(10000);
+      expect(response.status).not.toBe(500);
       expect([200, 400]).toContain(response.status);
     });
 
-    it('13. Multiple same parameters handled', async () => {
+    it('13. Multiple same parameters handled gracefully', async () => {
       const response = await fetchJson('/api/blog?limit=10&limit=20', {
         token: clientToken
       });
       
+      expect(response.status).not.toBe(500);
       expect([200, 400]).toContain(response.status);
     });
 
-    it('14. Null bytes in parameters handled', async () => {
+    it('14. Null bytes in parameters handled gracefully', async () => {
       const response = await fetchJson('/api/blog?limit=10\x00', {
         token: clientToken
       });
       
+      expect(response.status).not.toBe(500);
       expect([200, 400]).toContain(response.status);
     });
   });
@@ -189,7 +201,8 @@ describe('Security: Pagination DoS Prevention - Live API', () => {
         token: adminToken
       });
       
-      expect([200, 400, 401, 403]).toContain(response.status);
+      // Admin token accepted; returns 200 or auth error
+      expect([200, 401, 403]).toContain(response.status);
     }, 15000);
 
     it('16. Admin requests pagination is handled', async () => {
@@ -197,7 +210,7 @@ describe('Security: Pagination DoS Prevention - Live API', () => {
         token: adminToken
       });
       
-      expect([200, 400, 401, 403]).toContain(response.status);
+      expect([200, 401, 403]).toContain(response.status);
     }, 15000);
   });
 
@@ -206,20 +219,22 @@ describe('Security: Pagination DoS Prevention - Live API', () => {
   // =========================================================================
 
   describe('Projects Pagination', () => {
-    it('17. Projects limit is validated', async () => {
+    it('17. Projects limit is validated gracefully', async () => {
       const response = await fetchJson('/api/projects?limit=99999', {
         token: clientToken
       });
       
-      expect([200, 400, 404]).toContain(response.status);
+      expect(response.status).not.toBe(500);
+      expect([200, 400]).toContain(response.status);
     });
 
-    it('18. Projects page is validated', async () => {
+    it('18. Projects page is validated gracefully', async () => {
       const response = await fetchJson('/api/projects?page=-100', {
         token: clientToken
       });
       
-      expect([200, 400, 404]).toContain(response.status);
+      expect(response.status).not.toBe(500);
+      expect([200, 400]).toContain(response.status);
     });
   });
 
@@ -249,6 +264,7 @@ describe('Security: Pagination DoS Prevention - Live API', () => {
         token: clientToken
       }, { timeout: 15000 });
       
+      expect(response.status).not.toBe(500);
       expect([200, 400]).toContain(response.status);
     });
   });

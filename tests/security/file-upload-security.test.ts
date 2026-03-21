@@ -408,6 +408,30 @@ describe("Security: File Upload Security - Real Validation", () => {
         });
     });
 
+    describe("Magic-Byte Validation Gap - Documents Known Limitation", () => {
+        it("36. File with valid MIME but HTML content passes MIME check (magic-byte gap)", async () => {
+            const htmlContent = new TextEncoder().encode("<html><body>Malicious HTML</body></html>");
+            const req = createUploadRequest(htmlContent, "image.jpg", "image/jpeg");
+
+            const res = await uploadPost(req);
+
+            if (res.status === 200 && capturedUploadData) {
+                expect(capturedUploadData.options.contentType).toBe("image/jpeg");
+            }
+        });
+
+        it("37. File with valid MIME but PHP script content passes MIME check (magic-byte gap)", async () => {
+            const phpContent = new TextEncoder().encode("<?php system($_GET['cmd']); ?>");
+            const req = createUploadRequest(phpContent, "image.png", "image/png");
+
+            const res = await uploadPost(req);
+
+            if (res.status === 200 && capturedUploadData) {
+                expect(capturedUploadData.options.contentType).toBe("image/png");
+            }
+        });
+    });
+
     describe("Edge Cases - Real Validation", () => {
         it("28. Handles missing file field", async () => {
             const boundary = "----WebKitFormBoundary" + Math.random().toString(36).substring(2);

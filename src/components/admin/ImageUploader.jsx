@@ -72,6 +72,7 @@ export default function ImageUploader({ value, onChange, className = "" }) {
                         type="button"
                         onClick={() => onChange("")}
                         className="absolute top-2 right-2 p-1.5 bg-white border border-neutral-200 text-neutral-400 hover:text-red-500 hover:border-red-200 transition-colors opacity-0 group-hover:opacity-100 shadow-sm rounded-sm"
+                        aria-label="Remove image"
                     >
                         <FiX className="w-3 h-3" />
                     </button>

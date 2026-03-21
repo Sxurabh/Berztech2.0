@@ -13,10 +13,11 @@ import {
   getClientToken, 
   getAdminToken,
   cleanupTestData,
-  generateUniqueId 
+  generateUniqueId,
+  skipIfNoServer
 } from './api-client';
 
-describe('Security: Mass Assignment Prevention - Live API', () => {
+describe.skipIf(skipIfNoServer)('Security: Mass Assignment Prevention - Live API', () => {
   let clientToken;
   let adminToken;
 
@@ -53,7 +54,9 @@ describe('Security: Mass Assignment Prevention - Live API', () => {
         }
       });
       
-      expect([200, 201, 400, 401, 403]).toContain(response.status);
+      // Admin creates blog post; expects 201 (success) or auth error
+      expect(response.status).not.toBe(500);
+      expect([201, 400, 401, 403]).toContain(response.status);
     });
 
     it('2. Unknown fields are ignored', async () => {
@@ -70,7 +73,8 @@ describe('Security: Mass Assignment Prevention - Live API', () => {
         }
       });
       
-      expect([200, 201, 400, 401, 403]).toContain(response.status);
+      expect(response.status).not.toBe(500);
+      expect([201, 400, 401, 403]).toContain(response.status);
     });
 
     it('3. Only whitelisted fields are accepted', async () => {
@@ -85,7 +89,8 @@ describe('Security: Mass Assignment Prevention - Live API', () => {
         }
       });
       
-      expect([200, 201, 400, 401, 403]).toContain(response.status);
+      expect(response.status).not.toBe(500);
+      expect([201, 400, 401, 403]).toContain(response.status);
     });
 
     it('4. Non-admin cannot create blog post', async () => {
@@ -99,7 +104,7 @@ describe('Security: Mass Assignment Prevention - Live API', () => {
         }
       });
       
-      expect([403, 401]).toContain(response.status);
+      expect(response.status).toBe(403);
     });
   });
 
@@ -118,7 +123,8 @@ describe('Security: Mass Assignment Prevention - Live API', () => {
         }
       });
       
-      expect([200, 201, 400, 401, 403]).toContain(response.status);
+      expect(response.status).not.toBe(500);
+      expect([201, 400, 401, 403]).toContain(response.status);
     });
 
     it('6. Non-admin cannot create testimonial', async () => {
@@ -131,7 +137,7 @@ describe('Security: Mass Assignment Prevention - Live API', () => {
         }
       });
       
-      expect([403, 401]).toContain(response.status);
+      expect(response.status).toBe(403);
     });
   });
 
@@ -149,7 +155,7 @@ describe('Security: Mass Assignment Prevention - Live API', () => {
         }
       });
       
-      expect([403, 401]).toContain(response.status);
+      expect(response.status).toBe(403);
     });
 
     it('8. Admin can create task', async () => {
@@ -162,7 +168,8 @@ describe('Security: Mass Assignment Prevention - Live API', () => {
         }
       });
       
-      expect([200, 201, 400, 401, 403]).toContain(response.status);
+      expect(response.status).not.toBe(500);
+      expect([201, 400, 401, 403]).toContain(response.status);
     });
   });
 
@@ -181,7 +188,7 @@ describe('Security: Mass Assignment Prevention - Live API', () => {
         }
       });
       
-      expect([403, 401]).toContain(response.status);
+      expect(response.status).toBe(401);
     });
 
     it('10. Admin can set settings', async () => {
@@ -194,10 +201,11 @@ describe('Security: Mass Assignment Prevention - Live API', () => {
         }
       });
       
-      expect([200, 201, 400, 401, 403]).toContain(response.status);
+      expect(response.status).not.toBe(500);
+      expect([201, 400, 401, 403]).toContain(response.status);
     });
 
-    it('11. Special keys are handled', async () => {
+    it('11. Special keys are handled safely', async () => {
       const response = await fetchJson('/api/settings', {
         method: 'POST',
         token: adminToken,
@@ -207,7 +215,8 @@ describe('Security: Mass Assignment Prevention - Live API', () => {
         }
       });
       
-      expect([200, 201, 400, 401, 403]).toContain(response.status);
+      expect(response.status).not.toBe(500);
+      expect([201, 400, 401, 403]).toContain(response.status);
     });
   });
 
@@ -226,7 +235,9 @@ describe('Security: Mass Assignment Prevention - Live API', () => {
         }
       });
       
-      expect([200, 201, 400]).toContain(response.status);
+      // status field is ignored; request succeeds
+      expect(response.status).not.toBe(500);
+      expect(response.status).toBe(201);
     });
   });
 });

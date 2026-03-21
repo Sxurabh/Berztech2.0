@@ -317,6 +317,9 @@ export default function ProjectForm({ mode = "create", embedded, onClose, onSucc
                                             w-9 h-5 rounded-full relative transition-colors duration-200
                                             ${form.featured ? "bg-neutral-900" : "bg-neutral-300"}
                                         `}
+                                        aria-label={form.featured ? "Remove from featured" : "Mark as featured"}
+                                        role="switch"
+                                        aria-checked={form.featured}
                                     >
                                         <span
                                             className={`

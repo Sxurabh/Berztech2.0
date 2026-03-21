@@ -15,10 +15,11 @@ import {
   JWT_MALFORMED_PAYLOADS,
   BASE_URL,
   SUPABASE_URL,
-  SUPABASE_ANON_KEY
+  SUPABASE_ANON_KEY,
+  skipIfNoServer
 } from './api-client';
 
-describe('Security: JWT Tampering - Live API', () => {
+describe.skipIf(skipIfNoServer)('Security: JWT Tampering - Live API', () => {
   let validClientToken;
   let validAdminToken;
 
@@ -37,12 +38,10 @@ describe('Security: JWT Tampering - Live API', () => {
         token: JWT_MALFORMED_PAYLOADS.ALG_NONE
       });
       
-      // Should reject with 401 Unauthorized
       expect(response.status).toBe(401);
     });
 
     it('2. JWT with role: service_role injected must return 401/403', async () => {
-      // Create a token with injected service_role claim
       const maliciousPayload = {
         sub: '1234567890',
         email: 'admin@test.com',
@@ -59,7 +58,6 @@ describe('Security: JWT Tampering - Live API', () => {
         token: maliciousToken
       });
       
-      // Should reject with 401 or 403
       expect([401, 403]).toContain(response.status);
     });
 
@@ -80,7 +78,6 @@ describe('Security: JWT Tampering - Live API', () => {
         token: maliciousToken
       });
       
-      // Should reject with 401 or 403
       expect([401, 403]).toContain(response.status);
     });
 
@@ -89,12 +86,10 @@ describe('Security: JWT Tampering - Live API', () => {
         token: JWT_MALFORMED_PAYLOADS.EXPIRED
       });
       
-      // Should reject with 401
       expect(response.status).toBe(401);
     });
 
     it('5. JWT from different Supabase project must return 401', async () => {
-      // Create a token signed with a different key (simulated)
       const differentProjectPayload = {
         sub: 'different-project-user',
         email: 'test@example.com',
@@ -111,7 +106,6 @@ describe('Security: JWT Tampering - Live API', () => {
         token: differentToken
       });
       
-      // Should reject with 401
       expect(response.status).toBe(401);
     });
   });
@@ -122,9 +116,8 @@ describe('Security: JWT Tampering - Live API', () => {
 
   describe('JWT Claim Tampering', () => {
     it('6. JWT with modified user ID claim must return 401/403', async () => {
-      // Try to modify the user ID in a valid-looking token structure
       const tamperedPayload = {
-        sub: '00000000-0000-0000-0000-000000000000', // Different user ID
+        sub: '00000000-0000-0000-0000-000000000000',
         email: 'attacker@evil.com',
         iat: Math.floor(Date.now() / 1000),
         exp: Math.floor(Date.now() / 1000) + 3600
@@ -138,7 +131,6 @@ describe('Security: JWT Tampering - Live API', () => {
         token: tamperedToken
       });
       
-      // Should reject with 401 or 403
       expect([401, 403]).toContain(response.status);
     });
 
@@ -146,7 +138,7 @@ describe('Security: JWT Tampering - Live API', () => {
       const tamperedPayload = {
         sub: 'valid-user-id',
         email: 'test@example.com',
-        iss: 'https://evil-supabase.co/auth/v1', // Wrong issuer
+        iss: 'https://evil-supabase.co/auth/v1',
         iat: Math.floor(Date.now() / 1000),
         exp: Math.floor(Date.now() / 1000) + 3600
       };
@@ -159,7 +151,6 @@ describe('Security: JWT Tampering - Live API', () => {
         token: tamperedToken
       });
       
-      // Should reject with 401
       expect(response.status).toBe(401);
     });
 
@@ -168,17 +159,15 @@ describe('Security: JWT Tampering - Live API', () => {
         'not-a-valid-jwt',
         JWT_MALFORMED_PAYLOADS.MALFORMED,
         JWT_MALFORMED_PAYLOADS.RANDOM,
-        'eyJhbGc...', // Truncated
-        'header.payload', // Missing signature
-        '...', // Just dots
+        'eyJhbGc...',
+        'header.payload',
+        '...',
       ];
       
       for (const token of malformedTokens) {
         const response = await fetchJson('/api/client/tasks', { token });
         
-        // Should not crash with 500
         expect(response.status).not.toBe(500);
-        // Should return 401 for invalid tokens
         expect([401, 400]).toContain(response.status);
       }
     });
@@ -191,7 +180,6 @@ describe('Security: JWT Tampering - Live API', () => {
         exp: Math.floor(Date.now() / 1000) + 3600
       };
       
-      // Token with empty signature (just two dots at end)
       const nullSigToken = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${
         Buffer.from(JSON.stringify(payload)).toString('base64url')
       }.`;
@@ -200,18 +188,15 @@ describe('Security: JWT Tampering - Live API', () => {
         token: nullSigToken
       });
       
-      // Should reject with 401
       expect(response.status).toBe(401);
     });
 
     it('10. Valid admin JWT accessing client endpoint must succeed', async () => {
-      // Admin should be able to access client endpoints (they have higher privileges)
       const response = await fetchJson('/api/client/tasks', {
         token: validAdminToken
       });
       
-      // Should succeed (200) or return empty array if no tasks
-      // Note: Admin might not have client_id set, so could get 200 with empty data
+      // Admin has access to client endpoint
       expect([200, 401, 403]).toContain(response.status);
     });
   });

@@ -9,8 +9,11 @@ export async function PATCH(req, { params }) {
         const supabase = await createServerSupabaseClient();
         const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-        if (authError || !user || !isAdminEmail(user.email)) {
+        if (authError || !user) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+        if (!isAdminEmail(user.email)) {
+            return NextResponse.json({ error: "Forbidden" }, { status: 403 });
         }
 
         const body = await req.json();
@@ -26,7 +29,6 @@ export async function PATCH(req, { params }) {
         if (body.project_id !== undefined) updates.project_id = body.project_id || null;
         if (body.request_id !== undefined) {
             updates.request_id = body.request_id === "undefined" ? null : (body.request_id || null);
-            // Sync client_id if request_id changes
             if (updates.request_id) {
                 const { data: reqData } = await admin
                     .from("requests")
@@ -35,7 +37,7 @@ export async function PATCH(req, { params }) {
                     .single();
                 if (reqData) updates.client_id = reqData.user_id;
             } else {
-                updates.client_id = null; // Unlink client if request is removed
+                updates.client_id = null;
             }
         }
 
@@ -67,19 +69,27 @@ export async function DELETE(req, { params }) {
         const supabase = await createServerSupabaseClient();
         const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-        if (authError || !user || !isAdminEmail(user.email)) {
+        if (authError || !user) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+        if (!isAdminEmail(user.email)) {
+            return NextResponse.json({ error: "Forbidden" }, { status: 403 });
         }
 
         const admin = createAdminClient();
 
-        const { error } = await admin
+        const { data, error } = await admin
             .from("tasks")
             .delete()
-            .eq("id", id);
+            .eq("id", id)
+            .select();
 
         if (error) {
             return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+
+        if (!data || data.length === 0) {
+            return NextResponse.json({ error: "Task not found" }, { status: 404 });
         }
 
         return NextResponse.json({ success: true }, { status: 200 });

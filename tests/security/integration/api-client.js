@@ -22,6 +22,8 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 
 const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000';
 
+export const skipIfNoServer = process.env.SKIP_LIVE_TESTS === 'true';
+
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://srouvvdubxktqyihwphc.supabase.co';
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyb3V2dmR1YnhrdHF5aWh3cGhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3Mjg3MzEsImV4cCI6MjA4NjMwNDczMX0.2dXdU8R_2l1UyCtXciGJ05xB8I_9zBoaoP2tRPStXx4';
 
@@ -317,12 +319,12 @@ function generateUniqueId() {
 async function createTestRequest(token, overrides = {}) {
   const id = generateUniqueId();
   const payload = {
-    name: `Test User ${id}`,
+    name: `TEST_User_${id}`,
     email: `test${id}@example.com`,
-    company: 'Test Company',
+    company: 'TEST_Company',
     services: ['web-development'],
     budget: '$5k-$10k',
-    message: `Test message ${id}`,
+    message: `TEST_message_${id}`,
     ...overrides,
   };
   
@@ -343,10 +345,10 @@ async function createTestRequest(token, overrides = {}) {
 async function createTestBlogPost(token, overrides = {}) {
   const id = generateUniqueId();
   const payload = {
-    title: `Test Post ${id}`,
+    title: `TEST_Post_${id}`,
     slug: `test-post-${id}`,
-    content: `Test content ${id}`,
-    excerpt: 'Test excerpt',
+    content: `TEST_content_${id}`,
+    excerpt: 'TEST_excerpt',
     ...overrides,
   };
   
@@ -367,8 +369,8 @@ async function createTestBlogPost(token, overrides = {}) {
 async function createTestProject(token, overrides = {}) {
   const id = generateUniqueId();
   const payload = {
-    name: `Test Project ${id}`,
-    description: 'Test description',
+    name: `TEST_Project_${id}`,
+    description: 'TEST_description',
     category: 'web-development',
     status: 'active',
     ...overrides,

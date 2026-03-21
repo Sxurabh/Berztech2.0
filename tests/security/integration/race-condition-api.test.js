@@ -13,10 +13,11 @@ import {
   getClientToken, 
   getAdminToken,
   cleanupTestData,
-  login
+  login,
+  skipIfNoServer
 } from './api-client';
 
-describe('Security: Race Condition Prevention - Live API', () => {
+describe.skipIf(skipIfNoServer)('Security: Race Condition Prevention - Live API', () => {
   let clientToken;
   let adminToken;
 
@@ -190,25 +191,29 @@ describe('Security: Race Condition Prevention - Live API', () => {
   // =========================================================================
 
   describe('Data Consistency', () => {
-    it('7. Partial request data is handled gracefully', async () => {
+    it('7. Partial request data (empty body) is rejected', async () => {
       const response = await fetchJson('/api/requests', {
         method: 'POST',
         body: {}
       });
       
-      expect([400]).toContain(response.status);
+      // Empty body fails Zod validation: name missing
+      expect(response.status).toBe(400);
+      expect(response.status).not.toBe(500);
     });
 
-    it('8. Missing required fields are validated', async () => {
+    it('8. Missing required field (name only) is rejected', async () => {
       const response = await fetchJson('/api/requests', {
         method: 'POST',
         body: { name: 'Only Name' }
       });
       
-      expect([400]).toContain(response.status);
+      // Missing email fails Zod validation
+      expect(response.status).toBe(400);
+      expect(response.status).not.toBe(500);
     });
 
-    it('9. Extra fields are ignored', async () => {
+    it('9. Extra fields are safely ignored', async () => {
       const response = await fetchJson('/api/requests', {
         method: 'POST',
         body: { 
@@ -219,7 +224,9 @@ describe('Security: Race Condition Prevention - Live API', () => {
         }
       });
       
-      expect([200, 201, 400]).toContain(response.status);
+      // Extra fields pass Zod; stored successfully
+      expect(response.status).toBe(201);
+      expect(response.status).not.toBe(500);
     });
   });
 
@@ -242,7 +249,8 @@ describe('Security: Race Condition Prevention - Live API', () => {
       const elapsed = Date.now() - start;
       
       expect(elapsed).toBeLessThan(15000);
-      expect([200, 201, 400]).toContain(response.status);
+      expect(response.status).toBe(201);
+      expect(response.status).not.toBe(500);
     });
   });
 });

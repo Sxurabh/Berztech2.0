@@ -836,5 +836,82 @@ describe("Task Comments API", () => {
             expect(response.status).toBe(500);
             expect(body.error).toBe("Database connection failed");
         });
+
+        it("17. Client comment triggers listUsers() call exactly ONCE (N+1 fix)", async () => {
+            const clientUser = setupUser("client@example.com", false);
+
+            const mockTask = {
+                id: "task-123",
+                client_id: clientUser.id,
+                title: "Test Task",
+                request_id: null,
+            };
+
+            let listUsersCallCount = 0;
+            (mockAdminSupabase.auth.admin.listUsers as any).mockImplementation(() => {
+                listUsersCallCount++;
+                return Promise.resolve({
+                    data: {
+                        users: [
+                            { id: "admin-1", email: "admin1@berztech.com" },
+                            { id: "admin-2", email: "admin2@berztech.com" },
+                            { id: "admin-3", email: "admin3@berztech.com" },
+                        ]
+                    },
+                    error: null,
+                });
+            });
+
+            mockAdminSupabase.from.mockImplementation((table: string) => {
+                if (table === "tasks") {
+                    return {
+                        select: vi.fn().mockReturnThis(),
+                        eq: vi.fn().mockReturnThis(),
+                        single: vi.fn().mockResolvedValue({ data: mockTask, error: null }),
+                    };
+                }
+                if (table === "task_comments") {
+                    return {
+                        insert: vi.fn().mockReturnThis(),
+                        select: vi.fn().mockReturnThis(),
+                        single: vi.fn().mockResolvedValue({
+                            data: { id: "new-comment", content: "Test comment" },
+                            error: null,
+                        }),
+                    };
+                }
+                if (table === "admin_users") {
+                    const selectMock = vi.fn().mockReturnValue({
+                        then: (resolve: any) => resolve({ data: [
+                            { email: "admin1@berztech.com" },
+                            { email: "admin2@berztech.com" },
+                            { email: "admin3@berztech.com" },
+                        ], error: null }),
+                    });
+                    return { select: selectMock };
+                }
+                if (table === "notifications") {
+                    return { insert: vi.fn().mockResolvedValue({ data: [], error: null }) };
+                }
+                return {
+                    select: vi.fn().mockReturnThis(),
+                    eq: vi.fn().mockReturnThis(),
+                    insert: vi.fn().mockReturnThis(),
+                    single: vi.fn().mockResolvedValue({ data: null, error: null }),
+                };
+            });
+
+            const request = createJsonRequest(
+                "http://localhost:3000/api/tasks/task-123/comments",
+                { content: "Test comment" },
+                "POST"
+            );
+            const params = Promise.resolve({ id: "task-123" });
+
+            const response = await createComment(request, { params });
+
+            expect(response.status).toBe(201);
+            expect(listUsersCallCount).toBe(1);
+        });
     });
 });

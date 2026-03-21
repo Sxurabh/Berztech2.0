@@ -22,7 +22,15 @@ export default function DataTable({
     const [mobileActionOpen, setMobileActionOpen] = useState(null);
 
     const filteredData = useMemo(() => {
-        let result = data || [];
+        let result = data;
+
+        if (!result) {
+            return [];
+        }
+
+        if (!Array.isArray(result)) {
+            return [];
+        }
 
         if (search && searchKey) {
             const lowerSearch = search.toLowerCase();

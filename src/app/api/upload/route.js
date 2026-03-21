@@ -5,6 +5,12 @@ import { isAdminEmail } from "@/config/admin";
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
+// SECURITY NOTE: Magic-byte validation is not implemented. Files are validated
+// using browser-provided MIME types (file.type) via Array.includes(). A malicious
+// actor could upload a file with an allowed MIME type but contain malicious content
+// (e.g., HTML or PHP code). For future hardening, add magic-byte (file signature)
+// validation to verify the actual file content matches the declared MIME type.
+
 // Simple in-memory rate limiting map
 // Note: Clears on serverless cold starts, but prevents rapid DoS in warm instances
 const rateLimitMap = new Map();

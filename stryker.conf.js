@@ -3,11 +3,13 @@ module.exports = {
     reporters: ['html', 'clear-text', 'progress'],
     testRunner: 'command',
     commandRunner: {
-        command: 'npx vitest run tests/unit/config --no-coverage'
+        command: 'npx vitest run tests/unit --no-coverage'
     },
     coverageAnalysis: 'all',
     mutate: [
         'src/config/**/*.js',
+        'src/app/api/**/*.js',
+        'src/lib/data/**/*.js',
     ],
     ignoreMutations: [
         'src/**/*.d.ts',

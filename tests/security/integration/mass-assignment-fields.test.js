@@ -13,10 +13,11 @@ import {
   getClientToken, 
   getAdminToken,
   createTestRequest,
-  cleanupTestData
+  cleanupTestData,
+  skipIfNoServer
 } from './api-client';
 
-describe('Security: Mass Assignment Prevention - Live API', () => {
+describe.skipIf(skipIfNoServer)('Security: Mass Assignment Prevention - Live API', () => {
   let clientToken;
   let adminToken;
 
@@ -36,12 +37,13 @@ describe('Security: Mass Assignment Prevention - Live API', () => {
         body: {
           name: 'Test User',
           email: 'test@example.com',
-          role: 'admin' // Attempt to inject
+          role: 'admin'
         }
       });
       
-      // Should succeed but ignore the role field
-      expect([200, 201, 400]).toContain(response.status);
+      // role field is ignored; request succeeds with valid data
+      expect(response.status).toBe(201);
+      expect(response.status).not.toBe(500);
     });
 
     it('2. POST /api/requests with isAdmin: true in body - field NOT stored', async () => {
@@ -50,12 +52,12 @@ describe('Security: Mass Assignment Prevention - Live API', () => {
         body: {
           name: 'Test User',
           email: 'test@example.com',
-          isAdmin: true // Attempt to inject
+          isAdmin: true
         }
       });
       
-      // Should succeed but ignore isAdmin
-      expect([200, 201, 400]).toContain(response.status);
+      expect(response.status).toBe(201);
+      expect(response.status).not.toBe(500);
     });
 
     it('3. POST /api/requests with clientId override uses auth user ID', async () => {
@@ -65,12 +67,13 @@ describe('Security: Mass Assignment Prevention - Live API', () => {
         body: {
           name: 'Test User',
           email: 'test@example.com',
-          clientId: 'malicious-client-id' // Attempt to inject
+          clientId: 'malicious-client-id'
         }
       });
       
-      // Should succeed but use authenticated user's ID
-      expect([200, 201, 400]).toContain(response.status);
+      // clientId field is ignored; uses authenticated user ID
+      expect(response.status).toBe(201);
+      expect(response.status).not.toBe(500);
     });
 
     it('4. POST /api/requests with id: "custom-uuid" - ID ignored, system generates', async () => {
@@ -85,11 +88,10 @@ describe('Security: Mass Assignment Prevention - Live API', () => {
         }
       });
       
-      // Should succeed but ignore custom ID
-      expect([200, 201, 400]).toContain(response.status);
+      // Custom id is ignored; system generates the ID
+      expect(response.status).toBe(201);
       
       if (response.status === 201 && response.data?.data?.id) {
-        // The returned ID should not be our custom ID
         expect(response.data.data.id).not.toBe(customId);
       }
     });
@@ -107,8 +109,8 @@ describe('Security: Mass Assignment Prevention - Live API', () => {
         }
       });
       
-      // Should succeed but ignore custom timestamp
-      expect([200, 201, 400]).toContain(response.status);
+      expect(response.status).toBe(201);
+      expect(response.status).not.toBe(500);
     });
 
     it('6. POST /api/requests with status: "approved" - status defaults to "pending"', async () => {
@@ -117,17 +119,16 @@ describe('Security: Mass Assignment Prevention - Live API', () => {
         body: {
           name: 'Test User',
           email: 'test@example.com',
-          status: 'approved' // Attempt to bypass workflow
+          status: 'approved'
         }
       });
       
-      // Should succeed but status should be controlled by server
-      expect([200, 201, 400]).toContain(response.status);
+      // status is hardcoded to "discover" in route; injected value ignored
+      expect(response.status).toBe(201);
+      expect(response.status).not.toBe(500);
     });
 
     it('7. PATCH /api/admin/requests/:id with clientEmail changed - email unchanged', async () => {
-      // This would require a real request ID
-      // We'll test the endpoint structure
       const response = await fetchJson('/api/admin/requests/test-id', {
         method: 'PATCH',
         token: adminToken,
@@ -136,40 +137,40 @@ describe('Security: Mass Assignment Prevention - Live API', () => {
         }
       });
       
-      // Should either succeed with email unchanged or reject
-      expect([200, 201, 400, 404, 403]).toContain(response.status);
+      // Route doesn't handle clientEmail field; returns 200 (success) or 404 (not found)
+      expect([200, 400, 404]).toContain(response.status);
+      expect(response.status).not.toBe(500);
     });
 
     it('8. POST /api/blog with published: true as non-admin - rejected', async () => {
       const response = await fetchJson('/api/blog', {
         method: 'POST',
-        token: clientToken, // Non-admin token
+        token: clientToken,
         body: {
           title: 'Test Post',
           content: 'Test content',
-          published: true // Attempt to publish without admin rights
+          published: true
         }
       });
       
-      // Should be rejected with 401 or 403
-      expect([401, 403]).toContain(response.status);
+      // Non-admin gets 403 Forbidden
+      expect(response.status).toBe(403);
     });
 
-    it('9. POST /api/blog with authorId: "other-user" as admin - uses correct author', async () => {
+    it('9. POST /api/blog with authorId injection - safely ignored', async () => {
       const response = await fetchJson('/api/blog', {
         method: 'POST',
         token: adminToken,
         body: {
           title: 'Test Post',
           content: 'Test content',
-          authorId: 'malicious-user-id' // Attempt to spoof author
+          authorId: 'malicious-user-id'
         }
       });
       
-      // Should not crash - any valid response is acceptable
-      expect([200, 201, 400, 401, 403]).toContain(response.status);
-      // Should not crash
+      // authorId is not in the whitelist; ignored. Route returns 201.
       expect(response.status).not.toBe(500);
+      expect([201, 400, 401, 403]).toContain(response.status);
     });
 
     it('10. PUT /api/blog/:slug with __proto__ pollution attempt - safely ignored', async () => {
@@ -178,16 +179,17 @@ describe('Security: Mass Assignment Prevention - Live API', () => {
         token: adminToken,
         body: {
           title: 'Updated Post',
-          __proto__: { isAdmin: true }, // Prototype pollution attempt
+          __proto__: { isAdmin: true },
           constructor: { prototype: { isAdmin: true } }
         }
       });
       
-      // Should not crash with 500
+      // Should not crash with 500; route doesn't process __proto__
       expect(response.status).not.toBe(500);
+      expect([200, 400, 404]).toContain(response.status);
     });
 
-    it('11. PATCH /api/admin/tasks/:id with assigneeId override - validates assignee exists', async () => {
+    it('11. PATCH /api/admin/tasks/:id with non-existent assignee - returns 400 or 404', async () => {
       const response = await fetchJson('/api/admin/tasks/test-id', {
         method: 'PATCH',
         token: adminToken,
@@ -196,9 +198,8 @@ describe('Security: Mass Assignment Prevention - Live API', () => {
         }
       });
       
-      // Should not crash - accept any valid response
-      expect([200, 201, 400, 404, 403, 401]).toContain(response.status);
-      // Should not crash
+      // Should not crash; returns 200, 400, or 404
+      expect([200, 400, 404]).toContain(response.status);
       expect(response.status).not.toBe(500);
     });
 
@@ -214,8 +215,9 @@ describe('Security: Mass Assignment Prevention - Live API', () => {
         }
       });
       
-      // Should succeed but ignore extra fields
-      expect([200, 201, 400]).toContain(response.status);
+      // Extra fields pass Zod; stored successfully
+      expect(response.status).toBe(201);
+      expect(response.status).not.toBe(500);
     });
 
     it('13. POST /api/requests with prototype.__proto__ in body - no server crash', async () => {
@@ -231,8 +233,8 @@ describe('Security: Mass Assignment Prevention - Live API', () => {
         })
       });
       
-      // Should not crash
       expect(response.status).not.toBe(500);
+      expect(response.status).toBe(201);
     });
 
     it('14. Nested object injection: { name: { toString: "injected" } } - handled safely', async () => {
@@ -244,9 +246,9 @@ describe('Security: Mass Assignment Prevention - Live API', () => {
         }
       });
       
-      // Should handle gracefully - either reject or coerce to string
-      expect([200, 201, 400]).toContain(response.status);
+      // Zod coerces or rejects non-string name; should return 400
       expect(response.status).not.toBe(500);
+      expect(response.status).toBe(400);
     });
 
     it('15. Array injection in single-value field - validation rejects or coerces', async () => {
@@ -258,9 +260,9 @@ describe('Security: Mass Assignment Prevention - Live API', () => {
         }
       });
       
-      // Should handle array input gracefully
-      expect([200, 201, 400]).toContain(response.status);
+      // Zod string rejects arrays; returns 400
       expect(response.status).not.toBe(500);
+      expect(response.status).toBe(400);
     });
   });
 });

@@ -1,195 +1,356 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { createTask, createTaskBatch, createBacklogTask, createInProgressTask, createDoneTask, createHighPriorityTask } from '../../utils/factories/task.factory';
-import { createRequest, createPendingRequest, createApprovedRequest, createRequestBatch } from '../../utils/factories/request.factory';
-import { createProject, createFeaturedProject, createProjectBatch } from '../../utils/factories/project.factory';
-import { createUser, createAdminUser, createClientUser } from '../../utils/factories/user.factory';
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 
-describe('Async States Edge Cases', () => {
+vi.mock('framer-motion', () => ({
+    motion: {
+        div: ({ children, ...props }) => <div {...props}>{children}</div>,
+    },
+}));
+
+vi.mock('react-icons/fi', () => ({
+    FiArrowRight: () => <span data-testid="arrow-right" />,
+    FiPlus: () => <span data-testid="plus-icon" />,
+}));
+
+vi.mock('@/components/ui/CornerFrame', () => ({
+    CornerFrame: ({ children, className, ...props }) => (
+        <div data-testid="corner-frame" className={className} {...props}>{children}</div>
+    ),
+}));
+
+vi.mock('next/link', () => ({
+    default: ({ children, href }) => <a href={href}>{children}</a>,
+}));
+
+describe('Async States — Admin Dashboard Components', () => {
     beforeEach(() => {
+        cleanup();
         vi.clearAllMocks();
     });
 
-    describe('Loading States', () => {
-        it('creates tasks with valid structure', () => {
-            const task = createTask();
-            expect(task).toHaveProperty('id');
-            expect(task).toHaveProperty('title');
-            expect(task).toHaveProperty('status');
-            expect(task).toHaveProperty('priority');
-        });
-
-        it('creates tasks with default status', () => {
-            const task = createTask();
-            expect(['backlog', 'inprogress', 'done']).toContain(task.status);
-        });
-
-        it('creates tasks with default priority', () => {
-            const task = createTask();
-            expect(['low', 'medium', 'high']).toContain(task.priority);
-        });
-    });
-
-    describe('Empty States', () => {
-        it('handles empty array', () => {
-            const tasks = [];
-            expect(tasks).toHaveLength(0);
-        });
-
-        it('handles empty array in data table scenario', () => {
-            const data = [];
-            const isEmpty = data.length === 0;
-            expect(isEmpty).toBe(true);
-        });
-
-        it('renders empty message when no data', () => {
-            const data = [];
-            const emptyMessage = data.length === 0 ? 'No items found' : '';
-            expect(emptyMessage).toBe('No items found');
-        });
-    });
-
-    describe('Data States', () => {
-        it('handles single item array', () => {
-            const data = [createTask({ title: 'Single Task' })];
-            expect(data).toHaveLength(1);
-            expect(data[0].title).toBe('Single Task');
-        });
-
-        it('handles large data arrays', () => {
-            const data = createTaskBatch(100);
-            expect(data).toHaveLength(100);
-        });
-
-        it('handles data with missing optional fields', () => {
-            const task = {
-                id: '1',
-                title: 'Task without optional fields',
-            };
-            expect(task.title).toBe('Task without optional fields');
-            expect(task.description).toBeUndefined();
-        });
-    });
-
-    describe('Error States', () => {
-        it('handles error object in data', () => {
-            const data = [
-                { id: '1', title: 'Valid Task' },
-                { id: '2', title: 'Error Task', error: 'Failed to load' },
-            ];
-            expect(data).toHaveLength(2);
-            expect(data[0].title).toBe('Valid Task');
-            expect(data[1].error).toBe('Failed to load');
-        });
-
-        it('handles undefined data gracefully', () => {
-            const data = undefined;
-            expect(!!data).toBe(false);
-        });
-
-        it('handles null data gracefully', () => {
-            const data = null;
-            expect(!!data).toBe(false);
-        });
-    });
-
-    describe('Transition States', () => {
-        it('handles concurrent requests gracefully', async () => {
-            const requests = Array.from({ length: 5 }, (_, i) => 
-                Promise.resolve({ data: createTask({ id: String(i) }) })
+    describe('DashboardRecentProjects — Loading & Empty States', () => {
+        it('shows loading skeleton when loading is true', async () => {
+            const DashboardRecentProjects = (await import('@/components/features/admin/DashboardRecentProjects')).default;
+            render(
+                <DashboardRecentProjects
+                    projects={[]}
+                    loading={true}
+                    onNewProject={vi.fn()}
+                    onEditProject={vi.fn()}
+                />
             );
-            
-            const results = await Promise.all(requests);
-            expect(results).toHaveLength(5);
-            results.forEach((result, i) => {
-                expect(result.data.id).toBe(String(i));
-            });
+            const skeletons = document.querySelectorAll('.animate-pulse');
+            expect(skeletons.length).toBeGreaterThan(0);
         });
 
-        it('handles request batching', () => {
-            const batch = createRequestBatch(10);
-            expect(batch).toHaveLength(10);
+        it('shows empty state when projects array is empty', async () => {
+            const DashboardRecentProjects = (await import('@/components/features/admin/DashboardRecentProjects')).default;
+            render(
+                <DashboardRecentProjects
+                    projects={[]}
+                    loading={false}
+                    onNewProject={vi.fn()}
+                    onEditProject={vi.fn()}
+                />
+            );
+            expect(screen.getByText(/no projects/i)).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: /add project/i })).toBeInTheDocument();
+        });
+
+        it('shows empty state when projects is null', async () => {
+            const DashboardRecentProjects = (await import('@/components/features/admin/DashboardRecentProjects')).default;
+            render(
+                <DashboardRecentProjects
+                    projects={null}
+                    loading={false}
+                    onNewProject={vi.fn()}
+                    onEditProject={vi.fn()}
+                />
+            );
+            expect(screen.getByText(/no projects/i)).toBeInTheDocument();
+        });
+
+        it('renders project list when projects are provided', async () => {
+            const DashboardRecentProjects = (await import('@/components/features/admin/DashboardRecentProjects')).default;
+            const mockProjects = [
+                { id: 'p1', title: 'Acme Corp', client: 'Acme Corp', created_at: '2025-01-15T00:00:00Z' },
+                { id: 'p2', title: 'Beta Inc', client: 'Beta Inc', created_at: '2025-01-10T00:00:00Z' },
+            ];
+            render(
+                <DashboardRecentProjects
+                    projects={mockProjects}
+                    loading={false}
+                    onNewProject={vi.fn()}
+                    onEditProject={vi.fn()}
+                />
+            );
+            expect(screen.getByText('Acme Corp')).toBeInTheDocument();
+            expect(screen.getByText('Beta Inc')).toBeInTheDocument();
+        });
+
+        it('calls onEditProject when project row is clicked', async () => {
+            const DashboardRecentProjects = (await import('@/components/features/admin/DashboardRecentProjects')).default;
+            const onEditProject = vi.fn();
+            const mockProjects = [
+                { id: 'p1', title: 'Acme Corp', client: 'Acme Corp', created_at: '2025-01-15T00:00:00Z' },
+            ];
+            render(
+                <DashboardRecentProjects
+                    projects={mockProjects}
+                    loading={false}
+                    onNewProject={vi.fn()}
+                    onEditProject={onEditProject}
+                />
+            );
+            fireEvent.click(screen.getByText('Acme Corp'));
+            expect(onEditProject).toHaveBeenCalledWith('p1');
+        });
+
+        it('calls onNewProject when add project button is clicked', async () => {
+            const DashboardRecentProjects = (await import('@/components/features/admin/DashboardRecentProjects')).default;
+            const onNewProject = vi.fn();
+            render(
+                <DashboardRecentProjects
+                    projects={[]}
+                    loading={false}
+                    onNewProject={onNewProject}
+                    onEditProject={vi.fn()}
+                />
+            );
+            fireEvent.click(screen.getByRole('button', { name: /add project/i }));
+            expect(onNewProject).toHaveBeenCalled();
         });
     });
 
-    describe('Boundary Conditions', () => {
-        it('handles zero value', () => {
-            const request = createRequest({ budget: 0 });
-            expect(request.budget).toBe(0);
+    describe('DashboardRecentTestimonials — Loading & Empty States', () => {
+        it('shows loading skeleton when loading is true', async () => {
+            const DashboardRecentTestimonials = (await import('@/components/features/admin/DashboardRecentTestimonials')).default;
+            render(
+                <DashboardRecentTestimonials
+                    testimonials={[]}
+                    loading={true}
+                    onNewTestimonial={vi.fn()}
+                    onEditTestimonial={vi.fn()}
+                />
+            );
+            const skeletons = document.querySelectorAll('.animate-pulse');
+            expect(skeletons.length).toBeGreaterThan(0);
         });
 
-        it('handles decimal values', () => {
-            const request = createRequest({ budget: 12345.67 });
-            expect(request.budget).toBeCloseTo(12345.67);
+        it('shows empty state when testimonials array is empty', async () => {
+            const DashboardRecentTestimonials = (await import('@/components/features/admin/DashboardRecentTestimonials')).default;
+            render(
+                <DashboardRecentTestimonials
+                    testimonials={[]}
+                    loading={false}
+                    onNewTestimonial={vi.fn()}
+                    onEditTestimonial={vi.fn()}
+                />
+            );
+            expect(screen.getByText(/no testimonials/i)).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: /add testimonial/i })).toBeInTheDocument();
         });
 
-        it('handles empty string', () => {
-            const task = createTask({ title: '' });
-            expect(task.title).toBe('');
+        it('shows empty state when testimonials is null', async () => {
+            const DashboardRecentTestimonials = (await import('@/components/features/admin/DashboardRecentTestimonials')).default;
+            render(
+                <DashboardRecentTestimonials
+                    testimonials={null}
+                    loading={false}
+                    onNewTestimonial={vi.fn()}
+                    onEditTestimonial={vi.fn()}
+                />
+            );
+            expect(screen.getByText(/no testimonials/i)).toBeInTheDocument();
         });
 
-        it('handles whitespace-only string', () => {
-            const task = createTask({ title: '   ' });
-            expect(task.title).toBe('   ');
+        it('renders testimonial list with client names and quotes', async () => {
+            const DashboardRecentTestimonials = (await import('@/components/features/admin/DashboardRecentTestimonials')).default;
+            const mockTestimonials = [
+                { id: 't1', client: 'Jane Doe', company: 'Acme Corp', content: 'Great work!' },
+                { id: 't2', client: 'John Smith', company: 'Beta Inc', content: 'Highly recommend.' },
+            ];
+            render(
+                <DashboardRecentTestimonials
+                    testimonials={mockTestimonials}
+                    loading={false}
+                    onNewTestimonial={vi.fn()}
+                    onEditTestimonial={vi.fn()}
+                />
+            );
+            expect(screen.getByText(/jane doe/i)).toBeInTheDocument();
+            expect(screen.getByText(/john smith/i)).toBeInTheDocument();
+            expect(screen.getByText(/"great work!"/i)).toBeInTheDocument();
         });
 
-        it('handles future dates', () => {
-            const futureDate = new Date(Date.now() + 86400000 * 365);
-            const task = createTask({ created_at: futureDate.toISOString() });
-            expect(new Date(task.created_at).getTime()).toBeGreaterThan(Date.now());
-        });
-
-        it('handles very old dates', () => {
-            const oldDate = new Date(Date.now() - 86400000 * 3650);
-            const task = createTask({ created_at: oldDate.toISOString() });
-            expect(new Date(task.created_at).getTime()).toBeLessThan(Date.now());
+        it('calls onEditTestimonial when testimonial row is clicked', async () => {
+            const DashboardRecentTestimonials = (await import('@/components/features/admin/DashboardRecentTestimonials')).default;
+            const onEditTestimonial = vi.fn();
+            const mockTestimonials = [
+                { id: 't1', client: 'Jane Doe', company: 'Acme Corp', content: 'Great work!' },
+            ];
+            render(
+                <DashboardRecentTestimonials
+                    testimonials={mockTestimonials}
+                    loading={false}
+                    onNewTestimonial={vi.fn()}
+                    onEditTestimonial={onEditTestimonial}
+                />
+            );
+            fireEvent.click(screen.getByText(/jane doe/i));
+            expect(onEditTestimonial).toHaveBeenCalledWith('t1');
         });
     });
 
-    describe('Factory Variants', () => {
-        it('creates backlog tasks correctly', () => {
-            const task = createBacklogTask();
-            expect(task.status).toBe('backlog');
+    describe('DashboardRecentPosts — Loading & Empty States', () => {
+        it('shows loading skeleton when loading is true', async () => {
+            const DashboardRecentPosts = (await import('@/components/features/admin/DashboardRecentPosts')).default;
+            render(
+                <DashboardRecentPosts
+                    posts={[]}
+                    loading={true}
+                    onNewPost={vi.fn()}
+                    onEditPost={vi.fn()}
+                />
+            );
+            const skeletons = document.querySelectorAll('.animate-pulse');
+            expect(skeletons.length).toBeGreaterThan(0);
         });
 
-        it('creates in-progress tasks correctly', () => {
-            const task = createInProgressTask();
-            expect(task.status).toBe('inprogress');
+        it('shows empty state when posts array is empty', async () => {
+            const DashboardRecentPosts = (await import('@/components/features/admin/DashboardRecentPosts')).default;
+            render(
+                <DashboardRecentPosts
+                    posts={[]}
+                    loading={false}
+                    onNewPost={vi.fn()}
+                    onEditPost={vi.fn()}
+                />
+            );
+            expect(screen.getByText(/no posts/i)).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: /write post/i })).toBeInTheDocument();
         });
 
-        it('creates done tasks correctly', () => {
-            const task = createDoneTask();
-            expect(task.status).toBe('done');
+        it('shows empty state when posts is null', async () => {
+            const DashboardRecentPosts = (await import('@/components/features/admin/DashboardRecentPosts')).default;
+            render(
+                <DashboardRecentPosts
+                    posts={null}
+                    loading={false}
+                    onNewPost={vi.fn()}
+                    onEditPost={vi.fn()}
+                />
+            );
+            expect(screen.getByText(/no posts/i)).toBeInTheDocument();
         });
 
-        it('creates high priority tasks correctly', () => {
-            const task = createHighPriorityTask();
-            expect(task.priority).toBe('high');
+        it('renders published and draft posts correctly', async () => {
+            const DashboardRecentPosts = (await import('@/components/features/admin/DashboardRecentPosts')).default;
+            const mockPosts = [
+                { id: 'post1', title: 'First Post', published: true, created_at: '2025-01-15T00:00:00Z' },
+                { id: 'post2', title: 'Draft Post', published: false, created_at: '2025-01-10T00:00:00Z' },
+            ];
+            render(
+                <DashboardRecentPosts
+                    posts={mockPosts}
+                    loading={false}
+                    onNewPost={vi.fn()}
+                    onEditPost={vi.fn()}
+                />
+            );
+            expect(screen.getByText('First Post')).toBeInTheDocument();
+            expect(screen.getByText('Draft Post')).toBeInTheDocument();
+            expect(screen.getAllByText(/live|draft/i).length).toBeGreaterThan(0);
         });
 
-        it('creates pending requests correctly', () => {
-            const request = createPendingRequest();
-            expect(request.status).toBe('pending');
+        it('calls onEditPost when post row is clicked', async () => {
+            const DashboardRecentPosts = (await import('@/components/features/admin/DashboardRecentPosts')).default;
+            const onEditPost = vi.fn();
+            const mockPosts = [
+                { id: 'post1', title: 'First Post', published: true, created_at: '2025-01-15T00:00:00Z' },
+            ];
+            render(
+                <DashboardRecentPosts
+                    posts={mockPosts}
+                    loading={false}
+                    onNewPost={vi.fn()}
+                    onEditPost={onEditPost}
+                />
+            );
+            fireEvent.click(screen.getByText('First Post'));
+            expect(onEditPost).toHaveBeenCalledWith('post1');
+        });
+    });
+
+    describe('DashboardQuickActions — Interaction States', () => {
+        it('renders three quick action cards', async () => {
+            const DashboardQuickActions = (await import('@/components/features/admin/DashboardQuickActions')).default;
+            render(
+                <DashboardQuickActions
+                    onNewProject={vi.fn()}
+                    onNewTestimonial={vi.fn()}
+                    onNewBlogPost={vi.fn()}
+                />
+            );
+            expect(screen.getByText('New Project')).toBeInTheDocument();
+            expect(screen.getByText('New Testimonial')).toBeInTheDocument();
+            expect(screen.getByText('New Blog Post')).toBeInTheDocument();
         });
 
-        it('creates approved requests correctly', () => {
-            const request = createApprovedRequest();
-            expect(request.status).toBe('approved');
+        it('shows correct subtitles for each action', async () => {
+            const DashboardQuickActions = (await import('@/components/features/admin/DashboardQuickActions')).default;
+            render(
+                <DashboardQuickActions
+                    onNewProject={vi.fn()}
+                    onNewTestimonial={vi.fn()}
+                    onNewBlogPost={vi.fn()}
+                />
+            );
+            expect(screen.getByText('Add case study')).toBeInTheDocument();
+            expect(screen.getByText('Add client review')).toBeInTheDocument();
+            expect(screen.getByText('Write article')).toBeInTheDocument();
         });
 
-        it('creates featured projects correctly', () => {
-            const project = createFeaturedProject();
-            expect(project.featured).toBe(true);
+        it('calls onNewProject when first card is clicked', async () => {
+            const DashboardQuickActions = (await import('@/components/features/admin/DashboardQuickActions')).default;
+            const onNewProject = vi.fn();
+            render(
+                <DashboardQuickActions
+                    onNewProject={onNewProject}
+                    onNewTestimonial={vi.fn()}
+                    onNewBlogPost={vi.fn()}
+                />
+            );
+            fireEvent.click(screen.getByText('New Project'));
+            expect(onNewProject).toHaveBeenCalled();
         });
 
-        it('creates admin users correctly', () => {
-            const user = createAdminUser();
-            expect(user.email).toBe('admin@berztech.com');
+        it('calls onNewTestimonial when second card is clicked', async () => {
+            const DashboardQuickActions = (await import('@/components/features/admin/DashboardQuickActions')).default;
+            const onNewTestimonial = vi.fn();
+            render(
+                <DashboardQuickActions
+                    onNewProject={vi.fn()}
+                    onNewTestimonial={onNewTestimonial}
+                    onNewBlogPost={vi.fn()}
+                />
+            );
+            fireEvent.click(screen.getByText('New Testimonial'));
+            expect(onNewTestimonial).toHaveBeenCalled();
         });
 
-        it('creates client users correctly', () => {
-            const user = createClientUser();
-            expect(user.email).not.toBe('admin@berztech.com');
+        it('calls onNewBlogPost when third card is clicked', async () => {
+            const DashboardQuickActions = (await import('@/components/features/admin/DashboardQuickActions')).default;
+            const onNewBlogPost = vi.fn();
+            render(
+                <DashboardQuickActions
+                    onNewProject={vi.fn()}
+                    onNewTestimonial={vi.fn()}
+                    onNewBlogPost={onNewBlogPost}
+                />
+            );
+            fireEvent.click(screen.getByText('New Blog Post'));
+            expect(onNewBlogPost).toHaveBeenCalled();
         });
     });
 });

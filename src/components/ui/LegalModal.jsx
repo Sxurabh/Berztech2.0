@@ -78,6 +78,7 @@ export default function LegalModal({ isOpen, onClose, type }) {
                         <button
                             onClick={onClose}
                             className="p-2 -mr-2 text-neutral-400 hover:text-neutral-900 transition-colors"
+                            aria-label="Close modal"
                         >
                             <FiX className="w-5 h-5" />
                         </button>

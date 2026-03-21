@@ -456,8 +456,28 @@ describe("Admin Tasks API", () => {
             expect(body.data.order_index).toBe(5000);
         });
 
-        it("13. Non-admin → 401", async () => {
+        it("13. Non-admin → 403 Forbidden", async () => {
             setupUser("client@example.com", false);
+
+            const request = createJsonRequest(
+                "http://localhost:3000/api/admin/tasks/task-123",
+                { title: "Hacked" },
+                "PATCH"
+            );
+            const params = Promise.resolve({ id: "task-123" });
+
+            const response = await updateTask(request, { params });
+            const body = await response.json();
+
+            expect(response.status).toBe(403);
+            expect(body.error).toBe("Forbidden");
+        });
+
+        it("13b. Unauthenticated → 401 Unauthorized", async () => {
+            mockServerSupabase.auth.getUser.mockResolvedValue({
+                data: { user: null },
+                error: null,
+            });
 
             const request = createJsonRequest(
                 "http://localhost:3000/api/admin/tasks/task-123",
@@ -525,7 +545,16 @@ describe("Admin Tasks API", () => {
         it("14. Admin deletes task → 200 { success: true }", async () => {
             setupUser("admin@berztech.com", true);
 
-            mockAdminTaskQuery({});
+            mockAdminSupabase.from.mockReturnValue({
+                delete: vi.fn().mockReturnThis(),
+                eq: vi.fn().mockReturnThis(),
+                select: vi.fn().mockReturnThis(),
+                then: (resolve: any) =>
+                    resolve({
+                        data: [{ id: "task-to-delete", title: "Deleted Task" }],
+                        error: null,
+                    }),
+            });
 
             const request = createJsonRequest(
                 "http://localhost:3000/api/admin/tasks/task-to-delete",
@@ -541,8 +570,28 @@ describe("Admin Tasks API", () => {
             expect(body.success).toBe(true);
         });
 
-        it("15. Non-admin → 401", async () => {
+        it("15. Non-admin → 403 Forbidden", async () => {
             setupUser("client@example.com", false);
+
+            const request = createJsonRequest(
+                "http://localhost:3000/api/admin/tasks/task-123",
+                null,
+                "DELETE"
+            );
+            const params = Promise.resolve({ id: "task-123" });
+
+            const response = await deleteTask(request, { params });
+            const body = await response.json();
+
+            expect(response.status).toBe(403);
+            expect(body.error).toBe("Forbidden");
+        });
+
+        it("15b. Unauthenticated → 401 Unauthorized", async () => {
+            mockServerSupabase.auth.getUser.mockResolvedValue({
+                data: { user: null },
+                error: null,
+            });
 
             const request = createJsonRequest(
                 "http://localhost:3000/api/admin/tasks/task-123",
@@ -558,16 +607,17 @@ describe("Admin Tasks API", () => {
             expect(body.error).toBe("Unauthorized");
         });
 
-        it("16. Non-existent task ID → 500 (if no row found, returns error)", async () => {
+        it("16. Non-existent task ID → 404 Not Found", async () => {
             setupUser("admin@berztech.com", true);
 
             mockAdminSupabase.from.mockReturnValue({
                 delete: vi.fn().mockReturnThis(),
                 eq: vi.fn().mockReturnThis(),
+                select: vi.fn().mockReturnThis(),
                 then: (resolve: any) =>
                     resolve({
-                        data: null,
-                        error: { message: "Task not found" },
+                        data: [],
+                        error: null,
                     }),
             });
 
@@ -581,7 +631,7 @@ describe("Admin Tasks API", () => {
             const response = await deleteTask(request, { params });
             const body = await response.json();
 
-            expect(response.status).toBe(500);
+            expect(response.status).toBe(404);
             expect(body.error).toBe("Task not found");
         });
     });

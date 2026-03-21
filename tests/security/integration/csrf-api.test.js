@@ -14,10 +14,11 @@ import {
   getClientToken, 
   getAdminToken,
   cleanupTestData,
-  BASE_URL 
+  BASE_URL,
+  skipIfNoServer
 } from './api-client';
 
-describe('Security: CSRF & HTTP Method Protection - Live API', () => {
+describe.skipIf(skipIfNoServer)('Security: CSRF & HTTP Method Protection - Live API', () => {
   let clientToken;
   let adminToken;
 
@@ -51,7 +52,9 @@ describe('Security: CSRF & HTTP Method Protection - Live API', () => {
         body: JSON.stringify({ name: 'Test User', email: 'test@test.com' })
       });
       
-      expect([200, 201, 400, 401]).toContain(response.status);
+      // Anonymous POST succeeds or fails validation, never crashes
+      expect(response.status).not.toBe(500);
+      expect([201, 400]).toContain(response.status);
     });
 
     it('2. POST with valid Origin header is accepted', async () => {
@@ -64,7 +67,8 @@ describe('Security: CSRF & HTTP Method Protection - Live API', () => {
         body: JSON.stringify({ name: 'Test User', email: 'test@test.com' })
       });
       
-      expect([200, 201, 400, 401]).toContain(response.status);
+      expect(response.status).not.toBe(500);
+      expect([201, 400]).toContain(response.status);
     });
 
     it('3. POST with invalid/malformed Origin header is handled', async () => {
@@ -77,7 +81,9 @@ describe('Security: CSRF & HTTP Method Protection - Live API', () => {
         body: JSON.stringify({ name: 'Test User', email: 'test@test.com' })
       });
       
-      expect([200, 201, 400, 403, 401]).toContain(response.status);
+      // Next.js CORS doesn't enforce origin for same-site requests; accepts or validates
+      expect(response.status).not.toBe(500);
+      expect([201, 400, 403]).toContain(response.status);
     });
   });
 
@@ -92,10 +98,11 @@ describe('Security: CSRF & HTTP Method Protection - Live API', () => {
         body: { name: 'Test User', email: 'test@test.com' }
       });
       
-      expect([200, 201, 400, 401]).toContain(response.status);
+      expect(response.status).not.toBe(500);
+      expect([201, 400]).toContain(response.status);
     });
 
-    it('5. POST with text/plain is rejected or handled safely', async () => {
+    it('5. POST with text/plain is rejected with proper error', async () => {
       const response = await fetchRaw(`${BASE_URL}/api/requests`, {
         method: 'POST',
         headers: {
@@ -104,7 +111,9 @@ describe('Security: CSRF & HTTP Method Protection - Live API', () => {
         body: 'name=Test&email=test@test.com'
       });
       
-      expect([400, 415, 406, 500]).toContain(response.status);
+      // Returns 400 for wrong content type or 415 Unsupported Media Type
+      expect(response.status).not.toBe(500);
+      expect([400, 415]).toContain(response.status);
     });
 
     it('6. POST with missing Content-Type is handled', async () => {
@@ -113,7 +122,9 @@ describe('Security: CSRF & HTTP Method Protection - Live API', () => {
         body: JSON.stringify({ name: 'Test User', email: 'test@test.com' })
       });
       
-      expect([200, 201, 400, 401, 415]).toContain(response.status);
+      // JSON body still parses; accepts or validates
+      expect(response.status).not.toBe(500);
+      expect([201, 400]).toContain(response.status);
     });
 
     it('7. POST with wrong Content-Type (application/x-www-form-urlencoded)', async () => {
@@ -125,7 +136,9 @@ describe('Security: CSRF & HTTP Method Protection - Live API', () => {
         body: 'name=Test&email=test@test.com'
       });
       
-      expect([400, 415, 406, 500]).toContain(response.status);
+      // Returns 400 for wrong content type or 415 Unsupported Media Type
+      expect(response.status).not.toBe(500);
+      expect([400, 415]).toContain(response.status);
     });
   });
 
@@ -140,6 +153,7 @@ describe('Security: CSRF & HTTP Method Protection - Live API', () => {
         body: { name: 'Test User', email: 'test@test.com' }
       });
       
+      expect(response.status).not.toBe(500);
       expect([405, 400]).toContain(response.status);
     });
 
@@ -148,7 +162,8 @@ describe('Security: CSRF & HTTP Method Protection - Live API', () => {
         method: 'DELETE',
       });
       
-      expect([405, 404, 401]).toContain(response.status);
+      expect(response.status).not.toBe(500);
+      expect([405, 404]).toContain(response.status);
     });
 
     it('10. PATCH to POST-only /api/requests returns 405', async () => {
@@ -157,6 +172,7 @@ describe('Security: CSRF & HTTP Method Protection - Live API', () => {
         body: { name: 'Updated' }
       });
       
+      expect(response.status).not.toBe(500);
       expect([405, 400]).toContain(response.status);
     });
 
@@ -165,7 +181,9 @@ describe('Security: CSRF & HTTP Method Protection - Live API', () => {
         method: 'GET'
       });
       
-      expect([200, 405, 400]).toContain(response.status);
+      // Subscribe only accepts POST; returns 405 or handles gracefully
+      expect(response.status).not.toBe(500);
+      expect([405, 400]).toContain(response.status);
     });
 
     it('12. PUT to POST-only /api/blog returns 405', async () => {
@@ -175,19 +193,21 @@ describe('Security: CSRF & HTTP Method Protection - Live API', () => {
         body: { title: 'Test' }
       });
       
+      expect(response.status).not.toBe(500);
       expect([405, 400]).toContain(response.status);
     });
 
-    it('13. POST to GET-only /api/blog returns appropriate status', async () => {
+    it('13. POST to GET-only /api/blog without auth returns 401', async () => {
       const response = await fetchJson('/api/blog', {
         method: 'POST',
         body: { title: 'Test' }
       });
       
-      expect([200, 201, 400, 401, 403]).toContain(response.status);
+      // No auth provided; should return 401
+      expect(response.status).toBe(401);
     });
 
-    it('14. TRACE method is handled', async () => {
+    it('14. TRACE method is handled safely', async () => {
       const response = await fetchRaw(`${BASE_URL}/api/requests`, {
         method: 'TRACE',
         headers: {
@@ -196,60 +216,27 @@ describe('Security: CSRF & HTTP Method Protection - Live API', () => {
         body: JSON.stringify({ name: 'Test' })
       });
       
-      expect([405, 501, 403, 200, 400, 404, 500, 0]).toContain(response.status);
+      // Next.js may handle TRACE as 405, 501, or 200 (echo)
+      // Server should not crash regardless of response
+      expect([405, 501, 200, 400]).toContain(response.status);
     });
 
-    it('15. CONNECT method is handled', async () => {
+    it('15. CONNECT method is handled safely', async () => {
       const response = await fetchRaw(`${BASE_URL}/api/requests`, {
         method: 'CONNECT',
       });
       
-      expect([405, 501, 403, 200, 404, 500, 0]).toContain(response.status);
-    });
-
-    it('16. Headers are handled safely', async () => {
-      const response = await fetchRaw(`${BASE_URL}/api/requests`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: 'Test', email: 'test@test.com' })
-      });
-      
-      expect([200, 201, 400, 500]).toContain(response.status);
-    });
-
-    it('17. Headers with special chars are handled', async () => {
-      const response = await fetchRaw(`${BASE_URL}/api/requests`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: 'Test', email: 'test@test.com' })
-      });
-      
-      expect([200, 201, 400, 500]).toContain(response.status);
-    });
-
-    it('19. Header values are handled', async () => {
-      const response = await fetchRaw(`${BASE_URL}/api/requests`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: 'Test', email: 'test@test.com' })
-      });
-      
-      expect([200, 201, 400, 500]).toContain(response.status);
+      // Next.js may handle CONNECT as 405, 501, or 400
+      expect([405, 501, 400]).toContain(response.status);
     });
   });
 
   // =========================================================================
-  // Referer Header Validation
+  // Header Injection Prevention
   // =========================================================================
 
   describe('Header Injection Prevention', () => {
-    it('16. Headers are handled safely', async () => {
+    it('16. Valid JSON body with correct headers succeeds', async () => {
       const response = await fetchRaw(`${BASE_URL}/api/requests`, {
         method: 'POST',
         headers: {
@@ -258,10 +245,11 @@ describe('Security: CSRF & HTTP Method Protection - Live API', () => {
         body: JSON.stringify({ name: 'Test', email: 'test@test.com' })
       });
       
-      expect([200, 201, 400, 500]).toContain(response.status);
+      expect(response.status).not.toBe(500);
+      expect([201, 400]).toContain(response.status);
     });
 
-    it('17. Headers are processed correctly', async () => {
+    it('17. JSON body with standard headers is processed', async () => {
       const response = await fetchRaw(`${BASE_URL}/api/requests`, {
         method: 'POST',
         headers: {
@@ -270,10 +258,11 @@ describe('Security: CSRF & HTTP Method Protection - Live API', () => {
         body: JSON.stringify({ name: 'Test', email: 'test@test.com' })
       });
       
-      expect([200, 201, 400, 500]).toContain(response.status);
+      expect(response.status).not.toBe(500);
+      expect([201, 400]).toContain(response.status);
     });
 
-    it('18. Oversized header values are handled', async () => {
+    it('18. Oversized header values are rejected safely', async () => {
       const largeHeader = 'A'.repeat(10000);
       const response = await fetchRaw(`${BASE_URL}/api/requests`, {
         method: 'POST',
@@ -284,10 +273,12 @@ describe('Security: CSRF & HTTP Method Protection - Live API', () => {
         body: JSON.stringify({ name: 'Test', email: 'test@test.com' })
       });
       
-      expect([200, 201, 400, 431, 413, 500]).toContain(response.status);
+      // Server may reject large headers with 400, 413, or 431
+      expect(response.status).not.toBe(500);
+      expect([201, 400, 413, 431]).toContain(response.status);
     });
 
-    it('19. Header values are processed correctly', async () => {
+    it('19. JSON body with Accept header is processed', async () => {
       const response = await fetchRaw(`${BASE_URL}/api/requests`, {
         method: 'POST',
         headers: {
@@ -296,7 +287,8 @@ describe('Security: CSRF & HTTP Method Protection - Live API', () => {
         body: JSON.stringify({ name: 'Test', email: 'test@test.com' })
       });
       
-      expect([200, 201, 400, 500]).toContain(response.status);
+      expect(response.status).not.toBe(500);
+      expect([201, 400]).toContain(response.status);
     });
   });
 
@@ -315,7 +307,8 @@ describe('Security: CSRF & HTTP Method Protection - Live API', () => {
         body: JSON.stringify({ name: 'Test User', email: 'test@test.com' })
       });
       
-      expect([200, 201, 400, 401]).toContain(response.status);
+      expect(response.status).not.toBe(500);
+      expect([201, 400]).toContain(response.status);
     });
 
     it('21. POST with invalid Referer is handled', async () => {
@@ -328,7 +321,9 @@ describe('Security: CSRF & HTTP Method Protection - Live API', () => {
         body: JSON.stringify({ name: 'Test User', email: 'test@test.com' })
       });
       
-      expect([200, 201, 400, 403, 401]).toContain(response.status);
+      // Next.js doesn't enforce Referer; accepts or validates
+      expect(response.status).not.toBe(500);
+      expect([201, 400, 403]).toContain(response.status);
     });
 
     it('22. POST with missing Referer is handled', async () => {
@@ -340,7 +335,8 @@ describe('Security: CSRF & HTTP Method Protection - Live API', () => {
         body: JSON.stringify({ name: 'Test User', email: 'test@test.com' })
       });
       
-      expect([200, 201, 400, 401]).toContain(response.status);
+      expect(response.status).not.toBe(500);
+      expect([201, 400]).toContain(response.status);
     });
   });
 
@@ -359,7 +355,8 @@ describe('Security: CSRF & HTTP Method Protection - Live API', () => {
         }
       });
       
-      expect([200, 204, 405, 403]).toContain(response.status);
+      // Next.js may handle CORS preflight with 200, 204, or 405
+      expect([200, 204, 405]).toContain(response.status);
     });
 
     it('24. CORS headers are properly set or absent for cross-origin', async () => {
@@ -385,6 +382,7 @@ describe('Security: CSRF & HTTP Method Protection - Live API', () => {
         }
       });
       
+      // Server may respond with 200, 204, 403, or 405
       expect([200, 204, 403, 405]).toContain(response.status);
     });
   });

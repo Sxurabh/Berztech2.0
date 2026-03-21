@@ -17,21 +17,14 @@ import {
   createTestProject,
   cleanupTestData,
   generateUniqueId,
-  login
+  login,
+  skipIfNoServer
 } from './api-client';
 
-describe('Security: IDOR Prevention - Live API', () => {
+describe.skipIf(skipIfNoServer)('Security: IDOR Prevention - Live API', () => {
   let clientToken;
   let adminToken;
   let client2Token;
-  let testData = {
-    clientRequest: null,
-    client2Request: null,
-    clientBlog: null,
-    client2Blog: null,
-    clientProject: null,
-    client2Project: null,
-  };
 
   beforeAll(async () => {
     try {
@@ -167,7 +160,8 @@ describe('Security: IDOR Prevention - Live API', () => {
         token: clientToken
       });
       
-      expect([200, 401, 404]).toContain(response.status);
+      // GET /api/projects is public; returns 200 or 404
+      expect([200, 404]).toContain(response.status);
     });
 
     it('8. Client cannot access another user project by ID', async () => {
@@ -182,6 +176,7 @@ describe('Security: IDOR Prevention - Live API', () => {
           token: clientToken
         });
         
+        // Should return 403 or 404 for non-existent or unauthorized project
         expect([403, 404]).toContain(clientAccess.status);
       }
     });
@@ -232,7 +227,7 @@ describe('Security: IDOR Prevention - Live API', () => {
           body: { id: notification.id }
         });
         
-        expect([403, 404, 400]).toContain(markReadResponse.status);
+        expect([400, 403, 404]).toContain(markReadResponse.status);
       }
     });
 
@@ -250,7 +245,7 @@ describe('Security: IDOR Prevention - Live API', () => {
           body: { id: notification.id }
         });
         
-        expect([403, 404]).toContain(client1MarkRead.status);
+        expect([400, 403, 404]).toContain(client1MarkRead.status);
       }
     });
   });
@@ -265,7 +260,7 @@ describe('Security: IDOR Prevention - Live API', () => {
         token: clientToken
       });
       
-      expect([403, 401]).toContain(response.status);
+      expect([401, 403]).toContain(response.status);
     });
 
     it('14. Client cannot access /api/admin/requests', async () => {
@@ -273,7 +268,7 @@ describe('Security: IDOR Prevention - Live API', () => {
         token: clientToken
       });
       
-      expect([403, 401]).toContain(response.status);
+      expect([401, 403]).toContain(response.status);
     });
 
     it('15. Admin can access admin endpoints', async () => {
@@ -305,6 +300,7 @@ describe('Security: IDOR Prevention - Live API', () => {
         statuses.push(response.status);
       }
       
+      // All requests should get a response (200, 404, etc.)
       const uniqueStatuses = new Set(statuses);
       expect(uniqueStatuses.size).toBeGreaterThan(0);
     });

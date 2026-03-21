@@ -2,6 +2,10 @@ import { test, expect } from '@playwright/test';
 import Axe from '@axe-core/playwright';
 
 test.describe('Admin Pages Accessibility', () => {
+    test.use({
+        storageState: 'tests/e2e/.auth/admin.json',
+    });
+
     const adminPages = [
         { url: '/admin', name: 'Admin Dashboard' },
         { url: '/admin/board', name: 'Admin Board' },
@@ -41,6 +45,10 @@ test.describe('Admin Pages Accessibility', () => {
 });
 
 test.describe('Admin Board Accessibility', () => {
+    test.use({
+        storageState: 'tests/e2e/.auth/admin.json',
+    });
+
     test('Kanban board should be accessible', async ({ page }) => {
         await page.goto('/admin/board');
         await page.waitForLoadState('networkidle');
@@ -63,6 +71,10 @@ test.describe('Admin Board Accessibility', () => {
 });
 
 test.describe('Admin Forms Accessibility', () => {
+    test.use({
+        storageState: 'tests/e2e/.auth/admin.json',
+    });
+
     test('Blog form should have proper form accessibility', async ({ page }) => {
         await page.goto('/admin/blog/new');
         await page.waitForLoadState('networkidle');

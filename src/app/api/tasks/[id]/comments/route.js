@@ -12,8 +12,6 @@ export async function GET(req, { params }) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        // Fetch comments using admin client. 
-        // We will manually verify if the user has access to the task first.
         const admin = createAdminClient();
 
         const { data: taskData, error: taskError } = await admin
@@ -26,13 +24,11 @@ export async function GET(req, { params }) {
             return NextResponse.json({ error: "Task not found" }, { status: 404 });
         }
 
-        // Need to check if user is admin, if not, verify they are the client corresponding to the task
         const { isAdminEmail } = await import("@/config/admin");
         if (!isAdminEmail(user.email) && taskData.client_id !== user.id) {
             return NextResponse.json({ error: "Forbidden" }, { status: 403 });
         }
 
-        // Fetch comments
         const { data, error } = await admin
             .from("task_comments")
             .select("*")
@@ -68,7 +64,6 @@ export async function POST(req, { params }) {
 
         const admin = createAdminClient();
 
-        // Check access and get task details
         const { data: taskData, error: taskError } = await admin
             .from("tasks")
             .select("client_id, title, request_id")
@@ -100,13 +95,11 @@ export async function POST(req, { params }) {
             return NextResponse.json({ error: error.message }, { status: 500 });
         }
 
-        // ── Create notifications for the other party ──
         try {
             const senderName = user.user_metadata?.full_name?.split(" ")?.[0] || user.email?.split("@")[0] || "Someone";
             const truncatedContent = content.trim().length > 80 ? content.trim().slice(0, 80) + "…" : content.trim();
 
             if (userIsAdmin && taskData.client_id) {
-                // Admin commented → notify the client
                 await admin.from("notifications").insert({
                     user_id: taskData.client_id,
                     type: "comment",
@@ -117,13 +110,13 @@ export async function POST(req, { params }) {
                     source_user_id: user.id,
                 });
             } else if (!userIsAdmin) {
-                // Client commented → notify all admins
                 const { data: admins } = await admin.from("admin_users").select("email");
                 if (admins && admins.length > 0) {
-                    // Get admin user IDs from auth.users via their emails
+                    const { data: adminAuth } = await admin.auth.admin.listUsers();
+                    const authUsers = adminAuth?.users || [];
+                    
                     for (const adminRow of admins) {
-                        const { data: adminAuth } = await admin.auth.admin.listUsers();
-                        const adminUser = adminAuth?.users?.find(u => u.email === adminRow.email);
+                        const adminUser = authUsers.find(u => u.email === adminRow.email);
                         if (adminUser) {
                             await admin.from("notifications").insert({
                                 user_id: adminUser.id,
@@ -139,7 +132,6 @@ export async function POST(req, { params }) {
                 }
             }
         } catch (notifError) {
-            // Don't fail the comment if notification fails
             console.error("Failed to create notification:", notifError);
         }
 

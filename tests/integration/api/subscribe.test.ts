@@ -66,7 +66,7 @@ describe("Subscribe API", () => {
             const json = await response.json();
 
             expect(response.status).toBe(400);
-            expect(json.error).toBe("A valid email is required");
+            expect(json.error).toBe("A valid email address is required");
         });
 
         it("3. Missing email field → 400", async () => {
@@ -76,7 +76,7 @@ describe("Subscribe API", () => {
             const json = await response.json();
 
             expect(response.status).toBe(400);
-            expect(json.error).toBe("A valid email is required");
+            expect(json.error).toBe("A valid email address is required");
         });
 
         it("4. Empty email string → 400", async () => {
@@ -86,7 +86,7 @@ describe("Subscribe API", () => {
             const json = await response.json();
 
             expect(response.status).toBe(400);
-            expect(json.error).toBe("A valid email is required");
+            expect(json.error).toBe("A valid email address is required");
         });
 
         it("5. Duplicate email (23505) → 201 (idempotent, no 409)", async () => {
@@ -119,7 +119,7 @@ describe("Subscribe API", () => {
             expect(json.error).toBe("Failed to subscribe");
         });
 
-        it("7. Malformed JSON → 500", async () => {
+        it("7. Malformed JSON → 400 (Zod catches invalid JSON)", async () => {
             const req = new NextRequest("http://localhost/api/subscribe", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -128,7 +128,7 @@ describe("Subscribe API", () => {
 
             const response = await subscribe(req);
 
-            expect(response.status).toBe(500);
+            expect(response.status).toBe(400);
         });
 
         it("8. Email with valid surrounding whitespace in body still works (json parses it)", async () => {
@@ -157,6 +157,41 @@ describe("Subscribe API", () => {
 
             expect(response.status).toBe(201);
             expect(mockInsert).toHaveBeenCalledWith({ email: "test@example.com" });
+        });
+
+        it("10. Email without TLD (e.g., test@test) → 400 (Zod validation)", async () => {
+            const response = await subscribe(
+                createJsonRequest("http://localhost/api/subscribe", { email: "test@test" })
+            );
+            const json = await response.json();
+
+            expect(response.status).toBe(400);
+            expect(json.error).toBe("A valid email address is required");
+        });
+
+        it("11. Email with missing domain dot (e.g., test@example) → 400 (Zod validation)", async () => {
+            const response = await subscribe(
+                createJsonRequest("http://localhost/api/subscribe", { email: "test@example" })
+            );
+            const json = await response.json();
+
+            expect(response.status).toBe(400);
+            expect(json.error).toBe("A valid email address is required");
+        });
+
+        it("12. Subdomain email (e.g., user@mail.example.com) → 201 (valid)", async () => {
+            mockInsert.mockResolvedValue({
+                data: [{ id: "sub-1", email: "user@mail.example.com" }],
+                error: null,
+            });
+
+            const response = await subscribe(
+                createJsonRequest("http://localhost/api/subscribe", { email: "user@mail.example.com" })
+            );
+            const json = await response.json();
+
+            expect(response.status).toBe(201);
+            expect(json.success).toBe(true);
         });
     });
 });

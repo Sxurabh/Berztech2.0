@@ -45,20 +45,44 @@
 
 ---
 
-## 🛠️ Common Commands
+## 🛠️ Test Commands
 
 ```bash
-npm test                        # Watch mode (development)
-npm run test:unit               # Unit + component tests only (fast)
-npm run test:integration        # API integration tests
-npm run test:ci                 # All tests + coverage (use before pushing)
-npm run test:coverage           # Open HTML coverage report
-npm run test:e2e                # Playwright E2E (need app running)
-npm run test:e2e:mobile         # Mobile viewport E2E tests
-npm run test:visual             # Visual regression tests
-npm run test:visual:update      # Update visual baselines
+# No server needed — fast, self-contained
+npm run test:offline           # 108 vitest files: unit, components, integration,
+                               # property, contract, + stable security tests
+                               # ~1254 tests, runs in ~30s
+
+# Requires dev server + Supabase
+npm run test:live              # 21 security integration tests + 6 standalone security
+                               # tests (rate limiter isolation) + 26 E2E specs + cleanup
+                               # Starts server, runs all tests, cleans DB
+
+# Manual cleanup (also runs automatically after test:live)
+npm run test:cleanup           # Deletes TEST_* records from Supabase DB + storage
+                               # Requires SUPABASE_SERVICE_ROLE_KEY in tests/.env.test
+
+# Other commands
+npm run test                    # Watch mode (development)
+npm run test:ci                # Full suite + coverage (use before pushing)
+npm run test:unit              # Unit + component tests only
+npm run test:integration       # API integration tests (vitest, mocked)
+npm run test:e2e              # Playwright E2E (need app running)
+npm run test:a11y              # Accessibility component tests
+npm run test:visual           # Visual regression tests
+npm run test:visual:update    # Update visual baselines
 npx vitest run tests/unit/config/admin.test.ts   # Single file
 ```
+
+### When to use which command
+
+| Scenario | Command | Why |
+|----------|---------|------|
+| TDD / writing code | `npm test` | Watch mode, fast feedback |
+| Before pushing / PR | `npm run test:ci` | Full suite + coverage gate |
+| During development (no server) | `npm run test:offline` | Fast, no server needed |
+| Security audit / full test | `npm run test:live` | Needs dev server + Supabase |
+| Quick unit test | `npm run test:unit` | Only unit + component tests |
 
 ---
 
@@ -149,12 +173,94 @@ Each phase builds on the previous. P0 must be 100% done before P1.
 
 ## ❓ Troubleshooting
 
-**"Cannot find module '@/...'"** → Check `vitest.config.js` has the `@` alias pointing to `./src`
+**"Cannot find module '@/...'"** → Check `vitest.config.js` has the `@` alias in `resolve.alias` pointing to `./src`
+
+**"Vitest: Cannot find project for file"** → The file is not in any project's `include` pattern. Check `test.projects` in `vitest.config.js`.
 
 **"MSW: Unhandled request"** → Add a handler in `tests/mocks/handlers.ts` for that Supabase endpoint
 
 **"E2E: Auth redirect not working"** → Make sure `.env.test` has the correct Supabase test project credentials
 
-**"Coverage below threshold"** → Run `npm run test:coverage` and open `coverage/index.html` to see which files need more tests
+**"Coverage below threshold"** → Run `npm run test:coverage` and open `coverage/index.html` to see which files need more tests. CI also runs `scripts/check-coverage.js` to fail PRs below 89.05% line coverage.
+
+**"test:cleanup fails with missing env vars"** → Add `SUPABASE_SERVICE_ROLE_KEY=xxx` to `tests/.env.test`. Get this from Supabase Dashboard → Project Settings → API → `service_role` secret. This key has admin DB access and should never be committed.
+
+**"test:live fails: could not list storage"** → The `images` storage bucket may not exist in the Supabase project. Create it via Supabase Dashboard → Storage → New bucket named `images` with public access.
+
+**"Vitest: Cannot find project for file"** → The file is not in any project's `include` pattern. Check `test.projects` in `vitest.config.js`.
 
 **Tests pass locally but fail in CI** → Check GitHub Actions env secrets match your `.env.test` variable names
+
+---
+
+## 🧪 Phase 22 Audit Conventions
+
+These conventions were established during the external audit (Phase 22) and should be followed for all new tests.
+
+### Factory-First Pattern
+Prefer factory helper functions over inline object creation:
+```js
+const mockProject = (overrides = {}) => ({
+    id: 'p1', title: 'Test', client: 'Client',
+    created_at: '2025-01-15T00:00:00Z',
+    ...overrides,
+});
+```
+This keeps tests readable and makes it easy to test edge cases via overrides.
+
+### No Trivial Assertions
+Never assert things that are guaranteed to pass:
+```js
+// BAD
+expect(data).toBeDefined();
+
+// GOOD
+expect(data.id).toBe('p1');
+expect(screen.getByText('Test')).toBeInTheDocument();
+```
+
+### Deterministic Mocks
+- Always `vi.clearAllMocks()` and `vi.restoreAllMocks()` in `beforeEach`
+- Mock Supabase clients in `beforeEach`, not at module level
+- Use static timestamps (e.g., `'2025-01-15T00:00:00Z'`) instead of `new Date()` in mock data
+- Reset module state between test files
+
+### Explicit Auth State Per Describe Block
+Each `test.describe` block should set up its own auth state. Do not share cookies or storage state between blocks:
+```js
+test.describe('Authenticated admin', () => {
+    test.beforeEach(async ({ page }) => {
+        await adminLogin(page); // inline login helper
+    });
+    // tests...
+});
+```
+
+### Mocking Pattern for Components
+Use dynamic imports inside tests for mocked components:
+```js
+const DashboardRecentProjects = (await import('@/components/features/admin/DashboardRecentProjects')).default;
+```
+Always mock in this order: framer-motion, react-icons, CornerFrame, next/link.
+
+### Vitest Workspace Structure
+Tests run in two environments via `test.projects` in `vitest.config.js`:
+- **jsdom project**: unit tests, component tests, security tests (not integration)
+- **node project**: security integration tests (require real Supabase client)
+```bash
+npx vitest run                 # run all projects
+npx vitest run tests/unit      # run unit tests only
+```
+
+### MSW Handler Scope
+Add MSW handlers to `tests/mocks/handlers.ts`. Do not add inline handlers. If a handler is test-specific, create a test-local handler factory.
+
+### Skipping Auth-Dependent Tests
+If real Supabase credentials are not available, skip gracefully:
+```js
+const email = process.env.TEST_ADMIN_EMAIL;
+if (!email) { test.skip(); return; }
+```
+
+### Skip Pattern for E2E Tests
+Use `if (!email || !password) { test.skip(); return; }` inside `beforeEach` for E2E tests that require auth. This ensures the test suite passes when credentials are not configured.

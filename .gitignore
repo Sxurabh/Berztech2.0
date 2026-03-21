@@ -12,6 +12,9 @@
 .stryker-tmp
 playwright-report/
 
+# E2E auth tokens — never commit real or test credentials
+tests/e2e/.auth/*.json
+
 # next.js
 /.next/
 /out/

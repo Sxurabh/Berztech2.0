@@ -14,10 +14,11 @@ import {
   getAdminToken,
   createTestRequest,
   cleanupTestData,
-  SQL_PAYLOADS 
+  SQL_PAYLOADS,
+  skipIfNoServer
 } from './api-client';
 
-describe('Security: SQL Injection Prevention - Live API', () => {
+describe.skipIf(skipIfNoServer)('Security: SQL Injection Prevention - Live API', () => {
   let clientToken;
   let adminToken;
 
@@ -41,9 +42,8 @@ describe('Security: SQL Injection Prevention - Live API', () => {
         body: { name: SQL_PAYLOADS.UNION, email: 'test@test.com' }
       });
       
-      // Should either accept (store as data) or reject with validation error
-      // Should NOT cause a SQL error (500)
-      expect([200, 201, 400]).toContain(response.status);
+      // SQL strings are valid Zod strings, stored as-is; 500 = injection reached DB
+      expect(response.status).toBe(201);
       expect(response.status).not.toBe(500);
     });
 
@@ -53,7 +53,8 @@ describe('Security: SQL Injection Prevention - Live API', () => {
         body: { name: SQL_PAYLOADS.OR_TRUE, email: 'test@test.com' }
       });
       
-      expect([200, 201, 400]).toContain(response.status);
+      expect(response.status).toBe(201);
+      expect(response.status).not.toBe(500);
     });
 
     it('3. DROP TABLE attempt in message field is sanitized', async () => {
@@ -66,7 +67,8 @@ describe('Security: SQL Injection Prevention - Live API', () => {
         }
       });
       
-      expect([200, 201, 400]).toContain(response.status);
+      expect(response.status).toBe(201);
+      expect(response.status).not.toBe(500);
     });
 
     it('4. Admin bypass attempt in email field', async () => {
@@ -78,7 +80,8 @@ describe('Security: SQL Injection Prevention - Live API', () => {
         }
       });
       
-      expect([200, 201, 400]).toContain(response.status);
+      expect(response.status).toBe(201);
+      expect(response.status).not.toBe(500);
     });
 
     it('5. Inline DELETE attempt in company field', async () => {
@@ -91,7 +94,8 @@ describe('Security: SQL Injection Prevention - Live API', () => {
         }
       });
       
-      expect([200, 201, 400]).toContain(response.status);
+      expect(response.status).toBe(201);
+      expect(response.status).not.toBe(500);
     });
   });
 
@@ -100,31 +104,31 @@ describe('Security: SQL Injection Prevention - Live API', () => {
   // =========================================================================
 
   describe('GET /api/requests - SQL injection in query params', () => {
-    it('6. UNION injection in filter param', async () => {
+    it('6. UNION injection in filter param is safely ignored', async () => {
       const response = await fetchJson(`/api/requests?filter=${encodeURIComponent(SQL_PAYLOADS.UNION)}`, {
         token: clientToken
       });
       
-      expect([200, 400, 401]).toContain(response.status);
-      if (response.status === 200) {
-        expect(response.data).toBeDefined();
-      }
+      // Route ignores unknown filter param; returns 200 or 401
+      expect(response.status).toBe(200);
+      expect(response.status).not.toBe(500);
     });
 
-    it('7. OR 1=1 injection in filter param', async () => {
+    it('7. OR 1=1 injection in filter param is safely ignored', async () => {
       const response = await fetchJson(`/api/requests?filter=${encodeURIComponent(SQL_PAYLOADS.OR_TRUE)}`, {
         token: clientToken
       });
       
-      expect([200, 400, 401]).toContain(response.status);
+      expect(response.status).toBe(200);
+      expect(response.status).not.toBe(500);
     });
 
-    it('8. DROP TABLE in filter param', async () => {
+    it('8. DROP TABLE in filter param is safely ignored', async () => {
       const response = await fetchJson(`/api/requests?filter=${encodeURIComponent(SQL_PAYLOADS.DROP_TABLE)}`, {
         token: clientToken
       });
       
-      expect([200, 400, 401]).toContain(response.status);
+      expect(response.status).toBe(200);
       expect(response.status).not.toBe(500);
     });
 
@@ -135,7 +139,8 @@ describe('Security: SQL Injection Prevention - Live API', () => {
       });
       const elapsed = Date.now() - start;
       
-      expect([200, 400, 401]).toContain(response.status);
+      // Route ignores filter param; should return 200 quickly
+      expect(response.status).toBe(200);
       expect(elapsed).toBeLessThan(10000);
     });
   });
@@ -145,29 +150,32 @@ describe('Security: SQL Injection Prevention - Live API', () => {
   // =========================================================================
 
   describe('GET /api/blog - SQL injection in query params', () => {
-    it('10. UNION injection in search param', async () => {
+    it('10. UNION injection in search param is safely handled', async () => {
       const response = await fetchJson(`/api/blog?search=${encodeURIComponent(SQL_PAYLOADS.UNION)}`);
       
-      expect([200, 400, 500]).toContain(response.status);
+      // Route should handle safely; 500 = injection reached DB
       expect(response.status).not.toBe(500);
+      expect([200, 400]).toContain(response.status);
     });
 
     it('11. OR 1=1 injection in category param', async () => {
       const response = await fetchJson(`/api/blog?category=${encodeURIComponent(SQL_PAYLOADS.OR_TRUE)}`);
       
+      expect(response.status).not.toBe(500);
       expect([200, 400]).toContain(response.status);
     });
 
     it('12. DROP TABLE in category param', async () => {
       const response = await fetchJson(`/api/blog?category=${encodeURIComponent(SQL_PAYLOADS.DROP_TABLE)}`);
       
-      expect([200, 400]).toContain(response.status);
       expect(response.status).not.toBe(500);
+      expect([200, 400]).toContain(response.status);
     });
 
     it('13. OR TRUE in author param', async () => {
       const response = await fetchJson(`/api/blog?author=${encodeURIComponent(SQL_PAYLOADS.OR_TRUE)}`);
       
+      expect(response.status).not.toBe(500);
       expect([200, 400]).toContain(response.status);
     });
   });
@@ -177,28 +185,31 @@ describe('Security: SQL Injection Prevention - Live API', () => {
   // =========================================================================
 
   describe('GET /api/projects - SQL injection in query params', () => {
-    it('14. UNION injection in search param', async () => {
+    it('14. UNION injection in search param is safely handled', async () => {
       const response = await fetchJson(`/api/projects?search=${encodeURIComponent(SQL_PAYLOADS.UNION)}`);
       
-      expect([200, 400, 404]).toContain(response.status);
+      expect(response.status).not.toBe(500);
+      expect([200, 400]).toContain(response.status);
     });
 
     it('15. OR 1=1 injection in category param', async () => {
       const response = await fetchJson(`/api/projects?category=${encodeURIComponent(SQL_PAYLOADS.OR_TRUE)}`);
       
+      expect(response.status).not.toBe(500);
       expect([200, 400]).toContain(response.status);
     });
 
     it('16. DROP TABLE in category param', async () => {
       const response = await fetchJson(`/api/projects?category=${encodeURIComponent(SQL_PAYLOADS.DROP_TABLE)}`);
       
-      expect([200, 400]).toContain(response.status);
       expect(response.status).not.toBe(500);
+      expect([200, 400]).toContain(response.status);
     });
 
     it('17. Status bypass with OR TRUE', async () => {
       const response = await fetchJson(`/api/projects?status=${encodeURIComponent(SQL_PAYLOADS.OR_TRUE)}`);
       
+      expect(response.status).not.toBe(500);
       expect([200, 400]).toContain(response.status);
     });
   });

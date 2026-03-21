@@ -1,38 +1,71 @@
 /**
- * Generic API fetch wrapper
+ * Generic API fetch wrapper with retry logic
  * @param {string} endpoint 
  * @param {RequestInit} options 
+ * @param {Object} retryOptions
  */
-async function fetchJson(endpoint, options = {}) {
+async function fetchWithRetry(endpoint, options = {}, retryOptions = {}) {
+    const {
+        maxRetries = 3,
+        initialDelay = 100,
+        backoffMultiplier = 2,
+        retryableStatuses = [408, 429, 500, 502, 503, 504],
+    } = retryOptions;
+
     const headers = {
         "Content-Type": "application/json",
         ...options.headers,
     };
 
-    // Handle FormData (don't set Content-Type)
     if (options.body instanceof FormData) {
         delete headers["Content-Type"];
     }
 
-    const res = await fetch(`/api${endpoint}`, {
-        ...options,
-        headers,
-    });
+    let lastError;
 
-    if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.error || `Request failed with status ${res.status}`);
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+            const res = await fetch(`/api${endpoint}`, {
+                ...options,
+                headers,
+            });
+
+            if (!res.ok) {
+                if (retryableStatuses.includes(res.status) && attempt < maxRetries) {
+                    const delay = Math.min(initialDelay * Math.pow(backoffMultiplier, attempt - 1), 5000);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    lastError = new Error(`Request failed with status ${res.status}`);
+                    continue;
+                }
+                const errorData = await res.json().catch(() => ({}));
+                throw new Error(errorData.error || `Request failed with status ${res.status}`);
+            }
+
+            const text = await res.text();
+            if (!text) return null;
+            try {
+                return JSON.parse(text);
+            } catch {
+                throw new Error('Failed to parse response');
+            }
+        } catch (error) {
+            lastError = error;
+            
+            if (retryableStatuses.includes(error.response?.status) && attempt < maxRetries) {
+                const delay = Math.min(initialDelay * Math.pow(backoffMultiplier, attempt - 1), 5000);
+                await new Promise(resolve => setTimeout(resolve, delay));
+                continue;
+            }
+            
+            throw error;
+        }
     }
 
-    // Handle empty responses (like 204 No Content for DELETE?)
-    // But our API returns JSON even for delete usually. 
-    // If explicit null/empty body, handle it:
-    const text = await res.text();
-    try {
-        return text ? JSON.parse(text) : null;
-    } catch (e) {
-        throw new Error(`Failed to parse response: ${text.substring(0, 100)}... (Status: ${res.status})`);
-    }
+    throw lastError;
+}
+
+async function fetchJson(endpoint, options = {}) {
+    return fetchWithRetry(endpoint, options);
 }
 
 export const projectsApi = {
@@ -55,7 +88,7 @@ export const uploadApi = {
     upload: (file) => {
         const formData = new FormData();
         formData.append("file", file);
-        return fetchJson("/upload", {
+        return fetchWithRetry("/upload", {
             method: "POST",
             body: formData
         });
@@ -69,3 +102,5 @@ export const testimonialsApi = {
     update: (id, data) => fetchJson(`/testimonials/${id}`, { method: "PUT", body: JSON.stringify(data) }),
     delete: (id) => fetchJson(`/testimonials/${id}`, { method: "DELETE" }),
 };
+
+export { fetchWithRetry, fetchJson };

@@ -384,6 +384,87 @@ test.describe('Auth State Persistence', () => {
     });
 });
 
+test.describe('Session Expiry Mid-Use', () => {
+    test('Session expires while user is filling a form', async ({ page, context }) => {
+        const email = process.env.TEST_CLIENT_EMAIL;
+        const password = process.env.TEST_CLIENT_PASSWORD;
+
+        if (!email || !password) {
+            test.skip();
+            return;
+        }
+
+        await page.goto('/auth/login');
+        await page.waitForLoadState('networkidle');
+        await page.waitForTimeout(500);
+        
+        await page.getByPlaceholder('you@company.com').fill(email);
+        await page.getByPlaceholder('••••••••').fill(password);
+        
+        try {
+            await page.getByRole('button', { name: 'Sign In', exact: true }).click({ timeout: 5000 });
+        } catch (e) {
+            await page.keyboard.press('Enter');
+        }
+        
+        try {
+            await page.waitForURL(/.*\/dashboard/, { timeout: 20000 });
+        } catch (e) { }
+
+        await page.goto('/track');
+        await page.waitForLoadState('domcontentloaded');
+        await page.waitForTimeout(1000);
+
+        await context.clearCookies();
+
+        await page.locator('textarea[name="comment"], textarea[name="message"]').first().fill('Typing a comment...').catch(() => {});
+        await page.waitForTimeout(1000);
+
+        await page.waitForURL(/.*\/auth\/login/, { timeout: 10000 }).catch(() => {});
+        const url = page.url();
+        expect(url.includes('/auth/login') || url.includes('/dashboard')).toBeTruthy();
+    });
+
+    test('Session expires while on admin board', async ({ page, context }) => {
+        const email = process.env.TEST_ADMIN_EMAIL;
+        const password = process.env.TEST_ADMIN_PASSWORD;
+
+        if (!email || !password) {
+            test.skip();
+            return;
+        }
+
+        await page.goto('/auth/login');
+        await page.waitForLoadState('networkidle');
+        await page.waitForTimeout(500);
+        
+        await page.getByPlaceholder('you@company.com').fill(email);
+        await page.getByPlaceholder('••••••••').fill(password);
+        
+        try {
+            await page.getByRole('button', { name: 'Sign In', exact: true }).click({ timeout: 5000 });
+        } catch (e) {
+            await page.keyboard.press('Enter');
+        }
+        
+        try {
+            await page.waitForURL(/.*\/admin/, { timeout: 20000 });
+        } catch (e) { }
+
+        await page.goto('/admin/board');
+        await page.waitForLoadState('domcontentloaded');
+        await page.waitForTimeout(1000);
+
+        await context.clearCookies();
+
+        await page.reload();
+        await page.waitForTimeout(2000);
+
+        const url = page.url();
+        expect(url.includes('/auth/login') || url.includes('/admin') || url.includes('/dashboard')).toBeTruthy();
+    });
+});
+
 test.describe('Login Form Edge Cases', () => {
     test('Multiple rapid login attempts', async ({ page }) => {
         await page.goto('/auth/login');

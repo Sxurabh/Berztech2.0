@@ -12,10 +12,11 @@ import {
   fetchJson, 
   getClientToken, 
   getAdminToken,
-  cleanupTestData 
+  cleanupTestData,
+  skipIfNoServer
 } from './api-client';
 
-describe('Security: Cache Poisoning Prevention - Live API', () => {
+describe.skipIf(skipIfNoServer)('Security: Cache Poisoning Prevention - Live API', () => {
   let clientToken;
   let adminToken;
 
@@ -39,6 +40,7 @@ describe('Security: Cache Poisoning Prevention - Live API', () => {
         headers: { 'Cache-Control': 'no-store' }
       });
       
+      // Returns 200 (success) or 401 (unauthenticated)
       expect([200, 401]).toContain(response.status);
     });
 
@@ -84,6 +86,7 @@ describe('Security: Cache Poisoning Prevention - Live API', () => {
         token: clientToken
       });
       
+      // Returns 200 (authenticated) or 401 (unauthenticated)
       expect([200, 401]).toContain(response.status);
     });
   });

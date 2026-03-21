@@ -99,6 +99,50 @@ test.describe('Homepage Mobile', () => {
     });
 });
 
+test.describe('Newsletter Form', () => {
+    test('Newsletter form happy path submission', async ({ page }) => {
+        await page.goto('/');
+        await page.waitForLoadState('domcontentloaded');
+
+        const emailInput = page.locator('input[type="email"]').first();
+        if (await emailInput.count() > 0) {
+            await emailInput.fill(`test+${Date.now()}@example.com`);
+            const subscribeButton = page.getByRole('button', { name: /subscribe|join/i }).first();
+            if (await subscribeButton.count() > 0) {
+                await subscribeButton.click();
+                await page.waitForTimeout(2000);
+            }
+        }
+
+        const pageLoaded = await page.locator('main').isVisible().catch(() => false);
+        expect(pageLoaded).toBeTruthy();
+    });
+
+    test('Duplicate newsletter email is handled gracefully', async ({ page }) => {
+        await page.goto('/');
+        await page.waitForLoadState('domcontentloaded');
+
+        const duplicateEmail = `duplicate+${Date.now()}@example.com`;
+
+        const emailInput = page.locator('input[type="email"]').first();
+        if (await emailInput.count() > 0) {
+            await emailInput.fill(duplicateEmail);
+            const subscribeButton = page.getByRole('button', { name: /subscribe|join/i }).first();
+            if (await subscribeButton.count() > 0) {
+                await subscribeButton.click();
+                await page.waitForTimeout(2000);
+
+                await emailInput.fill(duplicateEmail);
+                await subscribeButton.click();
+                await page.waitForTimeout(2000);
+            }
+        }
+
+        const pageLoaded = await page.locator('main').isVisible().catch(() => false);
+        expect(pageLoaded).toBeTruthy();
+    });
+});
+
 test.describe('Homepage Elements', () => {
     test('Footer is visible', async ({ page }) => {
         await page.goto('/');

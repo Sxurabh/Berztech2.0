@@ -383,5 +383,32 @@ describe("POST /api/requests", () => {
             expect(response.status).toBe(400);
             expect(body.details.name).toBeDefined();
         });
+
+        it("15. Anonymous submission (no auth) succeeds with user_id: null", async () => {
+            mockInsertChain({
+                id: "req-anon",
+                name: "Anonymous User",
+                email: "anon@example.com",
+                company: null,
+                services: [],
+                budget: null,
+                message: "Anonymous request",
+                status: "discover",
+                user_id: null,
+                created_at: "2026-03-20T10:00:00Z",
+            });
+
+            const request = createJsonRequest({
+                name: "Anonymous User",
+                email: "anon@example.com",
+                message: "Anonymous request",
+            });
+
+            const response = await POST(request);
+            const body = await response.json();
+
+            expect(response.status).toBe(201);
+            expect(body.data.user_id).toBeNull();
+        });
     });
 });

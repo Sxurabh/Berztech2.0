@@ -223,6 +223,9 @@ export default function BlogPostForm({ mode = "create", embedded, onClose, onSuc
                                             w-9 h-5 rounded-full relative transition-colors duration-200
                                             ${form.published ? "bg-neutral-900" : "bg-neutral-300"}
                                         `}
+                                        aria-label={form.published ? "Unpublish post" : "Publish post"}
+                                        role="switch"
+                                        aria-checked={form.published}
                                     >
                                         <span
                                             className={`
@@ -244,6 +247,9 @@ export default function BlogPostForm({ mode = "create", embedded, onClose, onSuc
                                             w-9 h-5 rounded-full relative transition-colors duration-200
                                             ${form.featured ? "bg-neutral-900" : "bg-neutral-300"}
                                         `}
+                                        aria-label={form.featured ? "Remove from featured" : "Mark as featured"}
+                                        role="switch"
+                                        aria-checked={form.featured}
                                     >
                                         <span
                                             className={`

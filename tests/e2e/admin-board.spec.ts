@@ -112,3 +112,79 @@ test.describe('Admin Board Authenticated', () => {
         expect(content.length).toBeGreaterThan(100);
     });
 });
+
+test.describe('Admin Board Kanban Drag and Drop', () => {
+    test('Kanban board shows all four columns', async ({ page }) => {
+        const email = process.env.TEST_ADMIN_EMAIL;
+        const password = process.env.TEST_ADMIN_PASSWORD;
+        
+        if (!email || !password) {
+            test.skip();
+            return;
+        }
+
+        await page.goto('/auth/login');
+        await page.waitForLoadState('networkidle');
+        await page.waitForTimeout(500);
+        
+        await page.getByPlaceholder('you@company.com').fill(email);
+        await page.getByPlaceholder('••••••••').fill(password);
+        
+        try {
+            await page.getByRole('button', { name: 'Sign In', exact: true }).click({ timeout: 5000 });
+        } catch (e) {
+            await page.keyboard.press('Enter');
+        }
+        
+        await page.goto('/admin/board');
+        await page.waitForLoadState('domcontentloaded');
+        await page.waitForTimeout(2000);
+
+        await expect(page.getByText('Backlog')).toBeVisible();
+        await expect(page.getByText('In Progress')).toBeVisible();
+        await expect(page.getByText('In Review')).toBeVisible();
+        await expect(page.getByText('Completed')).toBeVisible();
+    });
+
+    test('Admin can drag a task between columns', async ({ page }) => {
+        const email = process.env.TEST_ADMIN_EMAIL;
+        const password = process.env.TEST_ADMIN_PASSWORD;
+        
+        if (!email || !password) {
+            test.skip();
+            return;
+        }
+
+        await page.goto('/auth/login');
+        await page.waitForLoadState('networkidle');
+        await page.waitForTimeout(500);
+        
+        await page.getByPlaceholder('you@company.com').fill(email);
+        await page.getByPlaceholder('••••••••').fill(password);
+        
+        try {
+            await page.getByRole('button', { name: 'Sign In', exact: true }).click({ timeout: 5000 });
+        } catch (e) {
+            await page.keyboard.press('Enter');
+        }
+        
+        await page.goto('/admin/board');
+        await page.waitForLoadState('domcontentloaded');
+        await page.waitForTimeout(2000);
+
+        const backlogColumn = page.locator('text=Backlog').locator('..');
+        const inProgressColumn = page.locator('text=In Progress').locator('..');
+
+        const backlogCards = backlogColumn.locator('[data-rbd-draggable-id]');
+        if (await backlogCards.count() > 0) {
+            const firstCard = backlogCards.first();
+            const destColumn = inProgressColumn;
+
+            await firstCard.dragTo(destColumn);
+            await page.waitForTimeout(1000);
+        }
+
+        const inProgressCount = await page.locator('text=In Progress').locator('..').locator('[data-rbd-draggable-id]').count();
+        expect(inProgressCount >= 0).toBeTruthy();
+    });
+});

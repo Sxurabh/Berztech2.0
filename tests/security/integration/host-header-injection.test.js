@@ -13,10 +13,11 @@ import {
   getClientToken, 
   getAdminToken,
   fetchRaw,
-  BASE_URL
+  BASE_URL,
+  skipIfNoServer
 } from './api-client';
 
-describe('Security: Host Header Injection - Live API', () => {
+describe.skipIf(skipIfNoServer)('Security: Host Header Injection - Live API', () => {
   let clientToken;
   let adminToken;
 
@@ -72,7 +73,7 @@ describe('Security: Host Header Injection - Live API', () => {
       }
     });
 
-    it('3. Request with X-Forwarded-For: <internal-ip> - not trusted blindly', async () => {
+    it('3. Request with X-Forwarded-For: internal-ip is not trusted blindly', async () => {
       const response = await fetchJson('/api/requests', {
         method: 'POST',
         headers: {
@@ -84,8 +85,8 @@ describe('Security: Host Header Injection - Live API', () => {
         }
       });
       
-      // Should handle gracefully
-      expect([200, 201, 400]).toContain(response.status);
+      // Valid JSON body; stored successfully
+      expect(response.status).toBe(201);
       expect(response.status).not.toBe(500);
     });
 
@@ -97,10 +98,8 @@ describe('Security: Host Header Injection - Live API', () => {
         }
       });
       
-      // Should not redirect to admin
+      // Should not redirect to admin; should return client tasks or auth error
       expect(response.status).not.toBe(500);
-      
-      // Should either return client tasks or 401/403
       expect([200, 401, 403]).toContain(response.status);
     });
 
@@ -112,12 +111,11 @@ describe('Security: Host Header Injection - Live API', () => {
         }
       });
       
-      // Should not redirect to admin
       expect(response.status).not.toBe(500);
       expect([200, 401, 403]).toContain(response.status);
     });
 
-    it('6. X-Http-Method-Override: DELETE on GET endpoint - ignored', async () => {
+    it('6. X-HTTP-Method-Override: DELETE on GET endpoint - ignored', async () => {
       const response = await fetchRaw(`${BASE_URL}/api/blog`, {
         method: 'GET',
         headers: {
@@ -125,10 +123,8 @@ describe('Security: Host Header Injection - Live API', () => {
         }
       });
       
-      // Should treat as GET, not DELETE
+      // Should treat as GET, not DELETE; returns 200 (blog posts) or 401/403
       expect(response.status).not.toBe(500);
-      
-      // Should return blog posts (GET behavior), not delete them
       expect([200, 401, 403]).toContain(response.status);
     });
 
@@ -144,14 +140,13 @@ describe('Security: Host Header Injection - Live API', () => {
         }
       });
       
-      // Should handle gracefully
-      expect([200, 201, 400]).toContain(response.status);
+      // Valid JSON body; stored successfully
+      expect(response.status).toBe(201);
       expect(response.status).not.toBe(500);
     });
 
-    it('8. Multiple Host headers in one request - request rejected or first used', async () => {
+    it('8. Multiple Host headers in one request - request handled safely', async () => {
       // This is typically handled at the server/proxy level
-      // We'll test with a single Host header that looks suspicious
       const response = await fetchRaw(`${BASE_URL}/api/requests`, {
         method: 'POST',
         headers: {

@@ -1,27 +1,46 @@
 import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { z } from "zod";
+
+const SubscribeSchema = z.object({
+    email: z.string({ required_error: "A valid email address is required" }).email("A valid email address is required"),
+});
+
+function getEmailValidationError(issues) {
+    if (!issues || issues.length === 0) {
+        return "A valid email address is required";
+    }
+    const firstIssue = issues[0];
+    if (firstIssue.path.includes('email')) {
+        return "A valid email address is required";
+    }
+    return firstIssue.message || "A valid email address is required";
+}
 
 export async function POST(req) {
     try {
-        const body = await req.json();
-        const { email } = body;
-
-        if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
-            return NextResponse.json({ error: "A valid email is required" }, { status: 400 });
+        let body;
+        try {
+            body = await req.json();
+        } catch (e) {
+            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
         }
 
+        const validation = SubscribeSchema.safeParse(body);
+        if (!validation.success) {
+            const errorMessage = getEmailValidationError(validation.error.issues);
+            return NextResponse.json({ error: errorMessage }, { status: 400 });
+        }
+
+        const { email } = validation.data;
         const supabase = await createServerSupabaseClient();
 
-        // Check if the user is already subscribed (we ignore errors because RLS might prevent read if not admin, but let's just attempt insert and handle unique constraint)
         const { error } = await supabase
             .from('subscribers')
             .insert({ email: email.toLowerCase().trim() });
 
         if (error) {
-            // 23505 is the unique violation error code in PostgreSQL
             if (error.code === '23505') {
-                // Return success anyway to avoid leaking whether an email is subscribed,
-                // and it acts idempotently for the user.
                 return NextResponse.json({ success: true, message: "Subscription received" }, { status: 201 });
             }
             console.error("Newsletter API Error:", error);

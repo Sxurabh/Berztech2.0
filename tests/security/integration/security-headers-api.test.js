@@ -8,9 +8,9 @@
  */
 
 import { describe, it, expect, beforeAll } from 'vitest';
-import { fetchJson, getClientToken, getAdminToken, BASE_URL } from './api-client';
+import { fetchJson, getClientToken, getAdminToken, BASE_URL, skipIfNoServer } from './api-client';
 
-describe('Security: HTTP Security Headers - Live API', () => {
+describe.skipIf(skipIfNoServer)('Security: HTTP Security Headers - Live API', () => {
   let clientToken;
   let adminToken;
 
@@ -32,11 +32,9 @@ describe('Security: HTTP Security Headers - Live API', () => {
                   response.headers['Content-Security-Policy'];
       
       // CSP is not sent by default in Next.js dev mode - check if configured
-      // If CSP exists, verify it's secure
       if (csp) {
         expect(csp.toLowerCase()).not.toContain("script-src 'unsafe-inline'");
       }
-      // Test passes whether CSP is present or not - just log status
     });
 
     it('2. GET / CSP does NOT contain unsafe-inline for scripts', async () => {
@@ -45,7 +43,6 @@ describe('Security: HTTP Security Headers - Live API', () => {
       const csp = response.headers['content-security-policy'] || 
                   response.headers['Content-Security-Policy'] || '';
       
-      // If CSP exists, it should not allow unsafe-inline scripts
       if (csp) {
         expect(csp.toLowerCase()).not.toContain("script-src 'unsafe-inline'");
       }
@@ -80,7 +77,6 @@ describe('Security: HTTP Security Headers - Live API', () => {
       const hsts = response.headers['strict-transport-security'] || 
                    response.headers['Strict-Transport-Security'];
       
-      // HSTS may not be present in dev, but if present should have max-age
       if (hsts) {
         expect(hsts.toLowerCase()).toContain('max-age');
       }
@@ -92,13 +88,10 @@ describe('Security: HTTP Security Headers - Live API', () => {
       const referrerPolicy = response.headers['referrer-policy'] || 
                              response.headers['Referrer-Policy'];
       
-      // Referrer-Policy may not be present in dev mode - if present verify it's secure
       if (referrerPolicy) {
         const rp = referrerPolicy.toLowerCase();
-        // Should not be unsafe-url
         expect(rp).not.toBe('unsafe-url');
       }
-      // Test passes whether header is present or not
     });
   });
 
@@ -115,7 +108,6 @@ describe('Security: HTTP Security Headers - Live API', () => {
       const serverHeader = response.headers['server'] || 
                            response.headers['Server'];
       
-      // Server header should not contain specific version info
       if (serverHeader) {
         expect(serverHeader.toLowerCase()).not.toMatch(/\d+\.\d+/);
       }
@@ -129,14 +121,13 @@ describe('Security: HTTP Security Headers - Live API', () => {
       const poweredBy = response.headers['x-powered-by'] || 
                         response.headers['X-Powered-By'];
       
-      // X-Powered-By should ideally not be present
       if (poweredBy) {
         expect(poweredBy.toLowerCase()).not.toContain('next');
         expect(poweredBy.toLowerCase()).not.toContain('express');
       }
     });
 
-    it('9. POST /api/requests CORS headers are properly configured', async () => {
+    it('9. POST /api/requests CORS preflight is handled', async () => {
       const response = await fetchJson('/api/requests', {
         method: 'OPTIONS',
         headers: {
@@ -145,7 +136,7 @@ describe('Security: HTTP Security Headers - Live API', () => {
         }
       });
       
-      // CORS should be handled - either blocked or properly configured
+      // Next.js handles CORS preflight with 200, 204, or denies with 403
       expect([200, 204, 403]).toContain(response.status);
     });
 
@@ -157,11 +148,9 @@ describe('Security: HTTP Security Headers - Live API', () => {
                                 response.headers['feature-policy'] ||
                                 response.headers['Feature-Policy'];
       
-      // Permissions-Policy may not be present in dev mode - if present verify it's not overly permissive
       if (permissionsPolicy) {
         expect(permissionsPolicy.toLowerCase()).not.toContain('*');
       }
-      // Test passes whether header is present or not
     });
   });
 
@@ -176,12 +165,11 @@ describe('Security: HTTP Security Headers - Live API', () => {
       });
       
       // Should not return directory listing (200 with HTML)
-      // Should return 405 (Method Not Allowed) or 401/403
-      expect([401, 403, 405, 404, 500]).toContain(response.status);
+      // Should return 405 (Method Not Allowed), 401, 403, or 404
+      expect([401, 403, 405, 404]).toContain(response.status);
     });
 
-    it('12. All API routes have proper Cache-Control on auth endpoints', async () => {
-      // Test client tasks endpoint (requires auth)
+    it('12. Auth endpoint has proper Cache-Control header', async () => {
       const response = await fetchJson('/api/client/tasks', {
         token: clientToken
       });
@@ -189,15 +177,12 @@ describe('Security: HTTP Security Headers - Live API', () => {
       // Should not be 500
       expect(response.status).not.toBe(500);
       
-      // If we get a successful response, check cache headers
       if (response.status === 200) {
         const cacheControl = response.headers['cache-control'] || 
                             response.headers['Cache-Control'];
         
-        // Auth endpoints should have no-cache or similar
         if (cacheControl) {
           const cc = cacheControl.toLowerCase();
-          // Should not allow public caching of auth data
           expect(cc).not.toBe('public');
         }
       }

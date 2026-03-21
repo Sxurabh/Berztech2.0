@@ -117,8 +117,6 @@ describe('Chaos Load Scenarios — fetchWithRetry', () => {
         });
 
         it('respects maxRetries limit and throws after exhausting retries', async () => {
-            vi.useFakeTimers();
-
             global.fetch = vi.fn().mockResolvedValue({
                 ok: false,
                 status: 500,
@@ -126,11 +124,8 @@ describe('Chaos Load Scenarios — fetchWithRetry', () => {
                 text: () => Promise.resolve('{"error":"Internal Server Error"}'),
             });
 
-            const resultPromise = fetchWithRetry('/api/test', {}, { maxRetries: 2, initialDelay: 10 });
-
-            await expect(resultPromise).rejects.toThrow();
+            await expect(fetchWithRetry('/api/test', {}, { maxRetries: 2, initialDelay: 10 })).rejects.toThrow();
             expect(global.fetch).toHaveBeenCalledTimes(2);
-            vi.useRealTimers();
         });
     });
 
@@ -230,8 +225,6 @@ describe('Chaos Load Scenarios — fetchWithRetry', () => {
         });
 
         it('throws after exhausting retries on 429', async () => {
-            vi.useFakeTimers();
-
             global.fetch = vi.fn().mockResolvedValue({
                 ok: false,
                 status: 429,
@@ -239,11 +232,8 @@ describe('Chaos Load Scenarios — fetchWithRetry', () => {
                 text: () => Promise.resolve('{"error":"Rate limited"}'),
             });
 
-            const resultPromise = fetchWithRetry('/api/test', {}, { maxRetries: 2, initialDelay: 10 });
-
-            await expect(resultPromise).rejects.toThrow();
+            await expect(fetchWithRetry('/api/test', {}, { maxRetries: 2, initialDelay: 10 })).rejects.toThrow();
             expect(global.fetch).toHaveBeenCalledTimes(2);
-            vi.useRealTimers();
         });
     });
 
@@ -360,42 +350,16 @@ describe('Chaos Load Scenarios — fetchWithRetry', () => {
     });
 
     describe('Exponential backoff timing', () => {
-        it('applies exponential backoff delays between retries', async () => {
-            vi.useFakeTimers();
-            const delays = [];
-
-            global.fetch = vi.fn().mockImplementation(async () => {
-                return {
-                    ok: false,
-                    status: 503,
-                    json: () => Promise.resolve({}),
-                    text: () => Promise.resolve('{}'),
-                };
+        it('calls fetch the correct number of times for maxRetries', async () => {
+            global.fetch = vi.fn().mockResolvedValue({
+                ok: false,
+                status: 503,
+                json: () => Promise.resolve({}),
+                text: () => Promise.resolve('{}'),
             });
 
-            const start = Date.now();
-            const resultPromise = fetchWithRetry(
-                '/api/test',
-                {},
-                { maxRetries: 3, initialDelay: 100, backoffMultiplier: 2 }
-            );
-
-            const advanceAndTrack = async () => {
-                await vi.advanceTimersByTimeAsync(100);
-                delays.push(Date.now() - start);
-                await vi.advanceTimersByTimeAsync(100);
-                delays.push(Date.now() - start);
-            };
-
-            await advanceAndTrack();
-
-            try {
-                await resultPromise;
-            } catch {
-            }
-
-            vi.useRealTimers();
-            expect(global.fetch).toHaveBeenCalledTimes(3);
+            await expect(fetchWithRetry('/api/test', {}, { maxRetries: 5, initialDelay: 10 })).rejects.toThrow();
+            expect(global.fetch).toHaveBeenCalledTimes(5);
         });
     });
 });
