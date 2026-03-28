@@ -1,67 +1,85 @@
 import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 
-export async function POST(req) {
+const IMAGE_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+const DOC_TYPES = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain"];
+const ALLOWED_TYPES = [...IMAGE_TYPES, ...DOC_TYPES];
+const MAX_SIZE = 10 * 1024 * 1024;
+
+const MIME_TO_EXT = {
+    "image/jpeg": "jpg",
+    "image/png": "png",
+    "image/gif": "gif",
+    "image/webp": "webp",
+    "application/pdf": "pdf",
+    "application/msword": "doc",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
+    "text/plain": "txt",
+};
+
+export async function POST(request) {
     try {
         const supabase = await createServerSupabaseClient();
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        const { data: { user } } = await supabase.auth.getUser();
 
-        if (authError || !user) {
+        if (!user) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const formData = await req.formData();
+        const formData = await request.formData();
         const file = formData.get("file");
-        const project_id = formData.get("project_id");
+        const projectId = formData.get("project_id");
 
         if (!file) {
             return NextResponse.json({ error: "No file provided" }, { status: 400 });
         }
 
-        if (!project_id) {
+        if (!projectId) {
             return NextResponse.json({ error: "project_id is required" }, { status: 400 });
         }
 
-        const admin = createAdminClient();
-        const bucket = "message-attachments";
-
-        const { data: bucketData } = await admin.storage.getBucket(bucket);
-        if (!bucketData) {
-            await admin.storage.createBucket(bucket, { public: true });
+        if (!ALLOWED_TYPES.includes(file.type)) {
+            return NextResponse.json(
+                { error: `Invalid file type. Allowed: ${ALLOWED_TYPES.join(", ")}` },
+                { status: 400 }
+            );
         }
 
-        const fileExt = file.name.split(".").pop();
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-        const filePath = `${project_id}/${fileName}`;
+        if (file.size > MAX_SIZE) {
+            return NextResponse.json(
+                { error: "File too large. Maximum size is 10MB." },
+                { status: 400 }
+            );
+        }
 
-        const arrayBuffer = await file.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
+        const fileExt = MIME_TO_EXT[file.type] || "bin";
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+        const filePath = `${projectId}/${fileName}`;
 
-        const { data: uploadData, error: uploadError } = await admin.storage
-            .from(bucket)
-            .upload(filePath, buffer, {
+        const { data, error } = await supabase.storage
+            .from("message-attachments")
+            .upload(filePath, file, {
                 contentType: file.type,
+                cacheControl: "3600",
                 upsert: false,
             });
 
-        if (uploadError) {
-            console.error("Upload error:", uploadError);
+        if (error) {
+            console.error("Storage error:", error);
             return NextResponse.json({ error: "Failed to upload file" }, { status: 500 });
         }
 
-        const { data: publicUrlData } = admin.storage
-            .from(bucket)
+        const { data: { publicUrl } } = supabase.storage
+            .from("message-attachments")
             .getPublicUrl(filePath);
 
         return NextResponse.json({
-            url: publicUrlData.publicUrl,
-            path: filePath,
-            type: file.type.startsWith("image/") ? "image" : "document",
+            url: publicUrl,
+            type: IMAGE_TYPES.includes(file.type) ? "image" : "document",
             name: file.name,
-        }, { status: 200 });
-    } catch (err) {
-        console.error("POST /api/messages/upload error:", err);
+        });
+    } catch (error) {
+        console.error("POST /api/messages/upload error:", error);
         return NextResponse.json({ error: "Unexpected error" }, { status: 500 });
     }
 }
