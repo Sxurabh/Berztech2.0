@@ -3,10 +3,11 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiEye, FiTrello, FiX, FiExternalLink } from "react-icons/fi";
+import { FiEye, FiTrello, FiX, FiExternalLink, FiMessageSquare } from "react-icons/fi";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
 import { CornerFrame } from "@/components/ui/CornerFrame";
+import { ChatPanel } from "@/components/chat/ChatPanel";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -41,6 +42,13 @@ export default function DashboardPage() {
     "there";
 
   const [viewingRequest, setViewingRequest] = useState(null);
+  const [chatProject, setChatProject] = useState(null);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
+  const handleOpenChat = (request) => {
+    setChatProject(request);
+    setIsChatOpen(true);
+  };
 
   return (
     <div className="min-h-screen py-8 sm:py-12 md:py-16">
@@ -137,6 +145,13 @@ export default function DashboardPage() {
                       title="View Details"
                     >
                       <FiEye className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={(e) => { e.preventDefault(); handleOpenChat(request); }}
+                      className="p-1.5 text-neutral-500 hover:text-neutral-700 hover:bg-white rounded transition-colors"
+                      title="Open Messages"
+                    >
+                      <FiMessageSquare className="w-3.5 h-3.5" />
                     </button>
                     <Link
                       href={`/track/board?requestId=${request.id}`}
@@ -245,6 +260,16 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Chat Panel */}
+      {chatProject && (
+        <ChatPanel
+          projectId={chatProject.id}
+          projectName={chatProject.company || chatProject.name || "Project"}
+          isOpen={isChatOpen}
+          onToggle={() => setIsChatOpen(!isChatOpen)}
+        />
       )}
     </div>
   );
