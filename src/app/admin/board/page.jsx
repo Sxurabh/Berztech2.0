@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, Suspense } from "react";
 import { FiPlus, FiTrash2, FiMessageSquare, FiFilter } from "react-icons/fi";
 import KanbanBoard from "@/components/admin/KanbanBoard";
 import TaskModal from "@/components/admin/TaskModal";
+import { ChatPanel } from "@/components/chat/ChatPanel";
 import { toast } from "react-hot-toast";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -17,6 +18,8 @@ function BoardContent() {
     const [modalData, setModalData] = useState({ open: false, task: null });
     const [requests, setRequests] = useState([]);
     const [selectedRequestId, setSelectedRequestId] = useState(requestId || '');
+    const [isChatOpen, setIsChatOpen] = useState(false);
+    const [selectedRequestName, setSelectedRequestName] = useState("");
 
     // Fetch requests for the filter dropdown (only when in global view)
     useEffect(() => {
@@ -29,6 +32,16 @@ function BoardContent() {
                 .catch(() => { });
         }
     }, [requestId]);
+
+    // Update selected request name when selectedRequestId changes
+    useEffect(() => {
+        if (selectedRequestId) {
+            const selected = requests.find(r => r.id === selectedRequestId);
+            setSelectedRequestName(selected?.name || "Request");
+        } else {
+            setSelectedRequestName("Request");
+        }
+    }, [selectedRequestId, requests]);
 
     useEffect(() => {
         fetchBoardData();
@@ -232,12 +245,21 @@ function BoardContent() {
                             </p>
                         </div>
 
-                        <button
-                            onClick={() => setModalData({ open: true, task: null })}
-                            className="self-start sm:self-auto px-4 sm:px-6 py-2 sm:py-2.5 bg-neutral-900 text-white font-jetbrains-mono text-[10px] sm:text-xs uppercase tracking-widest font-medium hover:bg-neutral-800 transition-colors rounded-sm shadow-sm"
-                        >
-                            Create Task
-                        </button>
+                        <div className="flex items-center gap-3">
+                            <button
+                                onClick={() => setIsChatOpen(!isChatOpen)}
+                                className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-white border border-neutral-200 text-neutral-700 font-jetbrains-mono text-[10px] sm:text-xs uppercase tracking-widest font-medium hover:bg-neutral-50 hover:border-neutral-300 transition-colors rounded-sm shadow-sm"
+                            >
+                                <FiMessageSquare className="w-4 h-4" />
+                                Messages
+                            </button>
+                            <button
+                                onClick={() => setModalData({ open: true, task: null })}
+                                className="self-start sm:self-auto px-4 sm:px-6 py-2 sm:py-2.5 bg-neutral-900 text-white font-jetbrains-mono text-[10px] sm:text-xs uppercase tracking-widest font-medium hover:bg-neutral-800 transition-colors rounded-sm shadow-sm"
+                            >
+                                Create Task
+                            </button>
+                        </div>
                     </div>
 
                     {/* Request Filter Dropdown — only shown in global view */}
@@ -290,6 +312,15 @@ function BoardContent() {
                     onClose={() => setModalData({ open: false, task: null })}
                     onDelete={handleTaskDelete}
                     onUpdate={handleTaskUpdate}
+                />
+            )}
+
+            {(activeRequestId || selectedRequestId) && (
+                <ChatPanel
+                    projectId={activeRequestId || selectedRequestId}
+                    projectName={selectedRequestName}
+                    isOpen={isChatOpen}
+                    onToggle={() => setIsChatOpen(!isChatOpen)}
                 />
             )}
         </div>
