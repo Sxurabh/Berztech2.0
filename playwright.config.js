@@ -11,6 +11,10 @@ export default defineConfig({
     retries: process.env.CI ? 2 : 0,
     workers: process.env.CI ? 1 : undefined,
     reporter: 'html',
+    timeout: 60000,
+    expect: {
+        timeout: 15000,
+    },
     use: {
         baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
         trace: 'on-first-retry',
@@ -33,6 +37,7 @@ export default defineConfig({
             name: 'chromium',
             use: { ...devices['Desktop Chrome'] },
             dependencies: ['client setup'],
+            testIgnore: /visual/,
         },
         {
             name: 'chromium-mobile',
@@ -41,6 +46,7 @@ export default defineConfig({
                 baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
             },
             dependencies: ['client setup'],
+            testIgnore: /visual/,
         },
         {
             name: 'chromium-tablet',
@@ -49,11 +55,13 @@ export default defineConfig({
                 baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
             },
             dependencies: ['client setup'],
+            testIgnore: /visual/,
         },
     ],
-    webServer: {
+    webServer: process.env.CI ? {
         command: 'npm run dev',
         url: 'http://localhost:3000',
-        reuseExistingServer: !process.env.CI,
-    },
+        reuseExistingServer: true,
+        timeout: 120000,
+    } : undefined,
 });

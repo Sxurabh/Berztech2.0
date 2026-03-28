@@ -33,12 +33,12 @@ export default function KanbanBoard({ tasks, onTaskClick, onTaskMove, onNewTask,
 
     return (
         <DragDropContext onDragEnd={handleDragEnd}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-6 pb-4 md:pb-8 md:h-full md:items-stretch md:auto-rows-[minmax(0,1fr)]">
+            <div data-testid="kanban-board" className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-6 pb-4 md:pb-8 md:h-full md:items-stretch md:auto-rows-[minmax(0,1fr)]">
                 {COLUMNS.map(column => {
                     const columnTasks = getTasksByStatus(column.id);
 
                     return (
-                        <div key={column.id} className="flex flex-col bg-neutral-50/50 border border-neutral-100 md:h-full md:max-h-full rounded-sm md:min-h-0">
+                        <div key={column.id} data-testid="kanban-column" className="flex flex-col bg-neutral-50/50 border border-neutral-100 md:h-full md:max-h-full rounded-sm md:min-h-0">
                             <div className="p-3 sm:p-4 border-b border-neutral-100 flex items-center justify-between bg-white rounded-t-sm">
                                 <h3 className="font-space-grotesk font-medium text-neutral-900 tracking-tight text-sm sm:text-base">
                                     {column.title}

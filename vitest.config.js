@@ -1,11 +1,20 @@
 import { defineConfig } from 'vitest/config';
 import path from 'path';
+import dotenv from 'dotenv';
+
+// Load test environment variables
+dotenv.config({ path: path.resolve(__dirname, 'tests/.env.test') });
+dotenv.config({ path: path.resolve(__dirname, '.env.local') });
 
 export default defineConfig({
   test: {
     globals: true,
     testTimeout: 30000,
     setupFiles: ['./tests/setup.ts'],
+    env: {
+      ADMIN_EMAIL: 'saurabhkirve@gmail.com',
+      NEXT_PUBLIC_ADMIN_EMAIL: 'saurabhkirve@gmail.com',
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
@@ -48,17 +57,12 @@ export default defineConfig({
             'tests/contract/**/*.test.{js,ts,jsx,tsx}',
             'tests/security/**/*.test.{js,ts,jsx,tsx}',
           ],
-          exclude: ['tests/security/integration/**'],
+          exclude: [
+            'tests/security/integration/**',
+            'tests/e2e/**',
+            'tests/load/**',
+          ],
           setupFiles: ['./tests/setup.ts'],
-        },
-      },
-      {
-        extends: true,
-        name: 'node',
-        test: {
-          environment: 'node',
-          include: ['tests/security/integration/**/*.test.js'],
-          setupFiles: ['./tests/setup-integration.ts'],
         },
       },
     ],

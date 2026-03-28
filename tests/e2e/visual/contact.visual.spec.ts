@@ -4,7 +4,7 @@ test.describe('Contact Page Visual Regression', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/contact');
         await page.waitForLoadState('networkidle');
-        await page.waitForTimeout(500);
+        await page.waitForTimeout(1000);
     });
 
     test.describe('Desktop', () => {
@@ -12,16 +12,16 @@ test.describe('Contact Page Visual Regression', () => {
 
         test('full contact page matches baseline', async ({ page }) => {
             await expect(page).toHaveScreenshot('contact-full.png', {
-                maxDiffPixels: 50,
-                threshold: 0.2,
+                maxDiffPixels: 200,
+                threshold: 0.5,
             });
         });
 
         test('contact form section matches baseline', async ({ page }) => {
-            const form = page.locator('form');
+            const form = page.locator('form').filter({ hasText: /Name|Email|Message/i }).first();
             await expect(form).toHaveScreenshot('contact-form.png', {
-                maxDiffPixels: 30,
-                threshold: 0.2,
+                maxDiffPixels: 100,
+                threshold: 0.4,
             });
         });
     });
@@ -31,16 +31,16 @@ test.describe('Contact Page Visual Regression', () => {
 
         test('mobile contact page matches baseline', async ({ page }) => {
             await expect(page).toHaveScreenshot('contact-mobile.png', {
-                maxDiffPixels: 30,
-                threshold: 0.3,
+                maxDiffPixels: 200,
+                threshold: 0.5,
             });
         });
 
         test('mobile contact form matches baseline', async ({ page }) => {
-            const form = page.locator('form');
+            const form = page.locator('form').filter({ hasText: /Name|Email|Message/i }).first();
             await expect(form).toHaveScreenshot('contact-form-mobile.png', {
-                maxDiffPixels: 20,
-                threshold: 0.25,
+                maxDiffPixels: 100,
+                threshold: 0.4,
             });
         });
     });

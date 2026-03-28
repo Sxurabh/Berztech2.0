@@ -29,11 +29,16 @@ test.describe('Blog Listing', () => {
 test.describe('Blog Post Detail', () => {
     test('Can navigate to blog post detail if posts exist', async ({ page }) => {
         await page.goto('/blog');
-        const firstPostLink = page.locator('a[href^="/blog/"]').first();
+        await page.waitForLoadState('networkidle');
+        await page.waitForTimeout(2000);
         
-        if (await firstPostLink.count() > 0) {
+        const firstPostLink = page.locator('article').locator('a[href^="/blog/"]').first();
+        const linkCount = await firstPostLink.count();
+        
+        if (linkCount > 0) {
             await firstPostLink.click();
-            await expect(page).toHaveURL(/\/blog\/[^/]+/, { timeout: 5000 });
+            await page.waitForLoadState('networkidle');
+            await expect(page).toHaveURL(/\/blog\/[^/]+/, { timeout: 10000 });
         } else {
             test.skip();
         }

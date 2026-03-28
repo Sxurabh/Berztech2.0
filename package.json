@@ -22,7 +22,7 @@
     "test:security:live:sql": "concurrently \"npm run dev\" \"wait-on http://localhost:3000 && vitest run tests/security/integration/sql-injection-api.test.js\"",
     "test:security:live:xss": "concurrently \"npm run dev\" \"wait-on http://localhost:3000 && vitest run tests/security/integration/xss-api.test.ts\"",
     "test:live": "npm run test:live:run && npm run test:cleanup",
-    "test:live:run": "npx vitest run tests/security/integration && npx vitest run tests/security/rate-limiting.test.ts tests/security/file-upload-security.test.ts tests/security/csrf-protection.test.ts tests/security/auth-session-security.test.ts tests/security/xss-validation.test.ts tests/security/sql-injection.test.ts && playwright test",
+    "test:live:run": "concurrently --kill-others --success first \"npm run dev\" \"wait-on http://localhost:3000 && (npx vitest run tests/security/integration tests/security/rate-limiting.test.ts tests/security/file-upload-security.test.ts tests/security/csrf-protection.test.ts tests/security/auth-session-security.test.ts tests/security/xss-validation.test.ts tests/security/sql-injection.test.ts && playwright test)\"",
     "test:cleanup": "node scripts/cleanup-test-data.js",
     "test:offline": "vitest run tests/unit tests/components tests/integration tests/property tests/contract && npx vitest run tests/security/secrets-audit.test.ts tests/security/auth-bypass.test.ts tests/security/data-exposure.test.ts tests/security/idor.test.ts tests/security/input-injection.test.ts tests/security/api-auth-matrix.test.ts",
     "test:a11y": "vitest run tests/components/a11y",

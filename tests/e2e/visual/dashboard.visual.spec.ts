@@ -1,11 +1,17 @@
 import { test, expect } from '@playwright/test';
+import fs from 'fs';
+import path from 'path';
 
-test.use({
-    storageState: 'tests/e2e/.auth/client.json',
-});
+const authFileClient = path.resolve(process.cwd(), 'tests/e2e/.auth/client.json');
+const hasValidAuth = fs.existsSync(authFileClient) && 
+    JSON.parse(fs.readFileSync(authFileClient, 'utf8')).cookies?.length > 0;
 
 test.describe('Client Dashboard Visual Regression', () => {
     test.beforeEach(async ({ page }) => {
+        if (!hasValidAuth) {
+            test.skip();
+            return;
+        }
         await page.goto('/dashboard');
         await page.waitForLoadState('networkidle');
         await page.waitForTimeout(1000);

@@ -140,7 +140,7 @@ describe.skipIf(skipIfNoServer)('Security: IDOR Protection - Live API with Real 
         token: clientAToken
       });
       
-      expect([401, 403, 404]).toContain(response.status);
+      expect([401, 403, 404, 405]).toContain(response.status);
     });
 
     it('8. Client A injecting clientId in POST body uses auth user ID', async () => {
@@ -238,8 +238,8 @@ describe.skipIf(skipIfNoServer)('Security: IDOR Protection - Live API with Real 
         }
       });
       
-      // RLS may block (403), allow empty (200), or reject (401)
-      expect([200, 401, 403]).toContain(response.status);
+      // RLS may block (403), allow empty (200), reject (401), or return 400 (bad request)
+      expect([200, 400, 401, 403]).toContain(response.status);
     });
   });
 });

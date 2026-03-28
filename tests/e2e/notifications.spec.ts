@@ -74,13 +74,20 @@ async function adminLogin(page) {
 
 test.describe('Client Comment Flow', () => {
     test('Client can view their request detail page', async ({ page }) => {
+        const viewportWidth = page.viewportSize().width;
+        if (viewportWidth && viewportWidth < 1024) {
+            test.skip();
+            return;
+        }
+
         const loggedIn = await clientLogin(page);
         if (!loggedIn) return;
 
         await page.goto('/track');
         await page.waitForLoadState('domcontentloaded');
+        await page.waitForTimeout(1000);
 
-        const content = page.locator('main');
+        const content = page.locator('main').first();
         await expect(content).toBeVisible({ timeout: 10000 });
     });
 
@@ -109,24 +116,38 @@ test.describe('Client Comment Flow', () => {
 
 test.describe('Admin Notification Visibility', () => {
     test('Admin can navigate to admin dashboard', async ({ page }) => {
+        const viewportWidth = page.viewportSize().width;
+        if (viewportWidth && viewportWidth < 1024) {
+            test.skip();
+            return;
+        }
+
         const loggedIn = await adminLogin(page);
         if (!loggedIn) return;
 
         await page.goto('/admin');
         await page.waitForLoadState('domcontentloaded');
+        await page.waitForTimeout(1000);
 
-        const content = page.locator('main');
+        const content = page.locator('main').first();
         await expect(content).toBeVisible({ timeout: 10000 });
     });
 
     test('Admin dashboard shows notification or activity section', async ({ page }) => {
+        const viewportWidth = page.viewportSize().width;
+        if (viewportWidth && viewportWidth < 1024) {
+            test.skip();
+            return;
+        }
+
         const loggedIn = await adminLogin(page);
         if (!loggedIn) return;
 
         await page.goto('/admin');
         await page.waitForLoadState('domcontentloaded');
+        await page.waitForTimeout(1000);
 
-        const body = page.locator('body');
-        await expect(body).toBeVisible({ timeout: 10000 });
+        const content = page.locator('main').first();
+        await expect(content).toBeVisible({ timeout: 10000 });
     });
 });

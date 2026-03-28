@@ -90,7 +90,7 @@ describe("GET /api/requests", () => {
         const json = await response.json();
 
         expect(response.status).toBe(500);
-        expect(json.error).toBe("DB error");
+        expect(json.error).toBe("Database error");
     });
 
     it("4. Authenticated user with no requests returns empty array", async () => {

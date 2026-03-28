@@ -24,6 +24,22 @@ const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000';
 
 export const skipIfNoServer = process.env.SKIP_LIVE_TESTS === 'true';
 
+// Check if server is running by making a simple request
+let serverAvailable = null;
+export async function checkServerAvailable() {
+  if (serverAvailable !== null) return serverAvailable;
+  try {
+    const response = await fetch(`${BASE_URL}/api/blog`, { 
+      method: 'HEAD',
+      signal: AbortSignal.timeout(3000)
+    });
+    serverAvailable = true;
+  } catch (e) {
+    serverAvailable = false;
+  }
+  return serverAvailable;
+}
+
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://srouvvdubxktqyihwphc.supabase.co';
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyb3V2dmR1YnhrdHF5aWh3cGhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3Mjg3MzEsImV4cCI6MjA4NjMwNDczMX0.2dXdU8R_2l1UyCtXciGJ05xB8I_9zBoaoP2tRPStXx4';
 

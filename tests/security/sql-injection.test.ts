@@ -36,23 +36,27 @@ describe("Security: SQL Injection Prevention - Real Validation", () => {
             },
             from: vi.fn().mockImplementation((table: string) => {
                 queryLog.push({ method: "from", table });
+                const queryChain = {
+                    eq: vi.fn().mockImplementation((col: string, val: any) => {
+                        queryLog.push({ method: "eq", column: col, value: val });
+                        return queryChain;
+                    }),
+                    ilike: vi.fn().mockImplementation((col: string, pattern: string) => {
+                        queryLog.push({ method: "ilike", column: col, pattern });
+                        return queryChain;
+                    }),
+                    order: vi.fn().mockImplementation((column: string, options?: any) => {
+                        queryLog.push({ method: "order", column, options });
+                        return queryChain;
+                    }),
+                    then: vi.fn().mockImplementation((resolve: any, reject: any) => {
+                        resolve({ data: [], error: null });
+                    }),
+                };
                 return {
                     select: vi.fn().mockImplementation((columns: string) => {
                         queryLog.push({ method: "select", columns });
-                        return {
-                            eq: vi.fn().mockImplementation((col: string, val: any) => {
-                                queryLog.push({ method: "eq", column: col, value: val });
-                                return {
-                                    order: vi.fn().mockResolvedValue({ data: [], error: null }),
-                                };
-                            }),
-                            ilike: vi.fn().mockImplementation((col: string, pattern: string) => {
-                                queryLog.push({ method: "ilike", column: col, pattern });
-                                return {
-                                    order: vi.fn().mockResolvedValue({ data: [], error: null }),
-                                };
-                            }),
-                        };
+                        return queryChain;
                     }),
                     insert: vi.fn().mockImplementation((data: any) => {
                         queryLog.push({ method: "insert", data });

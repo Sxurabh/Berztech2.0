@@ -22,6 +22,10 @@ vi.mock("@/config/admin", () => ({
     isAdminEmail: vi.fn().mockImplementation((email: string) => email === "admin@test.com"),
 }));
 
+vi.mock("next/cache", () => ({
+    revalidatePath: vi.fn(),
+}));
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 describe("Security: XSS Prevention - Real API Validation", () => {

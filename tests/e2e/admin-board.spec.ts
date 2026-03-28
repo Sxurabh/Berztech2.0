@@ -31,32 +31,18 @@ test.describe('Admin Board Access', () => {
 });
 
 test.describe('Admin Board Authenticated', () => {
+    test.use({
+        storageState: 'tests/e2e/.auth/admin.json',
+    });
+
     test.beforeEach(async ({ page }) => {
-        const email = process.env.TEST_ADMIN_EMAIL;
-        const password = process.env.TEST_ADMIN_PASSWORD;
+        await page.goto('/auth/login');
+        await page.waitForLoadState('domcontentloaded');
         
-        if (!email || !password) {
+        const storageState = await page.context().storageState();
+        if (!storageState.cookies || storageState.cookies.length === 0) {
             test.skip();
             return;
-        }
-
-        await page.goto('/auth/login');
-        await page.waitForLoadState('networkidle');
-        await page.waitForTimeout(500);
-        
-        await page.getByPlaceholder('you@company.com').fill(email);
-        await page.getByPlaceholder('••••••••').fill(password);
-        
-        try {
-            await page.getByRole('button', { name: 'Sign In', exact: true }).click({ timeout: 5000 });
-        } catch (e) {
-            await page.keyboard.press('Enter');
-        }
-        
-        try {
-            await page.waitForURL(/.*\/admin(\/board)?/, { timeout: 20000 });
-        } catch (e) {
-            // Continue - may already be on admin page
         }
     });
 
@@ -114,28 +100,11 @@ test.describe('Admin Board Authenticated', () => {
 });
 
 test.describe('Admin Board Kanban Drag and Drop', () => {
-    test('Kanban board shows all four columns', async ({ page }) => {
-        const email = process.env.TEST_ADMIN_EMAIL;
-        const password = process.env.TEST_ADMIN_PASSWORD;
-        
-        if (!email || !password) {
-            test.skip();
-            return;
-        }
+    test.use({
+        storageState: 'tests/e2e/.auth/admin.json',
+    });
 
-        await page.goto('/auth/login');
-        await page.waitForLoadState('networkidle');
-        await page.waitForTimeout(500);
-        
-        await page.getByPlaceholder('you@company.com').fill(email);
-        await page.getByPlaceholder('••••••••').fill(password);
-        
-        try {
-            await page.getByRole('button', { name: 'Sign In', exact: true }).click({ timeout: 5000 });
-        } catch (e) {
-            await page.keyboard.press('Enter');
-        }
-        
+    test('Kanban board shows all four columns', async ({ page }) => {
         await page.goto('/admin/board');
         await page.waitForLoadState('domcontentloaded');
         await page.waitForTimeout(2000);
@@ -147,27 +116,6 @@ test.describe('Admin Board Kanban Drag and Drop', () => {
     });
 
     test('Admin can drag a task between columns', async ({ page }) => {
-        const email = process.env.TEST_ADMIN_EMAIL;
-        const password = process.env.TEST_ADMIN_PASSWORD;
-        
-        if (!email || !password) {
-            test.skip();
-            return;
-        }
-
-        await page.goto('/auth/login');
-        await page.waitForLoadState('networkidle');
-        await page.waitForTimeout(500);
-        
-        await page.getByPlaceholder('you@company.com').fill(email);
-        await page.getByPlaceholder('••••••••').fill(password);
-        
-        try {
-            await page.getByRole('button', { name: 'Sign In', exact: true }).click({ timeout: 5000 });
-        } catch (e) {
-            await page.keyboard.press('Enter');
-        }
-        
         await page.goto('/admin/board');
         await page.waitForLoadState('domcontentloaded');
         await page.waitForTimeout(2000);

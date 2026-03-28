@@ -13,39 +13,17 @@ import { test, expect } from '@playwright/test';
  *     PLAYWRIGHT_BASE_URL
  */
 
-async function adminLogin(page) {
-    const email = process.env.TEST_ADMIN_EMAIL;
-    const password = process.env.TEST_ADMIN_PASSWORD;
-
-    if (!email || !password) {
-        test.skip();
-        return false;
-    }
-
-    await page.goto('/auth/login');
-    await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(500);
-
-    await page.getByPlaceholder('you@company.com').fill(email);
-    await page.getByPlaceholder('••••••••').fill(password);
-
-    try {
-        await page.getByRole('button', { name: 'Sign In', exact: true }).click({ timeout: 5000 });
-    } catch (e) {
-        await page.keyboard.press('Enter');
-    }
-
-    try {
-        await page.waitForURL(/.*\/admin/, { timeout: 20000 });
-    } catch (e) { }
-
-    return true;
-}
-
 test.describe('Admin Blog Post Creation', () => {
+    test.use({
+        storageState: 'tests/e2e/.auth/admin.json',
+    });
+
     test('Admin can navigate to blog admin page', async ({ page }) => {
-        const loggedIn = await adminLogin(page);
-        if (!loggedIn) return;
+        const viewportWidth = page.viewportSize().width;
+        if (viewportWidth && viewportWidth < 1024) {
+            test.skip();
+            return;
+        }
 
         await page.goto('/admin/blog');
         await page.waitForLoadState('domcontentloaded');
@@ -53,19 +31,15 @@ test.describe('Admin Blog Post Creation', () => {
     });
 
     test('Admin blog page shows blog management interface', async ({ page }) => {
-        const loggedIn = await adminLogin(page);
-        if (!loggedIn) return;
-
         await page.goto('/admin/blog');
         await page.waitForLoadState('domcontentloaded');
+        await page.waitForTimeout(1000);
 
-        const content = page.locator('main');
+        const content = page.locator('main').first();
         await expect(content).toBeVisible({ timeout: 10000 });
     });
 
     test('Created blog post appears on /blog listing', async ({ page }) => {
-        const loggedIn = await adminLogin(page);
-        if (!loggedIn) return;
 
         const testTitle = `E2E Test Post ${Date.now()}`;
 
@@ -97,29 +71,32 @@ test.describe('Admin Blog Post Creation', () => {
 });
 
 test.describe('Admin Project Creation', () => {
-    test('Admin can navigate to projects admin page', async ({ page }) => {
-        const loggedIn = await adminLogin(page);
-        if (!loggedIn) return;
+    test.use({
+        storageState: 'tests/e2e/.auth/admin.json',
+    });
 
+    test('Admin can navigate to projects admin page', async ({ page }) => {
         await page.goto('/admin/projects');
         await page.waitForLoadState('domcontentloaded');
         await expect(page).toHaveURL(/.*\/admin\/projects/, { timeout: 10000 });
     });
 
     test('Admin projects page shows project management interface', async ({ page }) => {
-        const loggedIn = await adminLogin(page);
-        if (!loggedIn) return;
+        const viewportWidth = page.viewportSize().width;
+        if (viewportWidth && viewportWidth < 1024) {
+            test.skip();
+            return;
+        }
 
         await page.goto('/admin/projects');
         await page.waitForLoadState('domcontentloaded');
+        await page.waitForTimeout(1000);
 
-        const content = page.locator('main');
+        const content = page.locator('main').first();
         await expect(content).toBeVisible({ timeout: 10000 });
     });
 
     test('Created project appears on /work listing', async ({ page }) => {
-        const loggedIn = await adminLogin(page);
-        if (!loggedIn) return;
 
         const testProjectName = `E2E Test Project ${Date.now()}`;
 

@@ -25,6 +25,10 @@ vi.mock("@/config/admin", () => ({
     }),
 }));
 
+vi.mock("next/cache", () => ({
+    revalidatePath: vi.fn(),
+}));
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 describe("Security: Authentication & Session Security - Real Validation", () => {
@@ -40,13 +44,16 @@ describe("Security: Authentication & Session Security - Real Validation", () => 
                 }),
             },
             from: vi.fn().mockReturnValue({
-                select: vi.fn().mockReturnValue({
-                    eq: vi.fn().mockReturnValue({
-                        order: vi.fn().mockResolvedValue({ data: [], error: null }),
-                    }),
+                select: vi.fn().mockReturnThis(),
+                eq: vi.fn().mockReturnThis(),
+                order: vi.fn().mockResolvedValue({ data: [], error: null }),
+                single: vi.fn().mockResolvedValue({ data: [], error: null }),
+                insert: vi.fn().mockReturnValue({
+                    select: vi.fn().mockReturnThis(),
+                    single: vi.fn().mockResolvedValue({ data: { id: "1" }, error: null }),
                 }),
-                insert: vi.fn().mockReturnThis(),
-                single: vi.fn().mockResolvedValue({ data: { id: "1" }, error: null }),
+                update: vi.fn().mockReturnThis(),
+                delete: vi.fn().mockReturnThis(),
             }),
             storage: {
                 from: vi.fn().mockReturnValue({

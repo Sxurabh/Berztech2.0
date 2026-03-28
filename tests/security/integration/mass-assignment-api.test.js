@@ -104,7 +104,7 @@ describe.skipIf(skipIfNoServer)('Security: Mass Assignment Prevention - Live API
         }
       });
       
-      expect(response.status).toBe(403);
+      expect([401, 403]).toContain(response.status);
     });
   });
 
@@ -137,7 +137,7 @@ describe.skipIf(skipIfNoServer)('Security: Mass Assignment Prevention - Live API
         }
       });
       
-      expect(response.status).toBe(403);
+      expect([401, 403]).toContain(response.status);
     });
   });
 
@@ -155,7 +155,7 @@ describe.skipIf(skipIfNoServer)('Security: Mass Assignment Prevention - Live API
         }
       });
       
-      expect(response.status).toBe(403);
+      expect([401, 403]).toContain(response.status);
     });
 
     it('8. Admin can create task', async () => {

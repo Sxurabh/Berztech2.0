@@ -4,7 +4,8 @@ describe('isAdminEmail', () => {
   const originalAdminEmail = process.env.ADMIN_EMAIL;
 
   beforeEach(() => {
-    vi.stubEnv('ADMIN_EMAIL', 'admin@example.com');
+    vi.stubEnv('ADMIN_EMAIL', 'saurabhkirve@gmail.com');
+    vi.stubEnv('NEXT_PUBLIC_ADMIN_EMAIL', 'saurabhkirve@gmail.com');
     vi.resetModules();
   });
 
@@ -15,14 +16,14 @@ describe('isAdminEmail', () => {
 
   it('returns true for configured admin email (exact match)', async () => {
     const { isAdminEmail } = await import('@/config/admin');
-    expect(isAdminEmail('admin@example.com')).toBe(true);
+    expect(isAdminEmail('saurabhkirve@gmail.com')).toBe(true);
   });
 
   it('returns true regardless of letter case (upper/lower)', async () => {
     const { isAdminEmail } = await import('@/config/admin');
-    expect(isAdminEmail('ADMIN@EXAMPLE.COM')).toBe(true);
-    expect(isAdminEmail('Admin@Example.Com')).toBe(true);
-    expect(isAdminEmail('aDmIn@ExAmPlE.cOm')).toBe(true);
+    expect(isAdminEmail('SAURABHKIRVE@GMAIL.COM')).toBe(true);
+    expect(isAdminEmail('Saurabhkirve@Gmail.Com')).toBe(true);
+    expect(isAdminEmail('sAuRaBhKiRvE@gMaIl.CoM')).toBe(true);
   });
 
   it('returns false for a random non-admin email', async () => {
@@ -55,9 +56,9 @@ describe('isAdminEmail', () => {
 
   it('returns false for a string that contains the admin email but has extra characters', async () => {
     const { isAdminEmail } = await import('@/config/admin');
-    expect(isAdminEmail('fakeadmin@example.com')).toBe(false);
-    expect(isAdminEmail('admin@example.com.fake')).toBe(false);
-    expect(isAdminEmail('notadmin@example.com')).toBe(false);
+    expect(isAdminEmail('fakesaurabhkirve@gmail.com')).toBe(false);
+    expect(isAdminEmail('saurabhkirve@gmail.com.fake')).toBe(false);
+    expect(isAdminEmail('notsaurabhkirve@gmail.com')).toBe(false);
   });
 });
 describe('isAdminEmail: missing ADMIN_EMAIL env var', () => {
