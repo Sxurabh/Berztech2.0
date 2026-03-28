@@ -4,16 +4,10 @@ vi.mock("@/lib/supabase/server", () => ({
     createServerSupabaseClient: vi.fn(),
 }));
 
-vi.mock("@/lib/supabase/admin", () => ({
-    createAdminClient: vi.fn(),
-}));
-
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 
 describe("Messages API", () => {
     let mockSupabase;
-    let mockAdminClient;
     let mockUser;
 
     beforeEach(() => {
@@ -22,19 +16,17 @@ describe("Messages API", () => {
             auth: {
                 getUser: vi.fn().mockResolvedValue({ data: { user: mockUser }, error: null }),
             },
-        };
-        mockAdminClient = {
             from: vi.fn().mockReturnValue({
                 select: vi.fn().mockReturnThis(),
                 insert: vi.fn().mockReturnThis(),
                 eq: vi.fn().mockReturnThis(),
                 order: vi.fn().mockReturnThis(),
+                limit: vi.fn().mockReturnThis(),
                 single: vi.fn().mockResolvedValue({ data: null, error: null }),
             }),
         };
         
         createServerSupabaseClient.mockResolvedValue(mockSupabase);
-        createAdminClient.mockReturnValue(mockAdminClient);
     });
 
     afterEach(() => {
@@ -66,7 +58,7 @@ describe("Messages API", () => {
             mockSupabase.auth.getUser.mockResolvedValueOnce({ data: { user: null }, error: null });
 
             const { GET } = await import("@/app/api/messages/route");
-            const req = createJsonRequest("/api/messages?project_id=123", null, "GET");
+            const req = createJsonRequest("/api/messages?project_id=550e8400-e29b-41d4-a716-446655440000", null, "GET");
             const res = await GET(req);
             const json = await res.json();
 
@@ -80,7 +72,10 @@ describe("Messages API", () => {
             mockSupabase.auth.getUser.mockResolvedValueOnce({ data: { user: null }, error: null });
 
             const { POST } = await import("@/app/api/messages/route");
-            const req = createJsonRequest("/api/messages", { project_id: "123", content: "Hello" });
+            const req = createJsonRequest("/api/messages", { 
+                project_id: "550e8400-e29b-41d4-a716-446655440000", 
+                content: "Hello" 
+            });
             const res = await POST(req);
             const json = await res.json();
 
@@ -88,24 +83,30 @@ describe("Messages API", () => {
             expect(json.error).toBe("Unauthorized");
         });
 
-        it("validates project_id is required", async () => {
+        it("validates with Zod schema - project_id must be valid UUID", async () => {
             const { POST } = await import("@/app/api/messages/route");
-            const req = createJsonRequest("/api/messages", { content: "Hello" });
+            const req = createJsonRequest("/api/messages", { 
+                project_id: "invalid-uuid", 
+                content: "Hello" 
+            });
             const res = await POST(req);
             const json = await res.json();
 
             expect(res.status).toBe(400);
-            expect(json.error).toBe("project_id is required");
+            expect(json.error).toBe("Validation failed");
         });
 
-        it("validates message content or attachment is required", async () => {
+        it("validates with Zod schema - content cannot be empty", async () => {
             const { POST } = await import("@/app/api/messages/route");
-            const req = createJsonRequest("/api/messages", { project_id: "123" });
+            const req = createJsonRequest("/api/messages", { 
+                project_id: "550e8400-e29b-41d4-a716-446655440000", 
+                content: "" 
+            });
             const res = await POST(req);
             const json = await res.json();
 
             expect(res.status).toBe(400);
-            expect(json.error).toBe("Message content or attachment is required");
+            expect(json.error).toBe("Validation failed");
         });
     });
 });

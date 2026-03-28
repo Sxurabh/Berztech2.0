@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ChatPanel } from "@/components/chat/ChatPanel";
 
@@ -16,17 +16,6 @@ vi.mock("@/lib/hooks/useMessages", () => ({
     }),
 }));
 
-Object.defineProperty(HTMLDivElement.prototype, "scrollIntoView", {
-    writable: true,
-    value: vi.fn(),
-});
-
-vi.mock("@/lib/hooks/useUploadMessageAttachment", () => ({
-    useUploadMessageAttachment: () => ({
-        upload: vi.fn(),
-    }),
-}));
-
 vi.mock("@/lib/supabase/client", () => ({
     createClient: () => ({
         auth: {
@@ -36,9 +25,15 @@ vi.mock("@/lib/supabase/client", () => ({
 }));
 
 describe("ChatPanel", () => {
-    it("renders toggle button", () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it("renders toggle button", async () => {
         render(<ChatPanel projectId="test" isOpen={false} onToggle={() => {}} />);
-        expect(screen.getByRole("button")).toBeTruthy();
+        await waitFor(() => {
+            expect(screen.getByRole("button")).toBeTruthy();
+        });
     });
 
     it("toggles visibility when button is clicked", async () => {
@@ -47,17 +42,24 @@ describe("ChatPanel", () => {
         
         render(<ChatPanel projectId="test" isOpen={false} onToggle={onToggle} />);
         
+        await waitFor(() => {
+            return screen.getByRole("button");
+        });
         await user.click(screen.getByRole("button"));
         expect(onToggle).toHaveBeenCalled();
     });
 
-    it("shows project name when provided", () => {
+    it("shows project name when provided", async () => {
         render(<ChatPanel projectId="test" projectName="My Project" isOpen={true} onToggle={() => {}} />);
-        expect(screen.getByText("My Project Messages")).toBeTruthy();
+        await waitFor(() => {
+            expect(screen.getByText("My Project")).toBeTruthy();
+        });
     });
 
-    it("shows default project name when not provided", () => {
+    it("shows default project name when not provided", async () => {
         render(<ChatPanel projectId="test" isOpen={true} onToggle={() => {}} />);
-        expect(screen.getByText("Project Messages")).toBeTruthy();
+        await waitFor(() => {
+            expect(screen.getByText("Project Chat")).toBeTruthy();
+        });
     });
 });
