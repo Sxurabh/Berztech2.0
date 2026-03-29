@@ -50,6 +50,14 @@ export async function createTestUser(userData = {}) {
             return null;
         }
 
+        await supabase
+            .from("profiles")
+            .update({ 
+                full_name: userData.metadata?.full_name || "Test User",
+                is_admin: userData.isAdmin || false
+            })
+            .eq("id", data.user.id);
+
         return {
             id: data.user.id,
             email: data.user.email,
@@ -84,6 +92,7 @@ export async function createTestProject(creatorId, projectData = {}) {
                 description,
                 created_by: creatorId,
                 status: projectData.status || "active",
+                client_email: projectData.clientEmail || "test@example.com",
             })
             .select()
             .single();
@@ -143,6 +152,99 @@ export async function createTestMessage(senderId, projectId, messageData = {}) {
     }
 }
 
+export async function createTestReadReceipt(messageId, userId, userEmail) {
+    if (!isSupabaseConfigured()) {
+        console.warn("Supabase not configured, skipping read receipt creation");
+        return null;
+    }
+
+    const supabase = getAdminClient();
+    if (!supabase) {
+        console.warn("Admin client unavailable, skipping read receipt creation");
+        return null;
+    }
+
+    try {
+        const { data, error } = await supabase
+            .from("message_reads")
+            .upsert({
+                message_id: messageId,
+                user_id: userId,
+                user_email: userEmail,
+                read_at: new Date().toISOString(),
+            })
+            .select()
+            .single();
+
+        if (error) {
+            console.warn("Failed to create test read receipt:", error.message);
+            return null;
+        }
+
+        return data;
+    } catch (err) {
+        console.warn("Error creating test read receipt:", err.message);
+        return null;
+    }
+}
+
+export async function getMessagesByProject(projectId) {
+    if (!isSupabaseConfigured()) {
+        return [];
+    }
+
+    const supabase = getAdminClient();
+    if (!supabase) {
+        return [];
+    }
+
+    try {
+        const { data, error } = await supabase
+            .from("project_messages")
+            .select("*")
+            .eq("project_id", projectId)
+            .order("created_at", { ascending: true });
+
+        if (error) {
+            console.warn("Failed to get messages:", error.message);
+            return [];
+        }
+
+        return data || [];
+    } catch (err) {
+        console.warn("Error getting messages:", err.message);
+        return [];
+    }
+}
+
+export async function getReadReceipts(messageId) {
+    if (!isSupabaseConfigured()) {
+        return [];
+    }
+
+    const supabase = getAdminClient();
+    if (!supabase) {
+        return [];
+    }
+
+    try {
+        const { data, error } = await supabase
+            .from("message_reads")
+            .select("*")
+            .eq("message_id", messageId);
+
+        if (error) {
+            console.warn("Failed to get read receipts:", error.message);
+            return [];
+        }
+
+        return data || [];
+    } catch (err) {
+        console.warn("Error getting read receipts:", err.message);
+        return [];
+    }
+}
+
 export async function cleanupTestData(userId = null, projectId = null, messageIds = []) {
     if (!isSupabaseConfigured()) {
         return;
@@ -156,12 +258,35 @@ export async function cleanupTestData(userId = null, projectId = null, messageId
     try {
         if (messageIds.length > 0) {
             await supabase
+                .from("message_reads")
+                .delete()
+                .in("message_id", messageIds);
+            
+            await supabase
                 .from("project_messages")
                 .delete()
                 .in("id", messageIds);
         }
 
         if (projectId) {
+            const { data: messages } = await supabase
+                .from("project_messages")
+                .select("id")
+                .eq("project_id", projectId);
+            
+            if (messages?.length > 0) {
+                const ids = messages.map(m => m.id);
+                await supabase
+                    .from("message_reads")
+                    .delete()
+                    .in("message_id", ids);
+                
+                await supabase
+                    .from("project_messages")
+                    .delete()
+                    .in("id", ids);
+            }
+
             await supabase
                 .from("projects")
                 .delete()

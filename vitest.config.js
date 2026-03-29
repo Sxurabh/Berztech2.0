@@ -52,7 +52,6 @@ export default defineConfig({
           include: [
             'tests/unit/**/*.test.{js,ts,jsx,tsx}',
             'tests/components/**/*.test.{js,ts,jsx,tsx}',
-            'tests/integration/**/*.test.{js,ts,jsx,tsx}',
             'tests/property/**/*.test.{js,ts,jsx,tsx}',
             'tests/contract/**/*.test.{js,ts,jsx,tsx}',
             'tests/security/**/*.test.{js,ts,jsx,tsx}',
@@ -61,6 +60,7 @@ export default defineConfig({
             'tests/security/integration/**',
             'tests/e2e/**',
             'tests/load/**',
+            'tests/integration/**/*.test.{js,ts}',
           ],
           setupFiles: ['./tests/setup.ts'],
         },

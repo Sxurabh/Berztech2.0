@@ -1,12 +1,13 @@
 "use client";
 import { useState, useRef } from "react";
-import { FiSend, FiPaperclip, FiX } from "react-icons/fi";
+import { FiSend, FiPaperclip, FiX, FiRefreshCw } from "react-icons/fi";
 import clsx from "clsx";
 
 export function ChatInput({ onSend, onUpload, disabled, isUploading, isMobile }) {
     const [message, setMessage] = useState("");
     const [attachment, setAttachment] = useState(null);
     const [uploadProgress, setUploadProgress] = useState(0);
+    const [uploadError, setUploadError] = useState(null);
     const fileInputRef = useRef(null);
 
     const handleFileSelect = async (e) => {
@@ -19,6 +20,7 @@ export function ChatInput({ onSend, onUpload, disabled, isUploading, isMobile })
             type: file.type.startsWith("image/") ? "image" : "document",
             preview: file.type.startsWith("image/") ? URL.createObjectURL(file) : null,
         });
+        setUploadError(null);
     };
 
     const handleSend = async () => {
@@ -29,13 +31,19 @@ export function ChatInput({ onSend, onUpload, disabled, isUploading, isMobile })
 
             if (attachment?.file) {
                 setUploadProgress(10);
-                const result = await onUpload(attachment.file);
-                setUploadProgress(100);
-                attachmentData = {
-                    attachment_url: result.url,
-                    attachment_type: result.type,
-                    attachment_name: result.name,
-                };
+                setUploadError(null);
+                try {
+                    const result = await onUpload(attachment.file);
+                    setUploadProgress(100);
+                    attachmentData = {
+                        attachment_url: result.url,
+                        attachment_type: result.type,
+                        attachment_name: result.name,
+                    };
+                } catch (uploadErr) {
+                    setUploadError(uploadErr.message || "Upload failed");
+                    throw uploadErr;
+                }
             }
 
             await onSend({
@@ -46,8 +54,25 @@ export function ChatInput({ onSend, onUpload, disabled, isUploading, isMobile })
             setMessage("");
             setAttachment(null);
             setUploadProgress(0);
+            setUploadError(null);
         } catch (error) {
             console.error("Send error:", error);
+            if (!uploadError) {
+                setUploadProgress(0);
+            }
+        }
+    };
+
+    const handleRetryUpload = async () => {
+        if (!attachment?.file || !onUpload) return;
+        setUploadError(null);
+        setUploadProgress(10);
+        try {
+            const result = await onUpload(attachment.file);
+            setUploadProgress(100);
+            setUploadError(null);
+        } catch (err) {
+            setUploadError(err.message || "Upload failed");
             setUploadProgress(0);
         }
     };
@@ -64,6 +89,8 @@ export function ChatInput({ onSend, onUpload, disabled, isUploading, isMobile })
             URL.revokeObjectURL(attachment.preview);
         }
         setAttachment(null);
+        setUploadProgress(0);
+        setUploadError(null);
         if (fileInputRef.current) {
             fileInputRef.current.value = "";
         }
@@ -100,12 +127,24 @@ export function ChatInput({ onSend, onUpload, disabled, isUploading, isMobile })
                             <FiX className={isMobile ? "w-5 h-5" : "w-4 h-4"} />
                         </button>
                     </div>
-                    {isUploading && (
+                    {isUploading && !uploadError && (
                         <div className="mt-2 h-1 bg-neutral-200 rounded overflow-hidden">
                             <div
                                 className="h-full bg-neutral-900 transition-all"
                                 style={{ width: `${uploadProgress}%` }}
                             />
+                        </div>
+                    )}
+                    {uploadError && (
+                        <div className="mt-2 flex items-center gap-2">
+                            <span className="text-xs text-red-500 flex-1 truncate">{uploadError}</span>
+                            <button
+                                onClick={handleRetryUpload}
+                                className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800"
+                            >
+                                <FiRefreshCw className="w-3 h-3" />
+                                Retry
+                            </button>
                         </div>
                     )}
                 </div>

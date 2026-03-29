@@ -58,9 +58,10 @@ export function ChatPanel({
     const [isUploading, setIsUploading] = useState(false);
     const [minimized, setMinimized] = useState(false);
     const panelRef = useRef(null);
-    const { messages, loading, sendMessage, markAsRead, isSending } = useMessages(projectId);
+    const { messages, loading, error, sendMessage, markAsRead, isSending } = useMessages(projectId);
     const { upload } = useUploadMessageAttachment();
     const { unreadCount: notificationCount } = useNotifications();
+    const [sendError, setSendError] = useState(null);
 
     const otherUserId = recipientId;
     console.log("[CHAT_PANEL] recipientId:", recipientId, "otherUserId:", otherUserId);
@@ -106,7 +107,13 @@ export function ChatPanel({
     }, [isOpen, onToggle]);
 
     const handleSend = async (data) => {
-        await sendMessage(data);
+        setSendError(null);
+        try {
+            await sendMessage(data);
+        } catch (err) {
+            setSendError(err.message || "Failed to send message");
+            throw err;
+        }
     };
 
     const handleUpload = async (file) => {
@@ -244,7 +251,19 @@ export function ChatPanel({
                             <MessageList
                                 messages={messages}
                                 currentUserId={currentUserId}
+                                isLoading={loading}
                             />
+                            {sendError && (
+                                <div className="px-4 py-2 bg-red-50 border-t border-red-200 text-red-600 text-sm flex items-center justify-between">
+                                    <span>{sendError}</span>
+                                    <button
+                                        onClick={() => setSendError(null)}
+                                        className="text-red-400 hover:text-red-600"
+                                    >
+                                        <FiX className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            )}
                             <ChatInput
                                 onSend={handleSend}
                                 onUpload={handleUpload}
@@ -272,7 +291,19 @@ export function ChatPanel({
                             <MessageList
                                 messages={messages}
                                 currentUserId={currentUserId}
+                                isLoading={loading}
                             />
+                            {sendError && (
+                                <div className="px-4 py-2 bg-red-50 border-t border-red-200 text-red-600 text-sm flex items-center justify-between">
+                                    <span>{sendError}</span>
+                                    <button
+                                        onClick={() => setSendError(null)}
+                                        className="text-red-400 hover:text-red-600"
+                                    >
+                                        <FiX className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            )}
                             <ChatInput
                                 onSend={handleSend}
                                 onUpload={handleUpload}
