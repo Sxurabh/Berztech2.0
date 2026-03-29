@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ChatPanel } from "@/components/chat/ChatPanel";
+import { MessageBubble } from "@/components/chat/MessageBubble";
 
 vi.mock("@/lib/hooks/useMessages", () => ({
     useMessages: () => ({
@@ -61,5 +62,38 @@ describe("ChatPanel", () => {
         await waitFor(() => {
             expect(screen.getByText("Project Chat")).toBeTruthy();
         });
+    });
+});
+
+describe("MessageBubble", () => {
+    const mockMessage = {
+        id: "msg-1",
+        content: "Hello there!",
+        sender_id: "other-user",
+        sender: { full_name: "John Doe" },
+        created_at: "2024-01-01T10:00:00Z",
+        reads: [],
+    };
+
+    it("shows avatar with sender's first letter for received messages", () => {
+        render(
+            <MessageBubble 
+                message={mockMessage} 
+                currentUserId="current-user" 
+            />
+        );
+        expect(screen.getByText("J")).toBeTruthy();
+    });
+
+    it("does not show avatar for own messages", () => {
+        const ownMessage = { ...mockMessage, sender_id: "current-user" };
+        const { container } = render(
+            <MessageBubble 
+                message={ownMessage} 
+                currentUserId="current-user" 
+            />
+        );
+        const avatar = container.querySelector(".rounded-full");
+        expect(avatar).toBeNull();
     });
 });

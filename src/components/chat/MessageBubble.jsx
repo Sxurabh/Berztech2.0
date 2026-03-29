@@ -44,9 +44,11 @@ export function MessageBubble({ message, currentUserId }) {
             "flex gap-2 mb-3",
             isOwn ? "flex-row-reverse" : "flex-row"
         )}>
-            <div className="w-8 h-8 rounded-full bg-neutral-200 flex items-center justify-center text-xs font-medium text-neutral-600 flex-shrink-0">
-                {message.sender?.full_name?.charAt(0)?.toUpperCase() || "?"}
-            </div>
+            {!isOwn && (
+                <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-xs font-medium text-white flex-shrink-0">
+                    {message.sender?.full_name?.charAt(0)?.toUpperCase() || "?"}
+                </div>
+            )}
 
             <div className={clsx(
                 "max-w-[70%] flex flex-col",
