@@ -62,32 +62,44 @@ describe("Security: File Upload Security - Real Validation", () => {
     });
 
     function createUploadRequest(content: Uint8Array, filename: string, contentType: string, ip: string = "192.168.1.1") {
-        const blob = new Blob([content.buffer as ArrayBuffer], { type: contentType });
-        const formData = new FormData();
-        formData.append("file", blob, filename);
-        
-        const req = new NextRequest("http://localhost:3000/api/upload", {
-            method: "POST",
-            headers: { "x-forwarded-for": ip },
-        });
-        
-        vi.spyOn(req, "formData").mockResolvedValue(formData);
-        return req;
+        const mockFile = {
+            type: contentType,
+            size: content.length,
+            name: filename,
+            arrayBuffer: vi.fn().mockResolvedValue(content.buffer),
+        };
+
+        const mockFormData = {
+            get: vi.fn().mockReturnValue(mockFile),
+        };
+
+        return {
+            headers: {
+                get: (name: string) => name === "x-forwarded-for" ? ip : null,
+            },
+            formData: vi.fn().mockResolvedValue(mockFormData),
+        } as unknown as Request;
     }
 
     describe("MIME Type Validation - Real Validation", () => {
+        const JPEG_MAGIC = new Uint8Array([0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46]);
+        const PNG_MAGIC = new Uint8Array([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]);
+        const GIF_MAGIC = new Uint8Array([0x47, 0x49, 0x46, 0x38, 0x39, 0x61]);
+        const WEBP_MAGIC = new Uint8Array([0x52, 0x49, 0x46, 0x46, 0x00, 0x00, 0x00, 0x00, 0x57, 0x45, 0x42, 0x50]);
+
         it("1. Accepts JPEG files", async () => {
-            const content = new Uint8Array(100).fill(0);
+            const content = new Uint8Array(100);
+            content.set(JPEG_MAGIC);
             const req = createUploadRequest(content, "test.jpg", "image/jpeg");
 
             const res = await uploadPost(req);
 
-            // Should succeed (200) or be rate limited (429)
             expect([200, 429]).toContain(res.status);
         });
 
         it("2. Accepts PNG files", async () => {
-            const content = new Uint8Array(100).fill(0);
+            const content = new Uint8Array(100);
+            content.set(PNG_MAGIC);
             const req = createUploadRequest(content, "test.png", "image/png");
 
             const res = await uploadPost(req);
@@ -96,7 +108,8 @@ describe("Security: File Upload Security - Real Validation", () => {
         });
 
         it("3. Accepts WebP files", async () => {
-            const content = new Uint8Array(100).fill(0);
+            const content = new Uint8Array(100);
+            content.set(WEBP_MAGIC);
             const req = createUploadRequest(content, "test.webp", "image/webp");
 
             const res = await uploadPost(req);
@@ -105,7 +118,8 @@ describe("Security: File Upload Security - Real Validation", () => {
         });
 
         it("4. Accepts GIF files", async () => {
-            const content = new Uint8Array(100).fill(0);
+            const content = new Uint8Array(100);
+            content.set(GIF_MAGIC);
             const req = createUploadRequest(content, "test.gif", "image/gif");
 
             const res = await uploadPost(req);
@@ -171,8 +185,11 @@ describe("Security: File Upload Security - Real Validation", () => {
     });
 
     describe("File Size Validation - Real Validation", () => {
+        const JPEG_MAGIC = new Uint8Array([0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46]);
+
         it("11. Accepts files under 5MB", async () => {
-            const content = new Uint8Array(100 * 1024); // 100KB - smaller for test stability
+            const content = new Uint8Array(100 * 1024);
+            content.set(JPEG_MAGIC);
             const req = createUploadRequest(content, "test.jpg", "image/jpeg");
 
             const res = await uploadPost(req);
@@ -181,7 +198,8 @@ describe("Security: File Upload Security - Real Validation", () => {
         });
 
         it("12. Rejects files over 5MB", async () => {
-            const content = new Uint8Array(6 * 1024 * 1024); // 6MB
+            const content = new Uint8Array(6 * 1024 * 1024);
+            content.set(JPEG_MAGIC);
             const req = createUploadRequest(content, "large.jpg", "image/jpeg");
 
             const res = await uploadPost(req);
@@ -192,7 +210,8 @@ describe("Security: File Upload Security - Real Validation", () => {
         });
 
         it("13. Rejects files exactly at 5MB boundary", async () => {
-            const content = new Uint8Array(5 * 1024 * 1024 + 1); // Just over 5MB
+            const content = new Uint8Array(5 * 1024 * 1024 + 1);
+            content.set(JPEG_MAGIC);
             const req = createUploadRequest(content, "boundary.jpg", "image/jpeg");
 
             const res = await uploadPost(req);
@@ -206,7 +225,6 @@ describe("Security: File Upload Security - Real Validation", () => {
 
             const res = await uploadPost(req);
 
-            // Empty files might be accepted or rejected
             expect([200, 400, 429]).toContain(res.status);
         });
     });

@@ -5,16 +5,50 @@ import { isAdminEmail } from "@/config/admin";
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
-// SECURITY NOTE: Magic-byte validation is not implemented. Files are validated
-// using browser-provided MIME types (file.type) via Array.includes(). A malicious
-// actor could upload a file with an allowed MIME type but contain malicious content
-// (e.g., HTML or PHP code). For future hardening, add magic-byte (file signature)
-// validation to verify the actual file content matches the declared MIME type.
+const MAGIC_BYTES = {
+    "image/jpeg": [
+        { bytes: [0xFF, 0xD8, 0xFF], offset: 0 }
+    ],
+    "image/png": [
+        { bytes: [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A], offset: 0 }
+    ],
+    "image/gif": [
+        { bytes: [0x47, 0x49, 0x46, 0x38, 0x39, 0x61], offset: 0 },
+        { bytes: [0x47, 0x49, 0x46, 0x38, 0x37, 0x61], offset: 0 }
+    ],
+    "image/webp": [
+        { bytes: [0x52, 0x49, 0x46, 0x46, null, null, null, null, 0x57, 0x45, 0x42, 0x50], offset: 0, wildcard: true }
+    ]
+};
+
+function validateMagicBytes(fileBuffer, mimeType) {
+    const signatures = MAGIC_BYTES[mimeType];
+    if (!signatures) return false;
+
+    const uint8Array = new Uint8Array(fileBuffer);
+
+    return signatures.some(sig => {
+        const match = sig.bytes.every((byte, index) => {
+            if (sig.wildcard && byte === null) return true;
+            return uint8Array[sig.offset + index] === byte;
+        });
+        return match;
+    });
+}
+
+function sanitizeFilename(filename) {
+    if (!filename) return filename;
+    return filename
+        .replace(/\.\./g, '')
+        .replace(/[\/\\]/g, '')
+        .replace(/\x00/g, '')
+        .trim()
+        .substring(0, 255);
+}
 
 // Simple in-memory rate limiting map
-// Note: Clears on serverless cold starts, but prevents rapid DoS in warm instances
 const rateLimitMap = new Map();
-const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
+const RATE_LIMIT_WINDOW_MS = 60 * 1000;
 const MAX_UPLOADS_PER_WINDOW = 20;
 
 const MIME_TO_EXT = {
@@ -66,6 +100,15 @@ export async function POST(request) {
         if (!ALLOWED_TYPES.includes(file.type)) {
             return NextResponse.json(
                 { error: `Invalid file type. Allowed: ${ALLOWED_TYPES.join(", ")}` },
+                { status: 400 }
+            );
+        }
+
+        // Validate magic bytes to verify actual file content
+        const fileBuffer = await file.arrayBuffer();
+        if (!validateMagicBytes(fileBuffer, file.type)) {
+            return NextResponse.json(
+                { error: "File content does not match declared type" },
                 { status: 400 }
             );
         }

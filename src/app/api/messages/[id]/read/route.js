@@ -1,21 +1,47 @@
 import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
+const RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const MAX_READS_PER_WINDOW = 60;
+
+const readRateLimitMap = new Map();
+
+function checkRateLimit(map, key, maxRequests) {
+    const now = Date.now();
+    const data = map.get(key) || { count: 0, startTime: now };
+
+    if (now - data.startTime > RATE_LIMIT_WINDOW_MS) {
+        data.count = 1;
+        data.startTime = now;
+    } else {
+        data.count += 1;
+    }
+    map.set(key, data);
+
+    return data.count >= maxRequests;
+}
+
 export async function PATCH(request, { params }) {
     try {
-        // FIX: Await params in Next.js 15+
         const { id } = await params;
         
-        console.log("[READ_RECEIPT] PATCH called with message id:", id);
-        console.log("[READ_RECEIPT] Request URL:", request.url);
+        const ip = request.headers.get("x-forwarded-for") || "unknown";
+        
+        if (checkRateLimit(readRateLimitMap, ip, MAX_READS_PER_WINDOW)) {
+            const retryAfter = Math.ceil(RATE_LIMIT_WINDOW_MS / 1000);
+            return NextResponse.json(
+                { error: "Rate limit exceeded. Try again later." }, 
+                { 
+                    status: 429,
+                    headers: { "retry-after": String(retryAfter) }
+                }
+            );
+        }
         
         const supabase = await createServerSupabaseClient();
         const { data: { user } } = await supabase.auth.getUser();
 
-        console.log("[READ_RECEIPT] Auth user:", user?.id, user?.email);
-
         if (!user) {
-            console.log("[READ_RECEIPT] Unauthorized - no user");
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
@@ -25,16 +51,29 @@ export async function PATCH(request, { params }) {
             .eq("id", id)
             .single();
 
-        console.log("[READ_RECEIPT] Message data:", message, "Error:", msgError);
-
         if (msgError || !message) {
-            console.log("[READ_RECEIPT] Message not found, id:", id);
             return NextResponse.json({ error: "Message not found" }, { status: 404 });
         }
 
         if (message.sender_id === user.id) {
-            console.log("[READ_RECEIPT] Cannot mark own message as read");
             return NextResponse.json({ error: "Cannot mark own message as read" }, { status: 400 });
+        }
+
+        const { data: project, error: projectError } = await supabase
+            .from("requests")
+            .select("user_id, client_email")
+            .eq("id", message.project_id)
+            .single();
+
+        if (projectError || !project) {
+            return NextResponse.json({ error: "Project not found" }, { status: 404 });
+        }
+
+        const isProjectOwner = project.user_id === user.id;
+        const isProjectClient = project.client_email === user.email;
+
+        if (!isProjectOwner && !isProjectClient) {
+            return NextResponse.json({ error: "Forbidden - not a project member" }, { status: 403 });
         }
 
         const { data, error } = await supabase
@@ -50,14 +89,11 @@ export async function PATCH(request, { params }) {
             .select()
             .single();
 
-        console.log("[READ_RECEIPT] Upsert result - data:", data, "error:", error);
-
         if (error) {
-            console.error("[READ_RECEIPT] Mark read error:", error);
+            console.error("[READ_RECEIPT] Mark read error:", error.code);
             return NextResponse.json({ error: "Failed to mark as read" }, { status: 500 });
         }
 
-        console.log("[READ_RECEIPT] Success! Marked message as read");
         return NextResponse.json({ data }, { status: 200 });
     } catch (error) {
         console.error("[READ_RECEIPT] PATCH /api/messages/[id]/read error:", error);

@@ -2,6 +2,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useRef } from "react";
 
+function isValidUUID(str) {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(str);
+}
+
 export function useMessages(projectId) {
     const queryClient = useQueryClient();
     const supabase = createClient();
@@ -67,6 +72,11 @@ export function useMessages(projectId) {
 
     useEffect(() => {
         if (!projectId || !supabase) return;
+        
+        if (!isValidUUID(projectId)) {
+            console.error("[USE_MESSAGES] Invalid projectId format:", projectId);
+            return;
+        }
 
         console.log("[USE_MESSAGES] Setting up realtime for projectId:", projectId);
 

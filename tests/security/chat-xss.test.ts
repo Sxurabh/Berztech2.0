@@ -301,7 +301,7 @@ describe("Security: Chat XSS Prevention - Real API Validation", () => {
             expect(body.data.content).toBe("Hello world");
         });
 
-        it("XSS payload returned without execution", async () => {
+        it("XSS payload is sanitized (script tags stripped)", async () => {
             const xssPayload = '<script>alert(1)</script>';
             const req = createJsonRequest({
                 project_id: validProjectId,
@@ -311,7 +311,8 @@ describe("Security: Chat XSS Prevention - Real API Validation", () => {
 
             expect(res.status).toBe(201);
             const body = await res.json();
-            expect(body.data.content).toBe(xssPayload);
+            expect(body.data.content).not.toContain("<script>");
+            expect(body.data.content).not.toContain("alert");
         });
 
         it("special chars handled correctly", async () => {

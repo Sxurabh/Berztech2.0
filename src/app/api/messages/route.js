@@ -2,6 +2,50 @@ import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { z } from "zod";
 
+const RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const MAX_MESSAGES_PER_WINDOW = 30;
+const MAX_FETCHES_PER_WINDOW = 60;
+
+const messageRateLimitMap = new Map();
+const fetchRateLimitMap = new Map();
+
+function checkRateLimit(map, key, maxRequests) {
+    const now = Date.now();
+    const data = map.get(key) || { count: 0, startTime: now };
+
+    if (now - data.startTime > RATE_LIMIT_WINDOW_MS) {
+        data.count = 1;
+        data.startTime = now;
+    } else {
+        data.count += 1;
+    }
+    map.set(key, data);
+
+    return data.count >= maxRequests;
+}
+
+function sanitizeContent(content) {
+    if (!content) return content;
+    
+    const dangerousPatterns = [
+        /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+        /<script\b[^>]*>/gi,
+        /<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi,
+        /javascript:/gi,
+        /on\w+\s*=/gi,
+        /<svg[^>]*onload[^>]*>/gi,
+        /data:text\/html/gi,
+        /vbscript:/gi,
+    ];
+
+    let sanitized = content;
+    dangerousPatterns.forEach(pattern => {
+        sanitized = sanitized.replace(pattern, '');
+    });
+
+    return sanitized;
+}
+
 const CreateMessageSchema = z.object({
     project_id: z.string().uuid("Invalid project ID"),
     content: z.string().min(1, "Message cannot be empty").max(5000, "Message too long"),
@@ -13,20 +57,30 @@ const CreateMessageSchema = z.object({
 
 export async function GET(request) {
     try {
+        const ip = request.headers.get("x-forwarded-for") || "unknown";
+        
+        if (checkRateLimit(fetchRateLimitMap, ip, MAX_FETCHES_PER_WINDOW)) {
+            const retryAfter = Math.ceil(RATE_LIMIT_WINDOW_MS / 1000);
+            return NextResponse.json(
+                { error: "Rate limit exceeded. Try again later." }, 
+                { 
+                    status: 429,
+                    headers: { "retry-after": String(retryAfter) }
+                }
+            );
+        }
+
         const supabase = await createServerSupabaseClient();
         const { searchParams } = new URL(request.url);
         const projectId = searchParams.get("project_id");
         const limit = parseInt(searchParams.get("limit") || "50");
         const before = searchParams.get("before");
 
-        console.log("[GET_MESSAGES] projectId:", projectId, "limit:", limit);
-
         if (!projectId) {
             return NextResponse.json({ error: "project_id is required" }, { status: 400 });
         }
 
         const { data: { user } } = await supabase.auth.getUser();
-        console.log("[GET_MESSAGES] Auth user:", user?.id, user?.email);
         
         if (!user) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -45,27 +99,21 @@ export async function GET(request) {
 
         const { data: messages, error } = await query;
 
-        console.log("[GET_MESSAGES] Raw messages count:", messages?.length || 0, "Error:", error);
-
         if (error) {
             console.error("[GET_MESSAGES] Database error:", error);
             return NextResponse.json({ error: "Database error" }, { status: 500 });
         }
 
         if (!messages || messages.length === 0) {
-            console.log("[GET_MESSAGES] No messages found for project:", projectId);
             return NextResponse.json({ data: [] }, { status: 200 });
         }
 
         const messageIds = messages.map(m => m.id);
-        console.log("[GET_MESSAGES] Message IDs:", messageIds);
 
         const { data: reads } = await supabase
             .from("message_reads")
             .select("*")
             .in("message_id", messageIds);
-
-        console.log("[GET_MESSAGES] Reads count:", reads?.length || 0);
 
         const readsMap = {};
         reads?.forEach(r => {
@@ -74,7 +122,6 @@ export async function GET(request) {
         });
 
         const senderIds = [...new Set(messages.map(m => m.sender_id))];
-        console.log("[GET_MESSAGES] Sender IDs:", senderIds);
 
         const { data: profiles } = await supabase
             .from("user_profiles")
@@ -86,11 +133,9 @@ export async function GET(request) {
             profilesMap[p.id] = p;
         });
 
-        console.log("[GET_MESSAGES] Profiles map:", profilesMap);
-
         const messagesWithReads = messages.map(msg => {
             const sender = profilesMap[msg.sender_id];
-            const formatted = {
+            return {
                 ...msg,
                 reads: readsMap[msg.id] || [],
                 sender: sender ? {
@@ -103,11 +148,8 @@ export async function GET(request) {
                     avatar_url: null
                 }
             };
-            console.log("[GET_MESSAGES] Message", msg.id, "sender:", formatted.sender);
-            return formatted;
         });
 
-        console.log("[GET_MESSAGES] Returning", messagesWithReads.length, "messages");
         return NextResponse.json({ data: messagesWithReads }, { status: 200 });
     } catch (error) {
         console.error("[GET_MESSAGES] GET /api/messages error:", error);
@@ -117,6 +159,19 @@ export async function GET(request) {
 
 export async function POST(request) {
     try {
+        const ip = request.headers.get("x-forwarded-for") || "unknown";
+        
+        if (checkRateLimit(messageRateLimitMap, ip, MAX_MESSAGES_PER_WINDOW)) {
+            const retryAfter = Math.ceil(RATE_LIMIT_WINDOW_MS / 1000);
+            return NextResponse.json(
+                { error: "Rate limit exceeded. Try again later." }, 
+                { 
+                    status: 429,
+                    headers: { "retry-after": String(retryAfter) }
+                }
+            );
+        }
+
         let body;
         try {
             body = await request.json();
@@ -127,7 +182,7 @@ export async function POST(request) {
         const validation = CreateMessageSchema.safeParse(body);
         if (!validation.success) {
             return NextResponse.json(
-                { error: "Validation failed", details: validation.error.format() },
+                { error: "Validation failed" },
                 { status: 400 }
             );
         }
@@ -140,6 +195,7 @@ export async function POST(request) {
         }
 
         const senderName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
+        const sanitizedContent = sanitizeContent(validation.data.content);
 
         const { data: message, error } = await supabase
             .from("project_messages")
@@ -148,7 +204,7 @@ export async function POST(request) {
                 sender_id: user.id,
                 sender_name: senderName,
                 sender_email: user.email,
-                content: validation.data.content,
+                content: sanitizedContent,
                 task_id: validation.data.task_id || null,
                 attachment_url: validation.data.attachment_url || null,
                 attachment_type: validation.data.attachment_type || null,
@@ -158,7 +214,7 @@ export async function POST(request) {
             .single();
 
         if (error) {
-            console.error("Insert error:", error);
+            console.error("[POST_MESSAGES] Insert error:", error.code);
             return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
         }
 
@@ -173,7 +229,7 @@ export async function POST(request) {
                 user_id: recipient.user_id,
                 type: "message",
                 title: "New Message",
-                message: `${senderName} sent you a message: ${validation.data.content.substring(0, 100)}${validation.data.content.length > 100 ? '...' : ''}`,
+                message: `${senderName} sent you a message: ${sanitizedContent.substring(0, 100)}${sanitizedContent.length > 100 ? '...' : ''}`,
                 request_id: validation.data.project_id,
                 source_user_id: user.id,
                 is_read: false

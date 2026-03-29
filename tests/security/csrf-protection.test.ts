@@ -340,14 +340,24 @@ describe("Security: CSRF Protection - Real Validation", () => {
                 error: null,
             });
 
-            const formData = new FormData();
-            const blob = new Blob(["test"], { type: "image/jpeg" });
-            formData.append("file", blob, "test.jpg");
+            const JPEG_MAGIC = new Uint8Array([0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46]);
+            const mockFile = {
+                type: "image/jpeg",
+                size: JPEG_MAGIC.length,
+                name: "test.jpg",
+                arrayBuffer: vi.fn().mockResolvedValue(JPEG_MAGIC.buffer),
+            };
 
-            const req = new NextRequest("http://localhost:3000/api/upload", {
-                method: "POST",
-            });
-            vi.spyOn(req, "formData").mockResolvedValue(formData);
+            const mockFormData = {
+                get: vi.fn().mockReturnValue(mockFile),
+            };
+
+            const req = {
+                headers: {
+                    get: (name: string) => name === "x-forwarded-for" ? "192.168.1.1" : null,
+                },
+                formData: vi.fn().mockResolvedValue(mockFormData),
+            } as unknown as Request;
 
             const res = await uploadPost(req);
 
@@ -360,13 +370,16 @@ describe("Security: CSRF Protection - Real Validation", () => {
                 error: null,
             });
 
-            const formData = new FormData();
-            // No file appended
+            const mockFormData = {
+                get: vi.fn().mockReturnValue(null),
+            };
 
-            const req = new NextRequest("http://localhost:3000/api/upload", {
-                method: "POST",
-            });
-            vi.spyOn(req, "formData").mockResolvedValue(formData);
+            const req = {
+                headers: {
+                    get: (name: string) => name === "x-forwarded-for" ? "192.168.1.1" : null,
+                },
+                formData: vi.fn().mockResolvedValue(mockFormData),
+            } as unknown as Request;
 
             const res = await uploadPost(req);
             const body = await res.json();

@@ -54,19 +54,25 @@ describe("Security: Rate Limiting - Real Validation", () => {
     });
 
     function createUploadRequest(ip: string = "192.168.1.1") {
-        const formData = new FormData();
-        const blob = new Blob(["test image content"], { type: "image/jpeg" });
-        formData.append("file", blob, "test.jpg");
+        const jpegHeader = new Uint8Array([0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46]);
+        
+        const mockFile = {
+            type: "image/jpeg",
+            size: jpegHeader.length,
+            name: "test.jpg",
+            arrayBuffer: vi.fn().mockResolvedValue(jpegHeader.buffer),
+        };
 
-        const req = new NextRequest("http://localhost:3000/api/upload", {
-            method: "POST",
+        const mockFormData = {
+            get: vi.fn().mockReturnValue(mockFile),
+        };
+
+        return {
             headers: {
-                "x-forwarded-for": ip,
+                get: (name: string) => name === "x-forwarded-for" ? ip : null,
             },
-        });
-
-        vi.spyOn(req, "formData").mockResolvedValue(formData);
-        return req;
+            formData: vi.fn().mockResolvedValue(mockFormData),
+        } as unknown as Request;
     }
 
     describe("Rate Limit Enforcement - Real Validation", () => {
