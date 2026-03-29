@@ -60,3 +60,6 @@ lhci_reports/
 
 # worktrees
 .worktrees/
+
+# MCP configuration (contains secrets)
+mcp.json
