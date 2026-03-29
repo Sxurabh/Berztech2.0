@@ -1,5 +1,6 @@
 "use client";
 import { useMemo } from "react";
+import { motion } from "framer-motion";
 import clsx from "clsx";
 import { AttachmentPreview } from "./AttachmentPreview";
 
@@ -25,57 +26,109 @@ function DoubleCheck({ className }) {
     );
 }
 
+function Avatar({ src, name, size = "md" }) {
+    const sizeClasses = {
+        sm: "w-7 h-7 text-xs",
+        md: "w-8 h-8 text-xs",
+        lg: "w-10 h-10 text-sm"
+    };
+    
+    const initial = name?.charAt(0)?.toUpperCase() || "?";
+    
+    if (src) {
+        return (
+            <img 
+                src={src} 
+                alt={name || "User"}
+                className={clsx(
+                    "rounded-full object-cover ring-2 ring-white",
+                    sizeClasses[size]
+                )}
+            />
+        );
+    }
+    
+    return (
+        <div className={clsx(
+            "rounded-full flex items-center justify-center font-medium text-white flex-shrink-0",
+            sizeClasses[size],
+            "bg-gradient-to-br from-primary to-primary-dark"
+        )}>
+            {initial}
+        </div>
+    );
+}
+
 export function MessageBubble({ message, currentUserId }) {
     const isOwn = message.sender_id === currentUserId;
     const hasAttachment = !!message.attachment_url;
+    
+    const senderName = message.sender?.full_name || message.sender_name || "Unknown";
+    const senderAvatar = message.sender?.avatar_url || null;
+
+    // DEBUG
+    console.log("[MESSAGE_BUBBLE] message:", {
+        id: message.id,
+        sender_id: message.sender_id,
+        sender_name: message.sender_name,
+        sender: message.sender,
+        senderName,
+        senderAvatar,
+        currentUserId,
+        isOwn
+    });
 
     const readStatus = useMemo(() => {
         const reads = message.reads || [];
         if (reads.length === 0) return "sent";
-        if (reads.some((r) => r.user_id !== currentUserId)) return "delivered";
-        return "read";
+        if (reads.some((r) => r.user_id !== currentUserId)) return "read";
+        return "delivered";
     }, [message.reads, currentUserId]);
 
     const ReadIcon = readStatus === "read" ? DoubleCheck : SingleCheck;
     const readColor = readStatus === "read" ? "text-blue-500" : "text-neutral-400";
 
     return (
-        <div className={clsx(
-            "flex gap-2 mb-3",
-            isOwn ? "flex-row-reverse" : "flex-row"
-        )}>
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={clsx(
+                "flex gap-2 mb-3",
+                isOwn ? "flex-row-reverse" : "flex-row"
+            )}
+        >
             {!isOwn && (
-                <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-xs font-medium text-white flex-shrink-0">
-                    {message.sender?.full_name?.charAt(0)?.toUpperCase() || "?"}
-                </div>
+                <Avatar src={senderAvatar} name={senderName} size="md" />
             )}
 
             <div className={clsx(
-                "max-w-[70%] flex flex-col",
+                "max-w-[75%] flex flex-col",
                 isOwn ? "items-end" : "items-start"
             )}>
-                {!isOwn && message.sender?.full_name && (
-                    <span className="text-xs text-neutral-500 mb-1 px-1">
-                        {message.sender.full_name}
+                {!isOwn && senderName && senderName !== "Unknown" && (
+                    <span className="text-xs text-neutral-500 mb-1 px-1 font-medium">
+                        {senderName}
                     </span>
                 )}
 
                 <div className={clsx(
-                    "rounded-lg px-3 py-2 text-sm",
+                    "rounded-2xl px-4 py-2.5 text-sm shadow-sm",
                     isOwn
-                        ? "bg-neutral-900 text-white"
-                        : "bg-neutral-100 text-neutral-900"
+                        ? "bg-gradient-to-br from-neutral-900 to-neutral-800 text-white rounded-br-md"
+                        : "bg-white text-neutral-900 border border-neutral-100 rounded-bl-md"
                 )}>
                     <p className="whitespace-pre-wrap break-words">{message.content}</p>
 
                     {hasAttachment && (
-                        <AttachmentPreview
-                            attachment={{
-                                attachment_url: message.attachment_url,
-                                attachment_type: message.attachment_type,
-                                attachment_name: message.attachment_name,
-                            }}
-                        />
+                        <div className="mt-2">
+                            <AttachmentPreview
+                                attachment={{
+                                    attachment_url: message.attachment_url,
+                                    attachment_type: message.attachment_type,
+                                    attachment_name: message.attachment_name,
+                                }}
+                            />
+                        </div>
                     )}
                 </div>
 
@@ -87,12 +140,12 @@ export function MessageBubble({ message, currentUserId }) {
                         {formatTime(message.created_at)}
                     </span>
                     {isOwn && (
-                        <span className={clsx("w-3 h-3 inline-flex items-center", readColor)}>
+                        <span className={clsx("w-4 h-4 inline-flex items-center", readColor)}>
                             <ReadIcon className="w-full h-full" />
                         </span>
                     )}
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 }

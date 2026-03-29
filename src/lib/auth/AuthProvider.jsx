@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useMyPresence } from "@/lib/hooks/useMyPresence";
 
 const AuthContext = createContext(null);
 
@@ -9,6 +10,9 @@ export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const supabase = createClient();
+    
+    // Track current user's presence globally
+    useMyPresence();
 
     useEffect(() => {
         // If Supabase isn't configured, skip auth setup

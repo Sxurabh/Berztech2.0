@@ -3,7 +3,7 @@ import { useState, useRef } from "react";
 import { FiSend, FiPaperclip, FiX } from "react-icons/fi";
 import clsx from "clsx";
 
-export function ChatInput({ onSend, onUpload, disabled, isUploading }) {
+export function ChatInput({ onSend, onUpload, disabled, isUploading, isMobile }) {
     const [message, setMessage] = useState("");
     const [attachment, setAttachment] = useState(null);
     const [uploadProgress, setUploadProgress] = useState(0);
@@ -92,9 +92,12 @@ export function ChatInput({ onSend, onUpload, disabled, isUploading }) {
                         </div>
                         <button
                             onClick={removeAttachment}
-                            className="p-1 text-neutral-400 hover:text-red-500"
+                            className={clsx(
+                                "text-neutral-400 hover:text-red-500 transition-colors",
+                                isMobile ? "p-3" : "p-1"
+                            )}
                         >
-                            <FiX className="w-4 h-4" />
+                            <FiX className={isMobile ? "w-5 h-5" : "w-4 h-4"} />
                         </button>
                     </div>
                     {isUploading && (
@@ -117,16 +120,17 @@ export function ChatInput({ onSend, onUpload, disabled, isUploading }) {
                     className="hidden"
                     disabled={disabled || isUploading}
                 />
-                <button
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={disabled || isUploading}
-                    className={clsx(
-                        "p-2 text-neutral-500 hover:text-neutral-900 transition-colors rounded",
-                        (disabled || isUploading) && "opacity-50 cursor-not-allowed"
-                    )}
-                >
-                    <FiPaperclip className="w-5 h-5" />
-                </button>
+                        <button
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={disabled || isUploading}
+                            className={clsx(
+                                "text-neutral-500 hover:text-neutral-900 transition-colors rounded",
+                                (disabled || isUploading) && "opacity-50 cursor-not-allowed",
+                                isMobile ? "p-3 min-w-[44px] min-h-[44px] flex items-center justify-center" : "p-2"
+                            )}
+                        >
+                            <FiPaperclip className="w-5 h-5" />
+                        </button>
 
                 <textarea
                     value={message}
@@ -135,7 +139,10 @@ export function ChatInput({ onSend, onUpload, disabled, isUploading }) {
                     placeholder="Type a message..."
                     disabled={disabled || isUploading}
                     rows={1}
-                    className="flex-1 resize-none border border-neutral-200 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent disabled:opacity-50"
+                    className={clsx(
+                        "flex-1 resize-none border border-neutral-200 rounded px-3 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent disabled:opacity-50",
+                        isMobile ? "py-3 min-h-[44px]" : "py-2"
+                    )}
                     style={{ maxHeight: "120px" }}
                 />
 
@@ -143,10 +150,11 @@ export function ChatInput({ onSend, onUpload, disabled, isUploading }) {
                     onClick={handleSend}
                     disabled={disabled || isUploading || (!message.trim() && !attachment)}
                     className={clsx(
-                        "p-2 rounded transition-colors",
+                        "rounded transition-colors",
                         (message.trim() || attachment) && !disabled && !isUploading
                             ? "bg-neutral-900 text-white hover:bg-neutral-800"
-                            : "bg-neutral-200 text-neutral-400 cursor-not-allowed"
+                            : "bg-neutral-200 text-neutral-400 cursor-not-allowed",
+                        isMobile ? "p-3 min-w-[44px] min-h-[44px] flex items-center justify-center" : "p-2"
                     )}
                 >
                     <FiSend className="w-5 h-5" />

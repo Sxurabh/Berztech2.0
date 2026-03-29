@@ -9,6 +9,10 @@ vi.mock('@/lib/supabase/client', () => ({
   createClient: vi.fn(() => null),
 }));
 
+vi.mock('@/lib/hooks/useMyPresence', () => ({
+  useMyPresence: vi.fn(),
+}));
+
 const mockSupabase = {
   auth: {
     getUser: vi.fn(),

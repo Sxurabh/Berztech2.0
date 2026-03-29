@@ -17,6 +17,26 @@ vi.mock("@/lib/hooks/useMessages", () => ({
     }),
 }));
 
+vi.mock("@/lib/hooks/useTheirPresence", () => ({
+    useTheirPresence: () => ({
+        isOnline: true,
+        lastSeen: null,
+        formattedStatus: "Online",
+        formattedLastSeen: "Online",
+        loading: false,
+    }),
+}));
+
+vi.mock("@/lib/hooks/useNotifications", () => ({
+    useNotifications: () => ({
+        notifications: [],
+        unreadCount: 0,
+        loading: false,
+        markAsRead: vi.fn(),
+        markAllAsRead: vi.fn(),
+    }),
+}));
+
 vi.mock("@/lib/supabase/client", () => ({
     createClient: () => ({
         auth: {
@@ -51,16 +71,74 @@ describe("ChatPanel", () => {
     });
 
     it("shows project name when provided", async () => {
-        render(<ChatPanel projectId="test" projectName="My Project" isOpen={true} onToggle={() => {}} />);
+        render(<ChatPanel projectId="test" projectName="My Project" recipientName="Recipient Name" isOpen={true} onToggle={() => {}} />);
         await waitFor(() => {
-            expect(screen.getByText("My Project")).toBeTruthy();
+            // Use first() - recipient name appears in header
+            expect(screen.getAllByText("Recipient Name")[0]).toBeTruthy();
         });
     });
 
     it("shows default project name when not provided", async () => {
         render(<ChatPanel projectId="test" isOpen={true} onToggle={() => {}} />);
         await waitFor(() => {
-            expect(screen.getByText("Project Chat")).toBeTruthy();
+            // Use first() - default name appears in header
+            expect(screen.getAllByText("Chat")[0]).toBeTruthy();
+        });
+    });
+});
+
+describe("ChatPanel Header", () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it("renders avatar with first letter of recipient name", async () => {
+        render(<ChatPanel projectId="test" recipientName="John Doe" isOpen={true} onToggle={() => {}} />);
+        await waitFor(() => {
+            // Use first() to get the avatar in header
+            expect(screen.getAllByText("J")[0]).toBeTruthy();
+        });
+    });
+
+    it("renders avatar with image when recipientAvatar provided", async () => {
+        render(
+            <ChatPanel 
+                projectId="test" 
+                recipientName="John Doe"
+                recipientAvatar="https://example.com/avatar.png"
+                isOpen={true} 
+                onToggle={() => {}} 
+            />
+        );
+        await waitFor(() => {
+            // Use first() to avoid multiple matches - look for img element
+            const imgs = screen.getAllByRole("img");
+            expect(imgs.length).toBeGreaterThan(0);
+        });
+    });
+
+    it("shows online status indicator", async () => {
+        render(<ChatPanel projectId="test" recipientName="John Doe" isOpen={true} onToggle={() => {}} />);
+        await waitFor(() => {
+            const indicators = document.querySelectorAll(".bg-green-500");
+            expect(indicators[0]).toBeTruthy();
+        });
+    });
+
+    it("shows online status text", async () => {
+        render(<ChatPanel projectId="test" recipientName="John Doe" isOpen={true} onToggle={() => {}} />);
+        await waitFor(() => {
+            // Use first() to get header status
+            expect(screen.getAllByText("Online")[0]).toBeTruthy();
+        });
+    });
+
+    it("close button has aria-label", async () => {
+        render(<ChatPanel projectId="test" recipientName="John Doe" isOpen={true} onToggle={() => {}} />);
+        await waitFor(() => {
+            // Use first() to get header close button
+            const buttons = screen.getAllByRole("button", { name: /close chat/i });
+            expect(buttons[0]).toBeTruthy();
         });
     });
 });

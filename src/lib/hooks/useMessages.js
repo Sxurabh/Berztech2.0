@@ -11,9 +11,14 @@ export function useMessages(projectId) {
         queryKey: ["messages", projectId],
         queryFn: async () => {
             if (!projectId) return [];
+            console.log("[USE_MESSAGES] Fetching messages for projectId:", projectId);
             const res = await fetch(`/api/messages?project_id=${projectId}`);
-            if (!res.ok) throw new Error("Failed to fetch messages");
+            if (!res.ok) {
+                console.error("[USE_MESSAGES] Fetch error:", res.status, res.statusText);
+                throw new Error("Failed to fetch messages");
+            }
             const json = await res.json();
+            console.log("[USE_MESSAGES] Got", json.data?.length || 0, "messages");
             return json.data || [];
         },
         enabled: !!projectId,
@@ -21,6 +26,7 @@ export function useMessages(projectId) {
 
     const sendMessage = useMutation({
         mutationFn: async (message) => {
+            console.log("[USE_MESSAGES] Sending message:", message);
             const res = await fetch("/api/messages", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -28,30 +34,41 @@ export function useMessages(projectId) {
             });
             if (!res.ok) {
                 const json = await res.json();
+                console.error("[USE_MESSAGES] Send error:", json);
                 throw new Error(json.error || "Failed to send message");
             }
             return res.json();
         },
         onSuccess: () => {
+            console.log("[USE_MESSAGES] Message sent successfully");
             queryClient.invalidateQueries({ queryKey: ["messages", projectId] });
         },
     });
 
     const markAsRead = useMutation({
         mutationFn: async (messageId) => {
+            console.log("[USE_MESSAGES] Marking as read, messageId:", messageId);
             const res = await fetch(`/api/messages/${messageId}/read`, {
                 method: "PATCH",
             });
-            if (!res.ok) throw new Error("Failed to mark as read");
+            if (!res.ok) {
+                const json = await res.json();
+                console.error("[USE_MESSAGES] Mark as read error:", res.status, json);
+                throw new Error("Failed to mark as read");
+            }
+            console.log("[USE_MESSAGES] Marked as read successfully");
             return res.json();
         },
         onSuccess: () => {
+            console.log("[USE_MESSAGES] Read receipt updated");
             queryClient.invalidateQueries({ queryKey: ["messages", projectId] });
         },
     });
 
     useEffect(() => {
         if (!projectId || !supabase) return;
+
+        console.log("[USE_MESSAGES] Setting up realtime for projectId:", projectId);
 
         channelRef.current = supabase
             .channel(`messages:${projectId}`)
@@ -64,6 +81,7 @@ export function useMessages(projectId) {
                     filter: `project_id=eq.${projectId}`,
                 },
                 (payload) => {
+                    console.log("[USE_MESSAGES] New message via realtime:", payload.new);
                     queryClient.setQueryData(["messages", projectId], (old) => {
                         if (!old) return [payload.new];
                         if (old.some((m) => m.id === payload.new.id)) return old;
@@ -79,6 +97,7 @@ export function useMessages(projectId) {
                     table: "message_reads",
                 },
                 (payload) => {
+                    console.log("[USE_MESSAGES] New read receipt via realtime:", payload.new);
                     queryClient.setQueryData(["messages", projectId], (old) => {
                         if (!old) return old;
                         return old.map((msg) => {
@@ -95,6 +114,7 @@ export function useMessages(projectId) {
             )
             .subscribe();
 
+        console.log("[USE_MESSAGES] Realtime subscribed");
         return () => {
             if (channelRef.current) {
                 supabase.removeChannel(channelRef.current);

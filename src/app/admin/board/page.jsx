@@ -20,6 +20,27 @@ function BoardContent() {
     const [selectedRequestId, setSelectedRequestId] = useState(requestId || '');
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [selectedRequestName, setSelectedRequestName] = useState("");
+    const [selectedClientProfile, setSelectedClientProfile] = useState(null);
+    const [directRequest, setDirectRequest] = useState(null); // For when requestId is in URL
+
+    // Fetch single request when requestId is in URL
+    useEffect(() => {
+        if (requestId) {
+            const fetchDirectRequest = async () => {
+                const supabase = createClient();
+                const { data } = await supabase
+                    .from("requests")
+                    .select("*")
+                    .eq("id", requestId)
+                    .single();
+                if (data) {
+                    setDirectRequest(data);
+                    setSelectedRequestName(data.name || "Request");
+                }
+            };
+            fetchDirectRequest();
+        }
+    }, [requestId]);
 
     // Fetch requests for the filter dropdown (only when in global view)
     useEffect(() => {
@@ -33,15 +54,42 @@ function BoardContent() {
         }
     }, [requestId]);
 
-    // Update selected request name when selectedRequestId changes
+    // Update selected request name and fetch client profile when selectedRequestId or directRequest changes
     useEffect(() => {
         if (selectedRequestId) {
-            const selected = requests.find(r => r.id === selectedRequestId);
+            // Use directRequest if available (from URL), otherwise find in requests array
+            const selected = directRequest || requests.find(r => r.id === selectedRequestId);
             setSelectedRequestName(selected?.name || "Request");
+            
+            // Fetch client profile for chat avatar
+            if (selected?.user_id) {
+                const fetchClientProfile = async () => {
+                    const supabase = createClient();
+                    
+                    // Try user_profiles first
+                    const { data: profile } = await supabase
+                        .from("user_profiles")
+                        .select("*")
+                        .eq("id", selected.user_id)
+                        .single();
+                    
+                    if (profile && profile.avatar_url) {
+                        setSelectedClientProfile(profile);
+                    } else {
+                        // Fallback: set basic info from request data
+                        setSelectedClientProfile({
+                            full_name: selected?.name || selected?.email?.split('@')[0] || "Client",
+                            avatar_url: profile?.avatar_url || null
+                        });
+                    }
+                };
+                fetchClientProfile();
+            }
         } else {
             setSelectedRequestName("Request");
+            setSelectedClientProfile(null);
         }
-    }, [selectedRequestId, requests]);
+    }, [selectedRequestId, requests, directRequest]);
 
     useEffect(() => {
         fetchBoardData();
@@ -315,14 +363,24 @@ function BoardContent() {
                 />
             )}
 
-            {(activeRequestId || selectedRequestId) && (
+            {(activeRequestId || selectedRequestId) && (() => {
+                // Use directRequest if available (from URL), otherwise find in requests array
+                const selectedRequest = directRequest || requests.find(r => r.id === (activeRequestId || selectedRequestId));
+                const clientName = selectedRequest?.name || selectedRequest?.email?.split('@')[0] || "Client";
+                console.log("[ADMIN_CHAT] selectedRequest:", selectedRequest);
+                console.log("[ADMIN_CHAT] clientName:", clientName);
+                console.log("[ADMIN_CHAT] clientProfile:", selectedClientProfile);
+                return (
                 <ChatPanel
                     projectId={activeRequestId || selectedRequestId}
                     projectName={selectedRequestName}
+                    recipientId={selectedRequest?.user_id}
+                    recipientName={clientName}
+                    recipientAvatar={selectedClientProfile?.avatar_url || null}
                     isOpen={isChatOpen}
                     onToggle={() => setIsChatOpen(!isChatOpen)}
                 />
-            )}
+            );})()}
         </div>
     );
 }

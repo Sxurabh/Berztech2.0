@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiEye, FiTrello, FiX, FiExternalLink, FiMessageSquare } from "react-icons/fi";
@@ -8,11 +8,13 @@ import { useAuth } from "@/lib/auth/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 import { ChatPanel } from "@/components/chat/ChatPanel";
+import { ADMIN_EMAIL } from "@/config/admin";
 
 export default function DashboardPage() {
   const { user } = useAuth();
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const hasAutoOpenedChat = useRef(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -27,6 +29,17 @@ export default function DashboardPage() {
 
         if (!error) {
           setRequests(data || []);
+          
+          // Auto-open chat on first login with existing requests
+          if (!hasAutoOpenedChat.current && data?.length > 0) {
+            const hasLoggedInBefore = localStorage.getItem('berztech_has_logged_in');
+            if (!hasLoggedInBefore) {
+              setChatProject(data[0]);
+              setIsChatOpen(true);
+              localStorage.setItem('berztech_has_logged_in', 'true');
+              hasAutoOpenedChat.current = true;
+            }
+          }
         }
       } finally {
         setLoading(false);
@@ -44,6 +57,40 @@ export default function DashboardPage() {
   const [viewingRequest, setViewingRequest] = useState(null);
   const [chatProject, setChatProject] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [adminProfile, setAdminProfile] = useState(null);
+
+  // Fetch admin profile for chat header using ADMIN_EMAIL from config
+  useEffect(() => {
+    const fetchAdminProfile = async () => {
+      const supabase = createClient();
+      
+      console.log("[DASHBOARD] Fetching admin profile for:", ADMIN_EMAIL);
+      
+      // Fetch admin profile using ADMIN_EMAIL from config
+      const { data: profile, error } = await supabase
+        .from("user_profiles")
+        .select("*")
+        .eq("email", ADMIN_EMAIL)
+        .single();
+      
+      console.log("[DASHBOARD] Admin profile:", profile, "error:", error);
+      
+      if (profile) {
+        setAdminProfile(profile);
+      } else {
+        // Fallback: use request data or default
+        console.log("[DASHBOARD] No admin profile found, using fallback");
+        setAdminProfile({
+          full_name: "Berztech Support",
+          avatar_url: null
+        });
+      }
+    };
+    
+    if (ADMIN_EMAIL) {
+      fetchAdminProfile();
+    }
+  }, []);
 
   const handleOpenChat = (request) => {
     setChatProject(request);
@@ -267,6 +314,9 @@ export default function DashboardPage() {
         <ChatPanel
           projectId={chatProject.id}
           projectName={chatProject.company || chatProject.name || "Project"}
+          recipientId={adminProfile?.id || null}
+          recipientName={adminProfile?.full_name || "Berztech Support"}
+          recipientAvatar={adminProfile?.avatar_url || null}
           isOpen={isChatOpen}
           onToggle={() => setIsChatOpen(!isChatOpen)}
         />
