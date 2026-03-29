@@ -11,26 +11,6 @@ const CreateMessageSchema = z.object({
     attachment_name: z.string().max(255).optional().nullable(),
 });
 
-async function checkProjectAccess(supabase, projectId, userId, userEmail) {
-    const { data: project, error } = await supabase
-        .from("projects")
-        .select("id, client_email")
-        .eq("id", projectId)
-        .single();
-
-    if (error || !project) return false;
-
-    if (project.client_email === userEmail) return true;
-
-    const { data: profile } = await supabase
-        .from("profiles")
-        .select("is_admin")
-        .eq("id", userId)
-        .single();
-
-    return profile?.is_admin === true;
-}
-
 export async function GET(request) {
     try {
         const supabase = await createServerSupabaseClient();
@@ -48,17 +28,11 @@ export async function GET(request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const hasAccess = await checkProjectAccess(supabase, projectId, user.id, user.email);
-        if (!hasAccess) {
-            return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-        }
-
         let query = supabase
             .from("project_messages")
             .select(`
                 *,
-                sender:profiles(id, full_name, avatar_url),
-                reads:message_reads(user_id, read_at)
+                reads:message_reads(user_id, user_email, read_at)
             `)
             .eq("project_id", projectId)
             .order("created_at", { ascending: true })
@@ -106,26 +80,20 @@ export async function POST(request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const hasAccess = await checkProjectAccess(supabase, validation.data.project_id, user.id, user.email);
-        if (!hasAccess) {
-            return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-        }
-
         const { data: message, error } = await supabase
             .from("project_messages")
             .insert({
                 project_id: validation.data.project_id,
                 sender_id: user.id,
+                sender_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+                sender_email: user.email,
                 content: validation.data.content,
                 task_id: validation.data.task_id || null,
                 attachment_url: validation.data.attachment_url || null,
                 attachment_type: validation.data.attachment_type || null,
                 attachment_name: validation.data.attachment_name || null,
             })
-            .select(`
-                *,
-                sender:profiles(id, full_name, avatar_url)
-            `)
+            .select()
             .single();
 
         if (error) {

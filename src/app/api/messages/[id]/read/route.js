@@ -30,6 +30,7 @@ export async function PATCH(request, { params }) {
             .upsert({
                 message_id: id,
                 user_id: user.id,
+                user_email: user.email,
                 read_at: new Date().toISOString(),
             }, {
                 onConflict: "message_id,user_id",
