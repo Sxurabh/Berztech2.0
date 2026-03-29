@@ -1,12 +1,28 @@
 "use client";
 import { useMemo } from "react";
-import { FiCheck, FiCheckCheck } from "react-icons/fi";
 import clsx from "clsx";
 import { AttachmentPreview } from "./AttachmentPreview";
 
 function formatTime(dateString) {
     const date = new Date(dateString);
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+}
+
+function SingleCheck({ className }) {
+    return (
+        <svg className={className} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M13.5 2.5L6 10L2.5 6.5" />
+        </svg>
+    );
+}
+
+function DoubleCheck({ className }) {
+    return (
+        <svg className={className} viewBox="0 0 24 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M15.5 2.5L8 10L4.5 6.5" />
+            <path d="M21.5 2.5L14 10L10.5 6.5" />
+        </svg>
+    );
 }
 
 export function MessageBubble({ message, currentUserId }) {
@@ -20,7 +36,7 @@ export function MessageBubble({ message, currentUserId }) {
         return "read";
     }, [message.reads, currentUserId]);
 
-    const ReadIcon = readStatus === "read" ? FiCheckCheck : FiCheck;
+    const ReadIcon = readStatus === "read" ? DoubleCheck : SingleCheck;
     const readColor = readStatus === "read" ? "text-blue-500" : "text-neutral-400";
 
     return (
@@ -69,7 +85,9 @@ export function MessageBubble({ message, currentUserId }) {
                         {formatTime(message.created_at)}
                     </span>
                     {isOwn && (
-                        <ReadIcon className={clsx("w-3 h-3", readColor)} />
+                        <span className={clsx("w-3 h-3 inline-flex items-center", readColor)}>
+                            <ReadIcon className="w-full h-full" />
+                        </span>
                     )}
                 </div>
             </div>
