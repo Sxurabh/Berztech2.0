@@ -30,10 +30,7 @@ export async function GET(request) {
 
         let query = supabase
             .from("project_messages")
-            .select(`
-                *,
-                reads:message_reads(user_id, user_email, read_at)
-            `)
+            .select("*")
             .eq("project_id", projectId)
             .order("created_at", { ascending: true })
             .limit(limit);
@@ -49,7 +46,9 @@ export async function GET(request) {
             return NextResponse.json({ error: "Database error" }, { status: 500 });
         }
 
-        return NextResponse.json({ data: messages || [] }, { status: 200 });
+        const messagesWithReads = (messages || []).map(msg => ({ ...msg, reads: [] }));
+
+        return NextResponse.json({ data: messagesWithReads }, { status: 200 });
     } catch (error) {
         console.error("GET /api/messages error:", error);
         return NextResponse.json({ error: "Unexpected error" }, { status: 500 });
