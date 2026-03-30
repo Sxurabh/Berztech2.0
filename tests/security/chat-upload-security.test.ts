@@ -260,4 +260,102 @@ describe("Security: Chat File Upload Security", () => {
             expect(body.error).toBe("Unauthorized");
         });
     });
+
+    describe("Filename XSS Vulnerability Tests", () => {
+        it("17. filename with script tag returned unsanitized", async () => {
+            const xssFilename = 'report<script>alert(1)</script>.pdf';
+            const content = new Uint8Array(100).fill(0);
+            const req = createUploadRequest(content, xssFilename, "application/pdf");
+
+            const res = await uploadPost(req);
+
+            expect(res.status).toBe(200);
+            const body = await res.json();
+            expect(body.name).toContain("<script>");
+        });
+
+        it("18. filename with event handler returned unsanitized", async () => {
+            const xssFilename = 'file"onclick="alert(1)".pdf';
+            const content = new Uint8Array(100).fill(0);
+            const req = createUploadRequest(content, xssFilename, "application/pdf");
+
+            const res = await uploadPost(req);
+
+            expect(res.status).toBe(200);
+            const body = await res.json();
+            expect(body.name).toContain('onclick');
+        });
+
+        it("19. filename returned in response without sanitization", async () => {
+            const maliciousFilename = '<img src=x onerror=alert(1)>.pdf';
+            const content = new Uint8Array(100).fill(0);
+            const req = createUploadRequest(content, maliciousFilename, "application/pdf");
+
+            const res = await uploadPost(req);
+
+            expect(res.status).toBe(200);
+            const body = await res.json();
+            expect(body.name).toContain('<img');
+        });
+
+        it("20. double-encoded characters in filename", async () => {
+            const encodedFilename = '%3Cscript%3Ealert%281%29%3C%2Fscript%3E.pdf';
+            const content = new Uint8Array(100).fill(0);
+            const req = createUploadRequest(content, encodedFilename, "application/pdf");
+
+            const res = await uploadPost(req);
+
+            expect(res.status).toBe(200);
+            const body = await res.json();
+            expect(body.name).toContain('%3Cscript%3E');
+        });
+
+        it("21. unicode XSS in filename", async () => {
+            const unicodeFilename = '\u003cscript\u003ealert(1)\u003c/script\u003e.pdf';
+            const content = new Uint8Array(100).fill(0);
+            const req = createUploadRequest(content, unicodeFilename, "application/pdf");
+
+            const res = await uploadPost(req);
+
+            expect(res.status).toBe(200);
+            const body = await res.json();
+            expect(body.name).toBeDefined();
+        });
+
+        it("22. SVG-based XSS in filename", async () => {
+            const svgFilename = '<svg onload=alert(1)>.pdf';
+            const content = new Uint8Array(100).fill(0);
+            const req = createUploadRequest(content, svgFilename, "application/pdf");
+
+            const res = await uploadPost(req);
+
+            expect(res.status).toBe(200);
+            const body = await res.json();
+            expect(body.name).toContain('<svg');
+        });
+
+        it("23. data URI in filename", async () => {
+            const dataUriFilename = 'data:text/html,<script>alert(1)</script>.pdf';
+            const content = new Uint8Array(100).fill(0);
+            const req = createUploadRequest(content, dataUriFilename, "application/pdf");
+
+            const res = await uploadPost(req);
+
+            expect(res.status).toBe(200);
+            const body = await res.json();
+            expect(body.name).toContain('data:');
+        });
+
+        it("24. javascript URI in filename", async () => {
+            const jsFilename = 'javascript:alert(1).pdf';
+            const content = new Uint8Array(100).fill(0);
+            const req = createUploadRequest(content, jsFilename, "application/pdf");
+
+            const res = await uploadPost(req);
+
+            expect(res.status).toBe(200);
+            const body = await res.json();
+            expect(body.name).toContain('javascript:');
+        });
+    });
 });
